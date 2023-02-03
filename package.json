@@ -1,0 +1,19 @@
+{
+  "name": "ksh-resume",
+  "version": "1.0.0",
+  "description": "Web page for job appliying.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ksheyon123/resume.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ksheyon123/resume/issues"
+  },
+  "homepage": "https://github.com/ksheyon123/resume#readme"
+}
