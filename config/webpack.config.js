@@ -7,10 +7,16 @@ module.exports = {
     port: 3000,
     hot: true,
   },
-  entry: "./src/index.js",
+  entry: "./src/index.tsx",
   output: {
     filename: "main.js",
-    path: path.join(__dirname, "dist"),
+    path: path.join(__dirname, "..", "dist"),
+  },
+  resolve: {
+    alias: {
+      components: path.resolve(__dirname, "..", "src"),
+    },
+    extensions: [".js", ".jsx", ".ts", ".tsx"],
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -20,7 +26,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|mjs|jsx|ts|tsx)$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
@@ -28,6 +34,11 @@ module.exports = {
             presets: ["@babel/preset-env", "@babel/preset-react"],
           },
         },
+      },
+      {
+        test: /\.(ts|tsx)$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
       },
     ],
   },
