@@ -1,7 +1,7 @@
 {
-  "name": "ksh-resume",
-  "version": "1.0.0",
-  "description": "Web page for job appliying.",
+  "name": "pixel-drawer",
+  "version": "0.0.0",
+  "description": "PC application for drawing pixel art",
   "main": "index.js",
   "scripts": {
     "webpack": "webpack --config config/webpack.config.js",
