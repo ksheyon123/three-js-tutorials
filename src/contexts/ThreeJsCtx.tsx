@@ -7,7 +7,9 @@ class ThreeJs {
   renderer: THREE.WebGLRenderer;
   obj: any;
 
-  constructor() {}
+  constructor() {
+    this.animate = this.animate.bind(this);
+  }
 
   createScene() {
     this.scene = new THREE.Scene();
@@ -23,28 +25,22 @@ class ThreeJs {
 
   createObject() {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    this.obj = {
-      ...this.obj,
-      geometry: geometry,
-      material: material,
-      cube: cube,
-    };
-    this.scene.add(cube);
+    const material = new THREE.MeshBasicMaterial({ color: "0x00ff00" });
+    this.obj = new THREE.Mesh(geometry, material);
+
+    this.scene.add(this.obj);
 
     this.camera.position.z = 5;
   }
 
   handleCamera() {
-    console.log("HandleCamera");
-    console.log(this.obj.cube);
-    this.obj.cube.rotation.x += 0.01;
-    this.obj.cube.rotation.y += 0.01;
+    this.obj.rotation.x += 0.01;
+    this.obj.rotation.y += 0.01;
     this.animate();
   }
 
   animate() {
+    this.renderer.clear();
     requestAnimationFrame(this.animate);
     this.renderer.render(this.scene, this.camera);
   }
