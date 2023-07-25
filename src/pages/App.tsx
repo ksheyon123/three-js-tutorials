@@ -22,6 +22,7 @@ const App = () => {
   return (
     <div>
       <div>Application</div>
+      <div onClick={() => ctx.handleCamera()}>Controller</div>
       <canvas ref={ctxRef}></canvas>
     </div>
   );
