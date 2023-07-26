@@ -1,5 +1,6 @@
 import React, { createContext } from "react";
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 class ThreeJs {
   scene: THREE.Scene;
@@ -7,8 +8,10 @@ class ThreeJs {
   renderer: THREE.WebGLRenderer;
   obj: any;
 
+  coordX: number;
   constructor() {
     this.animate = this.animate.bind(this);
+    this.coordX = 0;
   }
 
   createScene() {
@@ -23,14 +26,18 @@ class ThreeJs {
     this.renderer = new THREE.WebGLRenderer(options);
   }
 
-  createObject() {
+  createObject(idx?: number) {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({ color: "0x00ff00" });
+    const material = new THREE.MeshBasicMaterial({
+      color: "0x00ff00",
+      wireframe: true,
+    });
     this.obj = new THREE.Mesh(geometry, material);
 
+    this.obj.position.x = this.coordX;
     this.scene.add(this.obj);
 
-    this.camera.position.z = 5;
+    this.camera.position.z = 10;
   }
 
   handleCamera() {
@@ -40,8 +47,11 @@ class ThreeJs {
   }
 
   animate() {
-    this.renderer.clear();
     requestAnimationFrame(this.animate);
+    this.render();
+  }
+
+  render() {
     this.renderer.render(this.scene, this.camera);
   }
 }
