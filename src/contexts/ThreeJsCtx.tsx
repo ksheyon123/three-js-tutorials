@@ -29,14 +29,15 @@ class ThreeJs {
 
   createCamera(a: number, b: number, c: number, d: number) {
     this.camera = new THREE.PerspectiveCamera(a, b, c, d);
-    this.camera.position.z = 10;
+    this.camera.position.x = -2.5;
+    this.camera.position.y = 5;
   }
 
   cameraCoordinate(x?: number) {
     const copy = {
       ...this.obj.position,
     };
-    const cameraOffset = new THREE.Vector3(0, 2, 0);
+    const cameraOffset = new THREE.Vector3(-2.5, 5, 0);
     console.log(this.obj.position);
     this.camera.position.copy(copy).add(cameraOffset);
     console.log(this.camera.position);
@@ -68,8 +69,8 @@ class ThreeJs {
   }
 
   showGrid() {
-    const size = 100;
-    const divisions = 100;
+    const size = 10;
+    const divisions = 10;
 
     if (!this.gridHelper) {
       const gridHelper = new THREE.GridHelper(size, divisions);
