@@ -13,10 +13,10 @@ const App = () => {
       canvas: ctxRef.current,
       antialias: true,
     });
-
     ctx.renderer.setSize(window.innerWidth, window.innerHeight);
     ctx.createObject();
     ctx.renderer.render(ctx.scene, ctx.camera);
+    ctx.createOrbit();
   };
 
   useEffect(() => {
@@ -30,7 +30,8 @@ const App = () => {
       <div>Application</div>
       <div onClick={() => ctx.handleCamera()}>Controller</div>
       <div onClick={() => ctx.createObject()}>Create Obj</div>
-      <canvas ref={ctxRef}></canvas>
+      <div onClick={() => ctx.showGrid()}>Show Grid</div>
+      <canvas style={{ backgroundColor: "red" }} ref={ctxRef}></canvas>
     </div>
   );
 };
