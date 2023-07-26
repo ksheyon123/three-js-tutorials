@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { ThreeJsCtx } from "@/contexts/ThreeJsCtx";
+import { Controller } from "@/components/common";
 import * as THREE from "three";
 
 const App = () => {
@@ -32,6 +33,7 @@ const App = () => {
       <div onClick={() => ctx.createObject()}>Create Obj</div>
       <div onClick={() => ctx.showGrid()}>Show Grid</div>
       <canvas style={{ backgroundColor: "red" }} ref={ctxRef}></canvas>
+      <Controller />
     </div>
   );
 };

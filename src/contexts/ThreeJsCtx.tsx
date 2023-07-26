@@ -7,7 +7,10 @@ class ThreeJs {
   camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;
   controls: OrbitControls;
+  gridHelper: THREE.GridHelper;
   obj: any;
+
+  hasGrid: boolean;
 
   coordX: number;
   constructor() {
@@ -40,18 +43,26 @@ class ThreeJs {
     });
     this.obj = new THREE.Mesh(geometry, material);
 
-    this.obj.position.x = this.coordX;
+    this.obj.position.x = 0;
+    this.obj.position.z = 0;
+    this.obj.position.y = 0.5;
     this.scene.add(this.obj);
-
     this.camera.position.z = 10;
   }
 
   showGrid() {
-    const size = 10;
-    const divisions = 10;
+    const size = 100;
+    const divisions = 100;
 
-    const gridHelper = new THREE.GridHelper(size, divisions);
-    this.scene.add(gridHelper);
+    if (!this.gridHelper) {
+      const gridHelper = new THREE.GridHelper(size, divisions);
+      this.scene.add(gridHelper);
+      this.gridHelper = gridHelper;
+    } else {
+      this.scene.remove(this.gridHelper);
+      this.gridHelper = null;
+    }
+    this.render();
   }
 
   handleCamera() {
