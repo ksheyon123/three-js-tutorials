@@ -38,9 +38,9 @@ class ThreeJs {
       ...this.obj.position,
     };
     const cameraOffset = new THREE.Vector3(-2.5, 5, 0);
-    console.log(this.obj.position);
     this.camera.position.copy(copy).add(cameraOffset);
-    console.log(this.camera.position);
+    this.controls.target.set(copy.x, copy.y, copy.z);
+    this.controls.update();
   }
 
   createRenderer(options: any) {
