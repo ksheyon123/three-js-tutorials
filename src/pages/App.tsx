@@ -9,15 +9,15 @@ const App = () => {
 
   const init = () => {
     ctx.createScene();
-    ctx.createCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     ctx.createRenderer({
       canvas: ctxRef.current,
       antialias: true,
     });
-    ctx.renderer.setSize(window.innerWidth, window.innerHeight);
-    ctx.createObject();
+    ctx.createCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     ctx.renderer.render(ctx.scene, ctx.camera);
+    ctx.createObject();
     ctx.createOrbit();
+    ctx.animate();
   };
 
   useEffect(() => {
@@ -29,7 +29,6 @@ const App = () => {
   return (
     <div>
       <div>Application</div>
-      <div onClick={() => ctx.handleCamera()}>Controller</div>
       <div onClick={() => ctx.createObject()}>Create Obj</div>
       <div onClick={() => ctx.showGrid()}>Show Grid</div>
       <canvas style={{ backgroundColor: "red" }} ref={ctxRef}></canvas>

@@ -2,6 +2,7 @@ import React, { createContext } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
+type MoveAction = "ArrowUp" | "ArrowLeft" | "ArrowDown" | "ArrowRight";
 class ThreeJs {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
@@ -12,10 +13,14 @@ class ThreeJs {
 
   hasGrid: boolean;
 
-  coordX: number;
+  coord = {
+    x: 0,
+    y: 0,
+    z: 0,
+  };
+
   constructor() {
     this.animate = this.animate.bind(this);
-    this.coordX = 0;
   }
 
   createScene() {
@@ -24,15 +29,28 @@ class ThreeJs {
 
   createCamera(a: number, b: number, c: number, d: number) {
     this.camera = new THREE.PerspectiveCamera(a, b, c, d);
+    this.camera.position.z = 10;
+  }
+
+  cameraCoordinate(x?: number) {
+    const copy = {
+      ...this.obj.position,
+    };
+    const cameraOffset = new THREE.Vector3(0, 2, 0);
+    console.log(this.obj.position);
+    this.camera.position.copy(copy).add(cameraOffset);
+    console.log(this.camera.position);
   }
 
   createRenderer(options: any) {
     this.renderer = new THREE.WebGLRenderer(options);
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
   createOrbit() {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.addEventListener("change", this.render);
+    return () => this.controls.removeEventListener("change", this.render);
   }
 
   createObject(idx?: number) {
@@ -43,11 +61,10 @@ class ThreeJs {
     });
     this.obj = new THREE.Mesh(geometry, material);
 
-    this.obj.position.x = 0;
-    this.obj.position.z = 0;
-    this.obj.position.y = 0.5;
+    this.obj.position.x = this.coord.x;
+    this.obj.position.z = this.coord.z;
+    this.obj.position.y = this.coord.y + 0.5;
     this.scene.add(this.obj);
-    this.camera.position.z = 10;
   }
 
   showGrid() {
@@ -65,11 +82,29 @@ class ThreeJs {
     this.render();
   }
 
-  handleCamera() {
-    // this.obj.rotation.x += 0.01;
-    // this.obj.rotation.y += 0.01;
-    this.camera.position.set(0, 2.5, 2.5); // Set position like this
-    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+  move(key: MoveAction) {
+    console.log(key);
+    switch (key) {
+      case "ArrowUp":
+        this.obj.position.x += 0.5;
+        this.coord.x += 0.5;
+        break;
+      case "ArrowLeft":
+        this.obj.position.z -= 0.5;
+        break;
+      case "ArrowDown":
+        this.obj.position.x -= 0.5;
+        this.coord.x -= 0.5;
+
+        break;
+      case "ArrowRight":
+        this.obj.position.z += 0.5;
+
+        break;
+      default:
+        break;
+    }
+    this.cameraCoordinate();
     this.animate();
   }
 

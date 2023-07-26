@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import useController from "@/hooks/useController";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -7,22 +8,23 @@ import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 const Controller: React.FC = () => {
+  const { activeBtn } = useController();
   return (
     <StyledDiv>
       <div className="wrapper">
         <div className="upper">
-          <div>
+          <div className={activeBtn === "ArrowUp" ? "active" : ""}>
             <FontAwesomeIcon size="xl" icon={faArrowUp} />
           </div>
         </div>
         <div className="lower">
-          <div>
+          <div className={activeBtn === "ArrowLeft" ? "active" : ""}>
             <FontAwesomeIcon size="xl" icon={faArrowLeft} />
           </div>
-          <div>
+          <div className={activeBtn === "ArrowDown" ? "active" : ""}>
             <FontAwesomeIcon size="xl" icon={faArrowDown} />
           </div>
-          <div>
+          <div className={activeBtn === "ArrowRight" ? "active" : ""}>
             <FontAwesomeIcon size="xl" icon={faArrowRight} />
           </div>
         </div>
@@ -50,8 +52,9 @@ const StyledDiv = styled.div`
     & > div.lower {
       display: flex;
     }
-    & > div & > div {
+    & > div > div {
       width: 30px;
+      height: 30px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -59,6 +62,9 @@ const StyledDiv = styled.div`
 
       &:last-of-type : {
         margin-right: 0px;
+      }
+      &.active {
+        background-color: #666;
       }
     }
   }
