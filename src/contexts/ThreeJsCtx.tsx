@@ -21,6 +21,7 @@ class ThreeJs {
 
   constructor() {
     this.animate = this.animate.bind(this);
+    this.cameraCoordinate = this.cameraCoordinate.bind(this);
   }
 
   createScene() {
@@ -39,7 +40,7 @@ class ThreeJs {
     };
     const cameraOffset = new THREE.Vector3(-2.5, 5, 0);
     this.camera.position.copy(copy).add(cameraOffset);
-    this.controls.target.set(copy.x, copy.y, copy.z);
+    // this.controls.target.set(copy.x, copy.y, copy.z);
     this.controls.update();
   }
 
