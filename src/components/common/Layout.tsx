@@ -14,12 +14,12 @@ const Layout = ({ children }: any) => {
   useEffect(() => {
     window.addEventListener("keydown", showMenu);
     return () => window.removeEventListener("keydown", showMenu);
-  }, []);
+  }, [isShow]);
 
   return (
     <ThreeJsCtxProvider>
       <StyledLayout>
-        {isShow && <Menu />}
+        {isShow && <Menu close={() => setIsShow(false)} />}
         {children}
       </StyledLayout>
     </ThreeJsCtxProvider>
