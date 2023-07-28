@@ -37,7 +37,7 @@ class ThreeJs {
 
   createCamera(a: number, b: number, c: number, d: number) {
     this.camera = new THREE.PerspectiveCamera(a, b, c, d);
-    this.camera.position.x = -2.5;
+    this.camera.position.z = 5;
     this.camera.position.y = 5;
   }
 
@@ -45,7 +45,7 @@ class ThreeJs {
     const copy = {
       ...this.obj.position,
     };
-    const cameraOffset = new THREE.Vector3(-2.5, 5, 0);
+    const cameraOffset = new THREE.Vector3(0, 5, 5);
     this.camera.position.copy(copy).add(cameraOffset);
     this.camera.lookAt(new THREE.Vector3(copy.x, copy.y, copy.z));
     // this.camera.rotation.z = this.angle.z
@@ -74,8 +74,6 @@ class ThreeJs {
       this.angle.x = x;
       this.angle.y = y;
       this.angle.z = z;
-      console.log(x, y, z);
-      // console.log(this.controls.getAzimuthalAngle());
     });
     return () =>
       this.controls.removeEventListener("change", (e) => {
@@ -91,9 +89,9 @@ class ThreeJs {
     });
     this.obj = new THREE.Mesh(geometry, material);
 
-    this.obj.position.x = this.coord.x;
-    this.obj.position.z = this.coord.z;
-    this.obj.position.y = this.coord.y + 0.5;
+    this.obj.position.x = 0;
+    this.obj.position.z = 0;
+    this.obj.position.y = 0;
     this.scene.add(this.obj);
   }
 
@@ -103,6 +101,8 @@ class ThreeJs {
 
     if (!this.gridHelper) {
       const gridHelper = new THREE.GridHelper(size, divisions);
+      gridHelper.rotateX(-1.5708);
+      // gridHelper.rotateY(1.5708);
       this.scene.add(gridHelper);
       this.gridHelper = gridHelper;
     } else {
@@ -120,7 +120,7 @@ class ThreeJs {
         this.coord.x += 0.5;
         break;
       case "ArrowLeft":
-        this.obj.position.z -= 0.5;
+        this.obj.position.y -= 0.5;
         break;
       case "ArrowDown":
         this.obj.position.x -= 0.5;
@@ -128,7 +128,7 @@ class ThreeJs {
 
         break;
       case "ArrowRight":
-        this.obj.position.z += 0.5;
+        this.obj.position.y += 0.5;
 
         break;
       default:
@@ -145,6 +145,20 @@ class ThreeJs {
 
   render() {
     this.renderer.render(this.scene, this.camera);
+  }
+
+  createRndObj() {
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshBasicMaterial({
+      color: "0x000000",
+      wireframe: true,
+    });
+    const rndObj = new THREE.Mesh(geometry, material);
+
+    rndObj.position.x = Math.floor(Math.random() * 10);
+    rndObj.position.z = Math.floor(Math.random() * 10);
+    rndObj.position.y = 0.5;
+    this.scene.add(rndObj);
   }
 }
 
