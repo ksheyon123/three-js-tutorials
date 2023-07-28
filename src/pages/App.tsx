@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { ThreeJsCtx } from "@/contexts/ThreeJsCtx";
 import { Controller } from "@/components/common";
-import * as THREE from "three";
 
 const App = () => {
   const { ctx } = useContext(ThreeJsCtx);
