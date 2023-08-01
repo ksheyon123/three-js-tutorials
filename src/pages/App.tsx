@@ -30,7 +30,14 @@ const App = () => {
       <div>Application</div>
       <div onClick={() => ctx.createObject()}>Create Obj</div>
       <div onClick={() => ctx.showGrid()}>Show Grid</div>
-      <div onClick={() => ctx.createRndObj()}>Show Grid</div>
+      <div onClick={() => ctx.createRndObj()}>Create Rnd Obj</div>
+      <div
+        onClick={() => {
+          console.log(ctx.scene);
+        }}
+      >
+        N
+      </div>
       <canvas style={{ backgroundColor: "red" }} ref={ctxRef}></canvas>
       <Controller />
     </div>

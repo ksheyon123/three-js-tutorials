@@ -25,6 +25,8 @@ class ThreeJs {
     z: 0,
   };
 
+  objKeys = new Map<string, any>();
+
   constructor() {
     this.animate = this.animate.bind(this);
     this.cameraCoordinate = this.cameraCoordinate.bind(this);
@@ -92,6 +94,7 @@ class ThreeJs {
     this.obj.position.x = 0;
     this.obj.position.z = 0;
     this.obj.position.y = 0;
+    this.objKeys.set("user", this.obj);
     this.scene.add(this.obj);
   }
 
@@ -158,8 +161,12 @@ class ThreeJs {
     rndObj.position.x = Math.floor(Math.random() * 10);
     rndObj.position.z = Math.floor(Math.random() * 10);
     rndObj.position.y = 0.5;
+    const uuid = rndObj.uuid;
+    this.objKeys.set(uuid, rndObj);
     this.scene.add(rndObj);
   }
+
+  switctControl() {}
 }
 
 export const ThreeJsCtx = createContext<IContextProps>({
