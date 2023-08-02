@@ -19,12 +19,6 @@ class ThreeJs {
     z: 0,
   };
 
-  angle = {
-    x: 0,
-    y: 0,
-    z: 0,
-  };
-
   objKeys = new Map<string, any>();
 
   constructor() {
@@ -40,14 +34,14 @@ class ThreeJs {
   createCamera(a: number, b: number, c: number, d: number) {
     this.camera = new THREE.PerspectiveCamera(a, b, c, d);
     this.camera.position.z = 5;
-    this.camera.position.y = 5;
+    this.camera.position.y = -5;
   }
 
   cameraCoordinate(x?: number) {
     const copy = {
       ...this.obj.position,
     };
-    const cameraOffset = new THREE.Vector3(0, 5, 5);
+    const cameraOffset = new THREE.Vector3(0, -5, 5);
     this.camera.position.copy(copy).add(cameraOffset);
     this.camera.lookAt(new THREE.Vector3(copy.x, copy.y, copy.z));
     // this.camera.rotation.z = this.angle.z
@@ -73,9 +67,6 @@ class ThreeJs {
       const x = this.camera.rotation.x;
       const y = this.camera.rotation.y;
       const z = this.camera.rotation.z;
-      this.angle.x = x;
-      this.angle.y = y;
-      this.angle.z = z;
     });
     return () =>
       this.controls.removeEventListener("change", (e) => {
@@ -92,7 +83,7 @@ class ThreeJs {
     this.obj = new THREE.Mesh(geometry, material);
 
     this.obj.position.x = 0;
-    this.obj.position.z = 0;
+    this.obj.position.z = 0.5;
     this.obj.position.y = 0;
     this.objKeys.set("user", this.obj);
     this.scene.add(this.obj);
@@ -104,8 +95,7 @@ class ThreeJs {
 
     if (!this.gridHelper) {
       const gridHelper = new THREE.GridHelper(size, divisions);
-      gridHelper.rotateX(-1.5708);
-      // gridHelper.rotateY(1.5708);
+      gridHelper.rotateX(1.5078);
       this.scene.add(gridHelper);
       this.gridHelper = gridHelper;
     } else {
@@ -113,41 +103,6 @@ class ThreeJs {
       this.gridHelper = null;
     }
     this.render();
-  }
-
-  move(key: MoveAction) {
-    console.log(key);
-    switch (key) {
-      case "ArrowUp":
-        this.obj.position.x += 0.5;
-        this.coord.x += 0.5;
-        break;
-      case "ArrowLeft":
-        this.obj.position.y -= 0.5;
-        break;
-      case "ArrowDown":
-        this.obj.position.x -= 0.5;
-        this.coord.x -= 0.5;
-
-        break;
-      case "ArrowRight":
-        this.obj.position.y += 0.5;
-
-        break;
-      default:
-        break;
-    }
-    this.cameraCoordinate();
-    this.animate();
-  }
-
-  animate() {
-    requestAnimationFrame(this.animate);
-    this.render();
-  }
-
-  render() {
-    this.renderer.render(this.scene, this.camera);
   }
 
   createRndObj() {
@@ -164,6 +119,38 @@ class ThreeJs {
     const uuid = rndObj.uuid;
     this.objKeys.set(uuid, rndObj);
     this.scene.add(rndObj);
+  }
+
+  move(key: MoveAction) {
+    console.log(key);
+    switch (key) {
+      case "ArrowUp":
+        this.obj.position.y += 0.5;
+        break;
+      case "ArrowLeft":
+        this.obj.position.x -= 0.5;
+        break;
+      case "ArrowDown":
+        this.obj.position.y -= 0.5;
+
+        break;
+      case "ArrowRight":
+        this.obj.position.x += 0.5;
+        break;
+      default:
+        break;
+    }
+    this.cameraCoordinate();
+    this.animate();
+  }
+
+  animate() {
+    requestAnimationFrame(this.animate);
+    this.render();
+  }
+
+  render() {
+    this.renderer.render(this.scene, this.camera);
   }
 
   switctControl() {}
