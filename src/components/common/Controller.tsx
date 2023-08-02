@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import useController from "@/hooks/useController";
+import { ThreeJsCtx } from "@/contexts/ThreeJsCtx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -8,9 +9,14 @@ import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 const Controller: React.FC = () => {
+  const { ctx } = useContext(ThreeJsCtx);
   const { activeBtn } = useController();
   return (
     <StyledDiv>
+      <div>
+        <div>Buttons</div>
+        <div>Create Obj</div>
+      </div>
       <div className="wrapper">
         <div className="upper">
           <div className={activeBtn === "ArrowUp" ? "active" : ""}>
@@ -35,9 +41,13 @@ const Controller: React.FC = () => {
 
 const StyledDiv = styled.div`
   position: fixed;
+  width: 100vw;
+  height: auto;
   bottom: 0;
   right: 0;
   background-color: white;
+  display: flex;
+  justify-content: space-between;
   & > div.wrapper {
     display: flex;
     flex-direction: column;

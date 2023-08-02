@@ -2,7 +2,7 @@ import React, { createContext } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-type MoveAction = "ArrowUp" | "ArrowLeft" | "ArrowDown" | "ArrowRight";
+type MoveAction = "w" | "s" | "a" | "d";
 class ThreeJs {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
@@ -63,15 +63,6 @@ class ThreeJs {
 
   createOrbit() {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.addEventListener("change", (e) => {
-      const x = this.camera.rotation.x;
-      const y = this.camera.rotation.y;
-      const z = this.camera.rotation.z;
-    });
-    return () =>
-      this.controls.removeEventListener("change", (e) => {
-        console.log(e);
-      });
   }
 
   createObject(idx?: number) {
@@ -89,19 +80,13 @@ class ThreeJs {
     this.scene.add(this.obj);
   }
 
-  showGrid() {
+  createGrid() {
     const size = 10;
     const divisions = 10;
-
-    if (!this.gridHelper) {
-      const gridHelper = new THREE.GridHelper(size, divisions);
-      gridHelper.rotateX(1.5078);
-      this.scene.add(gridHelper);
-      this.gridHelper = gridHelper;
-    } else {
-      this.scene.remove(this.gridHelper);
-      this.gridHelper = null;
-    }
+    const gridHelper = new THREE.GridHelper(size, divisions);
+    gridHelper.rotateX(1.5078);
+    this.scene.add(gridHelper);
+    this.gridHelper = gridHelper;
     this.render();
   }
 
@@ -113,28 +98,28 @@ class ThreeJs {
     });
     const rndObj = new THREE.Mesh(geometry, material);
 
-    rndObj.position.x = Math.floor(Math.random() * 10);
-    rndObj.position.z = Math.floor(Math.random() * 10);
-    rndObj.position.y = 0.5;
+    const pn = Math.random() * 10 > 5 ? -1 : 1;
+
+    rndObj.position.x = pn * Math.floor(Math.random() * 5);
+    rndObj.position.z = 0.5;
+    rndObj.position.y = pn * Math.floor(Math.random() * 5);
     const uuid = rndObj.uuid;
     this.objKeys.set(uuid, rndObj);
     this.scene.add(rndObj);
   }
 
   move(key: MoveAction) {
-    console.log(key);
     switch (key) {
-      case "ArrowUp":
+      case "w":
         this.obj.position.y += 0.5;
         break;
-      case "ArrowLeft":
+      case "a":
         this.obj.position.x -= 0.5;
         break;
-      case "ArrowDown":
+      case "s":
         this.obj.position.y -= 0.5;
-
         break;
-      case "ArrowRight":
+      case "d":
         this.obj.position.x += 0.5;
         break;
       default:
