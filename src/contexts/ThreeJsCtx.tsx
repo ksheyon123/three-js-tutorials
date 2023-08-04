@@ -25,6 +25,7 @@ class ThreeJs {
     this.animate = this.animate.bind(this);
     this.cameraCoordinate = this.cameraCoordinate.bind(this);
     this.render = this.render.bind(this);
+    this.azimuthDetector = this.azimuthDetector.bind(this);
   }
 
   createScene() {
@@ -44,15 +45,7 @@ class ThreeJs {
     const cameraOffset = new THREE.Vector3(0, -5, 5);
     this.camera.position.copy(copy).add(cameraOffset);
     this.camera.lookAt(new THREE.Vector3(copy.x, copy.y, copy.z));
-    // this.camera.rotation.z = this.angle.z
-    // this.camera.rotation.x = this.angle.x;
-    // this.camera.rotation.y = this.angle.y;
-    // this.camera.rotation.z = this.angle.z;
-    // this.controls.object.rotation.x = this.angle.x;
-    // this.controls.object.rotation.y = this.angle.y;
-    // this.controls.object.rotation.z = this.angle.z;
-    // this.controls.object.rotation.set(this.angle.x, this.angle.y, this.angle.z);
-    this.controls.target.set(copy.x, copy.y, copy.z);
+    this.controls.target.set(copy.x, copy.y, copy.z - 0.5);
     this.controls.update();
   }
 
@@ -61,8 +54,27 @@ class ThreeJs {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
+  deltaAngle: number = 0;
+
+  azimuthDetector(e: any) {
+    console.log(this.deltaAngle);
+    const azimuth = this.controls.getAzimuthalAngle();
+    this.deltaAngle = azimuth;
+    console.log(this.deltaAngle);
+
+    const angle = Math.PI / 2;
+    if (azimuth < -angle || azimuth > angle) {
+      this.controls.enableRotate = false;
+    } else {
+      this.controls.enableRotate = true;
+    }
+  }
+
   createOrbit() {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.addEventListener("change", this.azimuthDetector);
+    return () =>
+      this.controls.removeEventListener("change", this.azimuthDetector);
   }
 
   createObject(idx?: number) {
