@@ -2,7 +2,7 @@ import React, { createContext } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-type MoveAction = "ArrowUp" | "ArrowLeft" | "ArrowDown" | "ArrowRight";
+type MoveAction = "w" | "s" | "a" | "d";
 class ThreeJs {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
@@ -19,16 +19,13 @@ class ThreeJs {
     z: 0,
   };
 
-  angle = {
-    x: 0,
-    y: 0,
-    z: 0,
-  };
+  objKeys = new Map<string, any>();
 
   constructor() {
     this.animate = this.animate.bind(this);
     this.cameraCoordinate = this.cameraCoordinate.bind(this);
     this.render = this.render.bind(this);
+    this.azimuthDetector = this.azimuthDetector.bind(this);
   }
 
   createScene() {
@@ -38,25 +35,17 @@ class ThreeJs {
   createCamera(a: number, b: number, c: number, d: number) {
     this.camera = new THREE.PerspectiveCamera(a, b, c, d);
     this.camera.position.z = 5;
-    this.camera.position.y = 5;
+    this.camera.position.y = -5;
   }
 
   cameraCoordinate(x?: number) {
     const copy = {
       ...this.obj.position,
     };
-    const cameraOffset = new THREE.Vector3(0, 5, 5);
+    const cameraOffset = new THREE.Vector3(0, -5, 5);
     this.camera.position.copy(copy).add(cameraOffset);
     this.camera.lookAt(new THREE.Vector3(copy.x, copy.y, copy.z));
-    // this.camera.rotation.z = this.angle.z
-    // this.camera.rotation.x = this.angle.x;
-    // this.camera.rotation.y = this.angle.y;
-    // this.camera.rotation.z = this.angle.z;
-    // this.controls.object.rotation.x = this.angle.x;
-    // this.controls.object.rotation.y = this.angle.y;
-    // this.controls.object.rotation.z = this.angle.z;
-    // this.controls.object.rotation.set(this.angle.x, this.angle.y, this.angle.z);
-    this.controls.target.set(copy.x, copy.y, copy.z);
+    this.controls.target.set(copy.x, copy.y, copy.z - 0.5);
     this.controls.update();
   }
 
@@ -65,20 +54,27 @@ class ThreeJs {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
+  deltaAngle: number = 0;
+
+  azimuthDetector(e: any) {
+    console.log(this.deltaAngle);
+    const azimuth = this.controls.getAzimuthalAngle();
+    this.deltaAngle = azimuth;
+    console.log(this.deltaAngle);
+
+    const angle = Math.PI / 2;
+    if (azimuth < -angle || azimuth > angle) {
+      this.controls.enableRotate = false;
+    } else {
+      this.controls.enableRotate = true;
+    }
+  }
+
   createOrbit() {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.addEventListener("change", (e) => {
-      const x = this.camera.rotation.x;
-      const y = this.camera.rotation.y;
-      const z = this.camera.rotation.z;
-      this.angle.x = x;
-      this.angle.y = y;
-      this.angle.z = z;
-    });
+    this.controls.addEventListener("change", this.azimuthDetector);
     return () =>
-      this.controls.removeEventListener("change", (e) => {
-        console.log(e);
-      });
+      this.controls.removeEventListener("change", this.azimuthDetector);
   }
 
   createObject(idx?: number) {
@@ -90,46 +86,53 @@ class ThreeJs {
     this.obj = new THREE.Mesh(geometry, material);
 
     this.obj.position.x = 0;
-    this.obj.position.z = 0;
+    this.obj.position.z = 0.5;
     this.obj.position.y = 0;
+    this.objKeys.set("user", this.obj);
     this.scene.add(this.obj);
   }
 
-  showGrid() {
+  createGrid() {
     const size = 10;
     const divisions = 10;
-
-    if (!this.gridHelper) {
-      const gridHelper = new THREE.GridHelper(size, divisions);
-      gridHelper.rotateX(-1.5708);
-      // gridHelper.rotateY(1.5708);
-      this.scene.add(gridHelper);
-      this.gridHelper = gridHelper;
-    } else {
-      this.scene.remove(this.gridHelper);
-      this.gridHelper = null;
-    }
+    const gridHelper = new THREE.GridHelper(size, divisions);
+    gridHelper.rotateX(1.5078);
+    this.scene.add(gridHelper);
+    this.gridHelper = gridHelper;
     this.render();
   }
 
+  createRndObj() {
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshBasicMaterial({
+      color: "0x000000",
+      wireframe: true,
+    });
+    const rndObj = new THREE.Mesh(geometry, material);
+
+    const pn = Math.random() * 10 > 5 ? -1 : 1;
+
+    rndObj.position.x = pn * Math.floor(Math.random() * 5);
+    rndObj.position.z = 0.5;
+    rndObj.position.y = pn * Math.floor(Math.random() * 5);
+    const uuid = rndObj.uuid;
+    this.objKeys.set(uuid, rndObj);
+    this.scene.add(rndObj);
+  }
+
   move(key: MoveAction) {
-    console.log(key);
     switch (key) {
-      case "ArrowUp":
-        this.obj.position.x += 0.5;
-        this.coord.x += 0.5;
+      case "w":
+        this.obj.position.y += 0.5;
         break;
-      case "ArrowLeft":
+      case "a":
+        this.obj.position.x -= 0.5;
+        break;
+      case "s":
         this.obj.position.y -= 0.5;
         break;
-      case "ArrowDown":
-        this.obj.position.x -= 0.5;
-        this.coord.x -= 0.5;
-
-        break;
-      case "ArrowRight":
-        this.obj.position.y += 0.5;
-
+      case "d":
+        this.obj.position.x += 0.5;
         break;
       default:
         break;
@@ -147,19 +150,7 @@ class ThreeJs {
     this.renderer.render(this.scene, this.camera);
   }
 
-  createRndObj() {
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({
-      color: "0x000000",
-      wireframe: true,
-    });
-    const rndObj = new THREE.Mesh(geometry, material);
-
-    rndObj.position.x = Math.floor(Math.random() * 10);
-    rndObj.position.z = Math.floor(Math.random() * 10);
-    rndObj.position.y = 0.5;
-    this.scene.add(rndObj);
-  }
+  switctControl() {}
 }
 
 export const ThreeJsCtx = createContext<IContextProps>({

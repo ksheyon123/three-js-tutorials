@@ -7,7 +7,8 @@ export default () => {
   const [number, setNumber] = useState<number>(-2.5);
   const handleOnKeyDown = (e: KeyboardEvent) => {
     setActiveBtn(e.key);
-    ctx.move(e.key as "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight");
+    console.log(e.key);
+    ctx.move(e.key as "w" | "s" | "a" | "d");
   };
   const handleOnKeyUp = (e: KeyboardEvent) => {
     setActiveBtn("");
