@@ -15,7 +15,7 @@ const App = () => {
     ctx.createCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     ctx.renderer.render(ctx.scene, ctx.camera);
     ctx.createObject();
-    ctx.createOrbit();
+    // ctx.createOrbit();
     ctx.animate();
     ctx.createGrid();
   };

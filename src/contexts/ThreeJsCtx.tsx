@@ -19,13 +19,13 @@ class ThreeJs {
     z: 0,
   };
 
-  objKeys = new Map<string, any>();
+  objMap = new Map<string, any>();
 
   constructor() {
     this.animate = this.animate.bind(this);
     this.cameraCoordinate = this.cameraCoordinate.bind(this);
     this.render = this.render.bind(this);
-    this.azimuthDetector = this.azimuthDetector.bind(this);
+    // this.azimuthDetector = this.azimuthDetector.bind(this);
   }
 
   createScene() {
@@ -36,6 +36,7 @@ class ThreeJs {
     this.camera = new THREE.PerspectiveCamera(a, b, c, d);
     this.camera.position.z = 5;
     this.camera.position.y = -5;
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
   }
 
   cameraCoordinate(x?: number) {
@@ -56,26 +57,26 @@ class ThreeJs {
 
   deltaAngle: number = 0;
 
-  azimuthDetector(e: any) {
-    console.log(this.deltaAngle);
-    const azimuth = this.controls.getAzimuthalAngle();
-    this.deltaAngle = azimuth;
-    console.log(this.deltaAngle);
+  // azimuthDetector(e: any) {
+  //   console.log(this.deltaAngle);
+  //   const azimuth = this.controls.getAzimuthalAngle();
+  //   this.deltaAngle = azimuth;
+  //   console.log(this.deltaAngle);
 
-    const angle = Math.PI / 2;
-    if (azimuth < -angle || azimuth > angle) {
-      this.controls.enableRotate = false;
-    } else {
-      this.controls.enableRotate = true;
-    }
-  }
+  //   const angle = Math.PI / 2;
+  //   if (azimuth < -angle || azimuth > angle) {
+  //     this.controls.enableRotate = false;
+  //   } else {
+  //     this.controls.enableRotate = true;
+  //   }
+  // }
 
-  createOrbit() {
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.addEventListener("change", this.azimuthDetector);
-    return () =>
-      this.controls.removeEventListener("change", this.azimuthDetector);
-  }
+  // createOrbit() {
+  //   this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+  //   this.controls.addEventListener("change", this.azimuthDetector);
+  //   return () =>
+  //     this.controls.removeEventListener("change", this.azimuthDetector);
+  // }
 
   createObject(idx?: number) {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -83,13 +84,13 @@ class ThreeJs {
       color: "0x000000",
       wireframe: true,
     });
-    this.obj = new THREE.Mesh(geometry, material);
+    const newObj = new THREE.Mesh(geometry, material);
 
-    this.obj.position.x = 0;
-    this.obj.position.z = 0.5;
-    this.obj.position.y = 0;
-    this.objKeys.set("user", this.obj);
-    this.scene.add(this.obj);
+    newObj.position.x = 0;
+    newObj.position.z = 0.5;
+    newObj.position.y = 0;
+    this.objMap.set("curUser", newObj);
+    this.scene.add(newObj);
   }
 
   createGrid() {
@@ -116,27 +117,34 @@ class ThreeJs {
     rndObj.position.z = 0.5;
     rndObj.position.y = pn * Math.floor(Math.random() * 5);
     const uuid = rndObj.uuid;
-    this.objKeys.set(uuid, rndObj);
+    this.objMap.set(uuid, rndObj);
     this.scene.add(rndObj);
   }
 
+  onControl() {
+    this.objMap.get("curUser");
+  }
+
   move(key: MoveAction) {
+    const obj = this.objMap.get("curUser");
     switch (key) {
       case "w":
-        this.obj.position.y += 0.5;
+        obj.position.y += 0.5;
         break;
       case "a":
-        this.obj.position.x -= 0.5;
+        obj.position.x -= 0.5;
         break;
       case "s":
-        this.obj.position.y -= 0.5;
+        obj.position.y -= 0.5;
         break;
       case "d":
-        this.obj.position.x += 0.5;
+        obj.position.x += 0.5;
         break;
       default:
         break;
     }
+    console.log(obj.position);
+    this.objMap.set("curUser", obj);
     this.cameraCoordinate();
     this.animate();
   }
