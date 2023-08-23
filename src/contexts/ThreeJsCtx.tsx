@@ -35,7 +35,7 @@ class ThreeJs {
   createCamera(a: number, b: number, c: number, d: number) {
     this.camera = new THREE.PerspectiveCamera(a, b, c, d);
     this.camera.position.z = 5;
-    this.camera.position.y = -5;
+    this.camera.position.y = 5;
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
   }
 
@@ -43,7 +43,7 @@ class ThreeJs {
     const copy = {
       ...this.obj.position,
     };
-    const cameraOffset = new THREE.Vector3(0, -5, 5);
+    const cameraOffset = new THREE.Vector3(0, 5, 5);
     this.camera.position.copy(copy).add(cameraOffset);
     this.camera.lookAt(new THREE.Vector3(copy.x, copy.y, copy.z));
     this.controls.target.set(copy.x, copy.y, copy.z - 0.5);
@@ -97,7 +97,7 @@ class ThreeJs {
     const size = 10;
     const divisions = 10;
     const gridHelper = new THREE.GridHelper(size, divisions);
-    gridHelper.rotateX(1.5078);
+    // gridHelper.rotateX(1.5078);
     this.scene.add(gridHelper);
     this.gridHelper = gridHelper;
     this.render();
