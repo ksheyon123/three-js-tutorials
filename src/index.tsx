@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { ThemeProvider, createGlobalStyle } from "styled-components";
 import router from "@/router";
+import { InitProvider } from "./contexts/initContext";
 
 const GlobalStyling = createGlobalStyle`
   * {
@@ -10,14 +11,17 @@ const GlobalStyling = createGlobalStyle`
   }
   body {
     margin : 0px;
+    background-color : #000
   }
 `;
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
+  <InitProvider>
     <ThemeProvider theme={{}}>
       <GlobalStyling />
       <RouterProvider router={router} />
     </ThemeProvider>
-  </React.StrictMode>
+  </InitProvider>
+  // </React.StrictMode>
 );
