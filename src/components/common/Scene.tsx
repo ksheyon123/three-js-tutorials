@@ -21,27 +21,43 @@ export const Scene: React.FC = () => {
     // document.body.appendChild( renderer.domElement );
     // use ref as a mount point of the Three.js scene instead of the document.body
     canvasRef.current && canvasRef.current.appendChild(renderer.domElement);
+
+    camera.position.set(0, 0, 10);
+
     var geometry = new THREE.ConeGeometry(0.5, 1.5, 32);
     var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    var cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-    camera.position.set(0, 0, 5);
-    // console.log(camera);
+    var cone = new THREE.Mesh(geometry, material);
 
-    console.log(camera.quaternion);
-    const forward = new THREE.Vector3(0, 0, -10).applyQuaternion(
-      camera.quaternion
-    );
-    console.log(new THREE.Vector3().copy(camera.position).add(forward));
-    camera.lookAt(new THREE.Vector3().copy(camera.position).add(forward));
-    // For cube
-    // cube.matrixAutoUpdate = false;
-    // const position = new THREE.Vector3(1, 0, 1);
-    // cube.matrix.setPosition(position);
-    // const eye = position.clone();
-    // const target = new THREE.Vector3(0, 1, 0);
-    // const up = new THREE.Vector3(0, 0, 1);
-    // cube.matrix.lookAt(eye, target, up);
+    scene.add(cone);
+
+    // Set the position of the cone
+    cone.position.set(0, 0, 0);
+
+    cone.matrixAutoUpdate = false;
+
+    const position = new THREE.Vector3(0, 0, 0); // Object coordinate
+    cone.matrix.setPosition(position);
+    const eye = position.clone();
+    // Calculate the orientation to look at (1, 0, 1)
+    var target = new THREE.Vector3(1, 1, 1);
+    var up = new THREE.Vector3(0, 1, 0); // Using the global up vector
+
+    // Calculate direction from position to target
+    var direction = new THREE.Vector3()
+      .subVectors(target, position)
+      .normalize();
+
+    // Calculate new up vector that is orthogonal to the direction
+    var right = new THREE.Vector3().crossVectors(direction, up).normalize();
+    var correctedUp = new THREE.Vector3()
+      .crossVectors(right, direction)
+      .normalize();
+
+    // Apply lookAt matrix using manual calculation
+    cone.matrix.lookAt(eye, target, up);
+
+    // Update the matrix
+    cone.matrixWorldNeedsUpdate = true;
 
     // For camera
     // camera.matrixAutoUpdate = false;
@@ -52,6 +68,7 @@ export const Scene: React.FC = () => {
     // controls.update();
     var animate = function () {
       requestAnimationFrame(animate);
+
       controls.update();
       renderer.render(scene, camera);
     };
