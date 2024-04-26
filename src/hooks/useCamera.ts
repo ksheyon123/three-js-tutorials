@@ -21,5 +21,16 @@ export const useCamera = () => {
     const position = new THREE.Vector3(0, 0, 5);
     // camera.matrix.setPosition(position);
   };
-  return { createCamera, handleCameraPosition };
+
+  const handleOrbitPosition = (
+    obj: THREE.Mesh,
+    camera: THREE.PerspectiveCamera,
+    renderer: THREE.WebGLRenderer
+  ) => {
+    const { x, y, z } = obj.position.clone();
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(x, y, z);
+    return controls;
+  };
+  return { createCamera, handleCameraPosition, handleOrbitPosition };
 };

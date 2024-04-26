@@ -1,14 +1,17 @@
-import React, { useEffect, useRef } from "react";
+import React, { RefObject, useEffect, useRef } from "react";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import * as THREE from "three";
 import { useCreate } from "@/hooks/useCreate";
 import { useCamera } from "@/hooks/useCamera";
+import { useControl } from "@/hooks/useControl";
 
 export const Scene: React.FC = () => {
+  const { getCoord, setCoord } = useControl();
   const { createObject, handleObjectLookAt } = useCreate();
-  const { createCamera, handleCameraPosition } = useCamera();
-  const canvasRef = useRef<any>();
+  const { createCamera, handleCameraPosition, handleOrbitPosition } =
+    useCamera();
+  const canvasRef = useRef<HTMLDivElement>();
 
   /**
    * @param scene THREE.Scene which receives projected object.
@@ -43,12 +46,11 @@ export const Scene: React.FC = () => {
 
     const obj = createObject();
     scene.add(obj);
-    handleObjectLookAt(obj);
+    // handleObjectLookAt(obj);
 
     const camera = createCamera();
     handleCameraPosition(camera, obj);
-    const controls = new OrbitControls(camera, renderer.domElement);
-    // controls.target.set(3, 3, 3);
+    const controls = handleOrbitPosition(obj, camera, renderer);
     // controls.update();
     var animate = function () {
       requestAnimationFrame(animate);
@@ -57,6 +59,24 @@ export const Scene: React.FC = () => {
       renderer.render(scene, camera);
     };
     animate();
+
+    window.addEventListener("keypress", (e: KeyboardEvent) => {
+      if (e.code === "KeyD") {
+        setCoord(new THREE.Vector3(1, 0, 0), obj);
+      } else if (e.code === "KeyW") {
+        setCoord(new THREE.Vector3(0, 0, -1), obj);
+      } else if (e.code === "KeyA") {
+        setCoord(new THREE.Vector3(-1, 0, 0), obj);
+      } else if (e.code === "KeyS") {
+        setCoord(new THREE.Vector3(0, 0, 1), obj);
+      }
+    });
   }, []);
-  return <div style={{ width: "100%", height: "100%" }} ref={canvasRef} />;
+
+  return (
+    <div
+      style={{ width: "100%", height: "100%" }}
+      ref={canvasRef as RefObject<HTMLDivElement>}
+    />
+  );
 };
