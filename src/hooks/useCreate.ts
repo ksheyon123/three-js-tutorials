@@ -1,17 +1,23 @@
+import { useRef, useState } from "react";
 import * as THREE from "three";
 
 export const useCreate = () => {
-  const createObject = () => {
+  const meshesRef = useRef<{ [key: string]: THREE.Mesh }>({});
+
+  const createObject = (coord?: { x: number; y: number; z: number }) => {
     var geometry = new THREE.BoxGeometry(1, 1, 1);
     var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    var cube = new THREE.Mesh(geometry, material);
-    return cube;
+    var obj = new THREE.Mesh(geometry, material);
+    obj.position.set(coord?.x || 0, coord?.y || 0, coord?.z || 0);
+
+    meshesRef.current = {
+      ...meshesRef.current,
+      [obj.uuid]: obj,
+    };
+    return obj;
   };
 
   const handleObjectLookAt = (obj: THREE.Mesh) => {
-    // Set the position of the cone
-    obj.position.set(0, 0, 0);
-
     obj.matrixAutoUpdate = false;
 
     const position = new THREE.Vector3(0, 0, 0); // Object coordinate
@@ -40,6 +46,7 @@ export const useCreate = () => {
   };
 
   return {
+    meshesRef,
     createObject,
     handleObjectLookAt,
   };

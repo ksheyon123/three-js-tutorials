@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useRef } from "react";
+import React, { RefObject, useEffect, useRef, useState } from "react";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import * as THREE from "three";
@@ -8,9 +8,10 @@ import { useControl } from "@/hooks/useControl";
 
 export const Scene: React.FC = () => {
   const { getCoord, setCoord } = useControl();
-  const { createObject, handleObjectLookAt } = useCreate();
+  const { meshesRef, createObject, handleObjectLookAt } = useCreate();
   const { createCamera, handleCameraPosition, handleOrbitPosition } =
     useCamera();
+
   const canvasRef = useRef<HTMLDivElement>();
 
   /**
@@ -45,6 +46,7 @@ export const Scene: React.FC = () => {
     canvasRef.current && canvasRef.current.appendChild(renderer.domElement);
 
     const obj = createObject();
+    console.log(obj.uuid);
     scene.add(obj);
     // handleObjectLookAt(obj);
 
@@ -61,17 +63,29 @@ export const Scene: React.FC = () => {
     animate();
 
     window.addEventListener("keypress", (e: KeyboardEvent) => {
-      if (e.code === "KeyD") {
-        setCoord(new THREE.Vector3(1, 0, 0), obj);
-      } else if (e.code === "KeyW") {
-        setCoord(new THREE.Vector3(0, 0, -1), obj);
-      } else if (e.code === "KeyA") {
-        setCoord(new THREE.Vector3(-1, 0, 0), obj);
-      } else if (e.code === "KeyS") {
-        setCoord(new THREE.Vector3(0, 0, 1), obj);
+      if (e.code === "Space") {
+        const obj = createObject({ x: 1, y: 1, z: 1 });
+        scene.add(obj);
       }
     });
   }, []);
+
+  useEffect(() => {
+    const isSingle = Object.keys(meshesRef.current).length === 1;
+    if (isSingle) {
+      // window.addEventListener("keypress", (e: KeyboardEvent) => {
+      //   if (e.code === "KeyD") {
+      //     setCoord(new THREE.Vector3(1, 0, 0), obj);
+      //   } else if (e.code === "KeyW") {
+      //     setCoord(new THREE.Vector3(0, 0, -1), obj);
+      //   } else if (e.code === "KeyA") {
+      //     setCoord(new THREE.Vector3(-1, 0, 0), obj);
+      //   } else if (e.code === "KeyS") {
+      //     setCoord(new THREE.Vector3(0, 0, 1), obj);
+      //   }
+      // });
+    }
+  }, [meshesRef.current]);
 
   return (
     <div
