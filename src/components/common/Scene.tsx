@@ -34,6 +34,10 @@ export const Scene: React.FC = () => {
     scene.add(axisHelper);
   };
 
+  setInterval(() => {
+    console.log(meshesRef.current);
+  }, 3000);
+
   useEffect(() => {
     var scene = new THREE.Scene();
     drawGridHelper(scene);
@@ -63,9 +67,24 @@ export const Scene: React.FC = () => {
     animate();
 
     window.addEventListener("keypress", (e: KeyboardEvent) => {
-      if (e.code === "Space") {
-        const obj = createObject({ x: 1, y: 1, z: 1 });
+      if (e.code === "Enter") {
+        const obj = createObject({ x: 1, y: 0, z: 1 });
         scene.add(obj);
+      }
+    });
+
+    window.addEventListener("keypress", (e: KeyboardEvent) => {
+      if (e.code === "KeyD") {
+        setCoord(new THREE.Vector3(1, 0, 0), obj);
+      } else if (e.code === "KeyW") {
+        setCoord(new THREE.Vector3(0, 0, -1), obj);
+      } else if (e.code === "KeyA") {
+        setCoord(new THREE.Vector3(-1, 0, 0), obj);
+      } else if (e.code === "KeyS") {
+        setCoord(new THREE.Vector3(0, 0, 1), obj);
+      } else if (e.code === "Space") {
+        setCoord(new THREE.Vector3(0, 1, 0), obj);
+        setTimeout(() => setCoord(new THREE.Vector3(0, -1, 0), obj), 500);
       }
     });
   }, []);
@@ -73,17 +92,6 @@ export const Scene: React.FC = () => {
   useEffect(() => {
     const isSingle = Object.keys(meshesRef.current).length === 1;
     if (isSingle) {
-      // window.addEventListener("keypress", (e: KeyboardEvent) => {
-      //   if (e.code === "KeyD") {
-      //     setCoord(new THREE.Vector3(1, 0, 0), obj);
-      //   } else if (e.code === "KeyW") {
-      //     setCoord(new THREE.Vector3(0, 0, -1), obj);
-      //   } else if (e.code === "KeyA") {
-      //     setCoord(new THREE.Vector3(-1, 0, 0), obj);
-      //   } else if (e.code === "KeyS") {
-      //     setCoord(new THREE.Vector3(0, 0, 1), obj);
-      //   }
-      // });
     }
   }, [meshesRef.current]);
 
