@@ -12,34 +12,56 @@ interface IProps {
   children: ReactNode;
 }
 
-const InitContext = createContext<any>({});
+const InitContext = createContext<{ scene: THREE.Scene | null }>({
+  scene: null,
+});
 
 const InitProvider: React.FC<IProps> = ({ children }) => {
   //   const [isWebGlMounted, setIsWebGlMounted] = useState<boolean>(false);
-  const [objects, setObjects] = useState<Map<string, any>>();
-  const threeJs = useRef<any>(THREE);
+  const [scene, setScene] = useState<THREE.Scene>();
+
+  /**
+   * @param scene THREE.Scene which receives projected object.
+   * @description Draw grid on the z-x plain
+   */
+  const drawGridHelper = (scene: THREE.Scene) => {
+    const size = 10;
+    const divisions = 10;
+
+    const gridHelper = new THREE.GridHelper(size, divisions);
+    scene.add(gridHelper);
+  };
+
+  /**
+   * @param scene THREE.Scene which receives projected object.
+   */
+  const drawAxisHelper = (scene: THREE.Scene) => {
+    const axisHelper = new THREE.AxesHelper();
+    scene.add(axisHelper);
+  };
+
+  const init = () => {
+    var scene = new THREE.Scene();
+    // drawGridHelper(scene);
+    // drawAxisHelper(scene);
+    setScene(scene);
+  };
+
   useEffect(() => {
     if (WebGL.isWebGLAvailable()) {
+      init();
     } else {
       alert("Unable to use webgl");
     }
   }, []);
 
-  //   const createScene = (obj: any) => {
-  //     const scene = new THREE.Scene();
-  //     scene.add(obj);
-  //     const renderer = new THREE.WebGLRenderer();
-  //     renderer.render(scene, )
-  //   };
-
   return (
     <InitContext.Provider
       value={{
-        setObjects,
-        objects,
+        scene,
       }}
     >
-      {children}
+      {!!scene && children}
     </InitContext.Provider>
   );
 };
