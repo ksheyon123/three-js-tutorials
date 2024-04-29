@@ -15,12 +15,14 @@ import { InitContext } from "@/contexts/initContext";
 
 export const Scene: React.FC = () => {
   const { scene } = useContext(InitContext);
-  const { setCoord } = useControl(scene);
+  const { calCoord } = useControl(scene);
   const { meshesRef, createObject, handleObjectLookAt } = useCreate();
   const { createCamera, handleCameraPosition, handleOrbitPosition } =
     useCamera();
 
   const canvasRef = useRef<HTMLDivElement>();
+
+  const [isMoving, setIsMoving] = useState<boolean>(false);
 
   useEffect(() => {
     if (scene) {
@@ -45,28 +47,6 @@ export const Scene: React.FC = () => {
         renderer.render(scene, camera);
       };
       animate();
-
-      window.addEventListener("keypress", (e: KeyboardEvent) => {
-        if (e.code === "Enter") {
-          const obj = createObject({ x: 1, y: 0, z: 1 });
-          scene.add(obj);
-        }
-      });
-
-      window.addEventListener("keypress", (e: KeyboardEvent) => {
-        if (e.code === "KeyD") {
-          setCoord(new THREE.Vector3(1, 0, 0), obj);
-        } else if (e.code === "KeyW") {
-          setCoord(new THREE.Vector3(0, 0, -1), obj);
-        } else if (e.code === "KeyA") {
-          setCoord(new THREE.Vector3(-1, 0, 0), obj);
-        } else if (e.code === "KeyS") {
-          setCoord(new THREE.Vector3(0, 0, 1), obj);
-        } else if (e.code === "Space") {
-          setCoord(new THREE.Vector3(0, 1, 0), obj);
-          setTimeout(() => setCoord(new THREE.Vector3(0, -1, 0), obj), 500);
-        }
-      });
     }
   }, [scene]);
 
@@ -75,6 +55,44 @@ export const Scene: React.FC = () => {
     if (isSingle) {
     }
   }, [meshesRef.current]);
+
+  useEffect(() => {
+    window.addEventListener("keypress", (e: KeyboardEvent) => {
+      if (e.code === "Enter") {
+        const obj = createObject({ x: 1, y: 0, z: 1 });
+        scene.add(obj);
+      }
+    });
+
+    window.addEventListener("keypress", keyPress);
+    return () => window.removeEventListener("keypress", keyPress);
+  }, [meshesRef.current, isMoving]);
+
+  const keyPress = (e: KeyboardEvent) => {
+    const obj = Object.values(meshesRef.current)[0];
+    if (e.code === "KeyD") {
+      calCoord(new THREE.Vector3(1, 0, 0), obj);
+    } else if (e.code === "KeyW") {
+      calCoord(new THREE.Vector3(0, 0, -1), obj);
+    } else if (e.code === "KeyA") {
+      calCoord(new THREE.Vector3(-1, 0, 0), obj);
+    } else if (e.code === "KeyS") {
+      calCoord(new THREE.Vector3(0, 0, 1), obj);
+    } else if (e.code === "Space") {
+      calCoord(new THREE.Vector3(0, 1, 0), obj, "jump");
+    }
+    if (e.code !== "Enter") {
+      let timeId: any;
+      new Promise(
+        (resolve) =>
+          (timeId = setTimeout(() => {
+            console.log("Timeout");
+            calCoord(new THREE.Vector3(0, -1, 0), obj);
+            resolve("");
+          }, 500))
+      ).finally(() => clearTimeout(timeId));
+    }
+  };
 
   return (
     <div
