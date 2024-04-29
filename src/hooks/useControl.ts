@@ -3,56 +3,35 @@ import { useCallback, useState } from "react";
 import { resolve } from "path";
 
 export const useControl = (scene: THREE.Scene) => {
-  const getCoord = (obj: THREE.Mesh) => {
-    const coord = obj.position;
-    return coord;
-  };
-
-  const move = (obj: THREE.Mesh, v: THREE.Vector3) => {
+  const move = (obj: THREE.Mesh, tVec: THREE.Vector3) => {
     // Move toward on the block
     // Move on the block toward the obstacle
 
     // Move toward no obstacle
     // Move toward block
     // Jump
-    const { x, y, z } = calCoord(obj, v);
+    const curVec = obj.position;
+    const { x, y, z } = calCoord(curVec, tVec);
     obj.position.set(x, y, z);
   };
 
-  const toTheBottom = (obj: THREE.Mesh) => {
-    const { y } = obj.position;
-    if (y > 0) {
-      //   calCoord(new THREE.Vector3(0, -1, 0), obj);
-    }
-  };
-
   const calCoord = (
-    obj: THREE.Mesh,
-    v: THREE.Vector3,
+    cVec: THREE.Vector3,
+    tVec: THREE.Vector3,
     iter: number = 3
   ): THREE.Vector3 => {
-    const curCoord = getCoord(obj);
-    const { x, y, z } = curCoord;
-    const newCoord = new THREE.Vector3(x, y, z).add(v);
+    const { x, y, z } = cVec;
+    const newCoord = new THREE.Vector3(x, y, z).add(tVec);
 
-    if (!collisionChk(curCoord, newCoord)) {
+    if (!collisionChk(cVec, newCoord)) {
       if (iter === 0) return new THREE.Vector3(0, 0, 0);
       if (newCoord.y === 0) {
+        console.log("On the ground");
         return newCoord;
       }
-      const yCoord = calCoord(
-        obj,
-        new THREE.Vector3(newCoord.x, newCoord.y - 1, newCoord.z),
-        iter - 1
-      );
-
-      if (yCoord.y === 0) {
-        return yCoord;
-      }
-      //   calCoord(new THREE.Vector3(x, y - 1, z), obj);
-      //   obj.position.set(x, y, z);
+      return calCoord(newCoord, new THREE.Vector3(0, -1, 0), iter - 1);
     } else {
-      return curCoord;
+      return cVec;
     }
   };
 

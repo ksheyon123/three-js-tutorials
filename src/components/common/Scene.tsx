@@ -38,8 +38,7 @@ export const Scene: React.FC = () => {
 
       const camera = createCamera();
       handleCameraPosition(camera, obj);
-      const controls = handleOrbitPosition(obj, camera, renderer);
-      // controls.update();
+      const controls = handleOrbitPosition(camera, renderer);
       var animate = function () {
         requestAnimationFrame(animate);
 
