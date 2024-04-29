@@ -23,17 +23,9 @@ export const useControl = (scene: THREE.Scene) => {
 
   const collisionChk = (cVec: THREE.Vector3, tVec: THREE.Vector3) => {
     const raycaster = new THREE.Raycaster();
-    const copiedCoord = structuredClone(tVec);
-    const newCoord = new THREE.Vector3(
-      copiedCoord.x,
-      copiedCoord.y,
-      copiedCoord.z
-    );
-    const direction = newCoord.normalize(); // Direction the ray should go
-    console.log(direction);
+    const direction = new THREE.Vector3().subVectors(tVec, cVec).normalize(); // Direction the ray should go
     const origin = cVec; // Starting point of the ray
 
-    console.log(origin);
     raycaster.set(origin, direction);
 
     const intersects = raycaster.intersectObjects(scene.children);
