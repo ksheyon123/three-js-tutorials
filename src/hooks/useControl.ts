@@ -1,23 +1,23 @@
 import * as THREE from "three";
-import { useCreate } from "./useCreate";
+import { useState } from "react";
 
 export const useControl = (scene: THREE.Scene) => {
   const getCoord = (obj: THREE.Mesh) => {
-    const coord = obj.position.clone();
+    const coord = obj.position;
     return coord;
   };
 
-  const setCoord = (vector3: THREE.Vector3, obj: THREE.Mesh) => {
+  const setCoord = (v: THREE.Vector3, obj: THREE.Mesh) => {
     const curCoord = getCoord(obj);
-    const copiedCoord = structuredClone(curCoord);
-    const newCoord = new THREE.Vector3(
-      copiedCoord.x,
-      copiedCoord.y,
-      copiedCoord.z
-    ).add(vector3);
+    const { x, y, z } = curCoord;
+    const newCoord = new THREE.Vector3(x, y, z).add(v);
+
     if (!collisionChk(curCoord, newCoord)) {
       const { x, y, z } = newCoord;
       obj.position.set(x, y, z);
+      if (y !== 0) {
+        setCoord(new THREE.Vector3(0, -1, 0), obj);
+      }
     }
   };
 
@@ -40,7 +40,6 @@ export const useControl = (scene: THREE.Scene) => {
   };
 
   return {
-    getCoord,
     setCoord,
   };
 };

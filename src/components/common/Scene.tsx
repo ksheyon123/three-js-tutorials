@@ -15,7 +15,7 @@ import { InitContext } from "@/contexts/initContext";
 
 export const Scene: React.FC = () => {
   const { scene } = useContext(InitContext);
-  const { getCoord, setCoord } = useControl(scene);
+  const { setCoord } = useControl(scene);
   const { meshesRef, createObject, handleObjectLookAt } = useCreate();
   const { createCamera, handleCameraPosition, handleOrbitPosition } =
     useCamera();
