@@ -42,8 +42,8 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
 
   const init = () => {
     var scene = new THREE.Scene();
-    // drawGridHelper(scene);
-    // drawAxisHelper(scene);
+    drawGridHelper(scene);
+    drawAxisHelper(scene);
     setScene(scene);
   };
 

@@ -15,7 +15,7 @@ import { InitContext } from "@/contexts/initContext";
 
 export const Scene: React.FC = () => {
   const { scene } = useContext(InitContext);
-  const { calCoord } = useControl(scene);
+  const { move } = useControl(scene);
   const { meshesRef, createObject, handleObjectLookAt } = useCreate();
   const { createCamera, handleCameraPosition, handleOrbitPosition } =
     useCamera();
@@ -32,7 +32,7 @@ export const Scene: React.FC = () => {
       // use ref as a mount point of the Three.js scene instead of the document.body
       canvasRef.current && canvasRef.current.appendChild(renderer.domElement);
 
-      const obj = createObject();
+      const obj = createObject({ x: 0, y: 1, z: 0 });
       scene.add(obj);
       // handleObjectLookAt(obj);
 
@@ -59,7 +59,8 @@ export const Scene: React.FC = () => {
   useEffect(() => {
     window.addEventListener("keypress", (e: KeyboardEvent) => {
       if (e.code === "Enter") {
-        const obj = createObject({ x: 1, y: 0, z: 1 });
+        const obj = createObject({ x: 0, y: 0, z: 0 });
+        // const obj = createObject({ x: 0, y: 1, z: 0 });
         scene.add(obj);
       }
     });
@@ -71,27 +72,27 @@ export const Scene: React.FC = () => {
   const keyPress = (e: KeyboardEvent) => {
     const obj = Object.values(meshesRef.current)[0];
     if (e.code === "KeyD") {
-      calCoord(new THREE.Vector3(1, 0, 0), obj);
+      move(obj, new THREE.Vector3(1, 0, 0));
     } else if (e.code === "KeyW") {
-      calCoord(new THREE.Vector3(0, 0, -1), obj);
+      move(obj, new THREE.Vector3(0, 0, -1));
     } else if (e.code === "KeyA") {
-      calCoord(new THREE.Vector3(-1, 0, 0), obj);
+      move(obj, new THREE.Vector3(-1, 0, 0));
     } else if (e.code === "KeyS") {
-      calCoord(new THREE.Vector3(0, 0, 1), obj);
+      move(obj, new THREE.Vector3(0, 0, 1));
     } else if (e.code === "Space") {
-      calCoord(new THREE.Vector3(0, 1, 0), obj, "jump");
+      // calCoord(new THREE.Vector3(0, 1, 0), obj);
     }
-    if (e.code !== "Enter") {
-      let timeId: any;
-      new Promise(
-        (resolve) =>
-          (timeId = setTimeout(() => {
-            console.log("Timeout");
-            calCoord(new THREE.Vector3(0, -1, 0), obj);
-            resolve("");
-          }, 500))
-      ).finally(() => clearTimeout(timeId));
-    }
+    // if (e.code !== "Enter") {
+    //   let timeId: any;
+    //   new Promise(
+    //     (resolve) =>
+    //       (timeId = setTimeout(() => {
+    //         console.log("Timeout");
+    //         calCoord(new THREE.Vector3(0, -1, 0), obj);
+    //         resolve("");
+    //       }, 500))
+    //   ).finally(() => clearTimeout(timeId));
+    // }
   };
 
   return (
