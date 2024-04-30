@@ -52,15 +52,17 @@ export const useControl = (scene: THREE.Scene) => {
   const collisionChk = (cVec: THREE.Vector3, tVec: THREE.Vector3) => {
     const raycaster = new THREE.Raycaster();
     const direction = new THREE.Vector3().subVectors(tVec, cVec).normalize(); // Direction the ray should go
-    console.log("direction", direction);
     const origin = cVec; // Starting point of the ray
     raycaster.set(origin, direction);
     const onlyMesh = scene.children.filter(
       (el) => el.type !== "GridHelper" && el.type !== "AxesHelper"
     );
-    const intersects = raycaster.intersectObjects(onlyMesh);
+    const myBox = onlyMesh[0];
+    const meshes = onlyMesh.splice(1);
+    const box = new THREE.Box3().setFromObject(myBox);
+    const intersects = raycaster.intersectObjects(meshes);
 
-    if (intersects.length > 0) {
+    if (intersects.length > 0 && intersects[0].distance < 1) {
       console.log("Collision detected with", intersects[0].object);
       return true;
     } else {

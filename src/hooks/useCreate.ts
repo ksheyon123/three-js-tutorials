@@ -5,7 +5,7 @@ export const useCreate = () => {
   const meshesRef = useRef<{ [key: string]: THREE.Mesh }>({});
 
   const createObject = (coord?: { x: number; y: number; z: number }) => {
-    var geometry = new THREE.BoxGeometry(1, 1, 1);
+    var geometry = new THREE.BoxGeometry(0.9, 0.9, 0.9);
     var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     var obj = new THREE.Mesh(geometry, material);
     obj.position.set(coord?.x || 0, coord?.y || 0, coord?.z || 0);
