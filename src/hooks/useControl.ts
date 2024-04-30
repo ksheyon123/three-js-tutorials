@@ -3,33 +3,47 @@ import { useCallback, useState } from "react";
 import { resolve } from "path";
 
 export const useControl = (scene: THREE.Scene) => {
-  const move = (obj: THREE.Mesh, tVec: THREE.Vector3) => {
-    // Move toward on the block
-    // Move on the block toward the obstacle
+  const move = (cVec: THREE.Vector3, tVec: THREE.Vector3) => {
+    const coord = calCoord(cVec, tVec);
+    return coord;
+  };
 
-    // Move toward no obstacle
-    // Move toward block
-    // Jump
-    const curVec = obj.position;
-    const { x, y, z } = calCoord(curVec, tVec);
-    obj.position.set(x, y, z);
+  const drop = (cVec: THREE.Vector3) => {
+    const coord = gravity(cVec);
+    if (coord.y > 0) {
+      return coord;
+    } else if (coord.y <= 0) {
+      return new THREE.Vector3(coord.x, 0, coord.z);
+    }
   };
 
   const calCoord = (
     cVec: THREE.Vector3,
-    tVec: THREE.Vector3,
-    iter: number = 3
+    tVec: THREE.Vector3
   ): THREE.Vector3 => {
     const { x, y, z } = cVec;
     const newCoord = new THREE.Vector3(x, y, z).add(tVec);
 
     if (!collisionChk(cVec, newCoord)) {
-      if (iter === 0) return new THREE.Vector3(0, 0, 0);
-      if (newCoord.y === 0) {
-        console.log("On the ground");
+      return newCoord;
+    } else {
+      return cVec;
+    }
+  };
+
+  const gravity = (cVec: THREE.Vector3): THREE.Vector3 => {
+    const { x, y, z } = cVec;
+    const g = new THREE.Vector3(0, -1, 0);
+    const newCoord = new THREE.Vector3(x, y, z).add(g);
+
+    if (!collisionChk(cVec, newCoord)) {
+      if (newCoord.y > 0) {
+        return gravity(newCoord);
+      } else if (newCoord.y < 0) {
+        return new THREE.Vector3(x, 0, z);
+      } else {
         return newCoord;
       }
-      return calCoord(newCoord, new THREE.Vector3(0, -1, 0), iter - 1);
     } else {
       return cVec;
     }
@@ -38,12 +52,12 @@ export const useControl = (scene: THREE.Scene) => {
   const collisionChk = (cVec: THREE.Vector3, tVec: THREE.Vector3) => {
     const raycaster = new THREE.Raycaster();
     const direction = new THREE.Vector3().subVectors(tVec, cVec).normalize(); // Direction the ray should go
+    console.log("direction", direction);
     const origin = cVec; // Starting point of the ray
     raycaster.set(origin, direction);
     const onlyMesh = scene.children.filter(
       (el) => el.type !== "GridHelper" && el.type !== "AxesHelper"
     );
-    console.log(onlyMesh);
     const intersects = raycaster.intersectObjects(onlyMesh);
 
     if (intersects.length > 0) {
@@ -57,5 +71,6 @@ export const useControl = (scene: THREE.Scene) => {
 
   return {
     move,
+    drop,
   };
 };
