@@ -57,9 +57,7 @@ export const useControl = (scene: THREE.Scene) => {
     const onlyMesh = scene.children.filter(
       (el) => el.type !== "GridHelper" && el.type !== "AxesHelper"
     );
-    const myBox = onlyMesh[0];
     const meshes = onlyMesh.splice(1);
-    const box = new THREE.Box3().setFromObject(myBox);
     const intersects = raycaster.intersectObjects(meshes);
 
     if (intersects.length > 0 && intersects[0].distance < 1) {
