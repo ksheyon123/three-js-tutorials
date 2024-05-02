@@ -13,7 +13,8 @@ import { InitContext } from "@/contexts/initContext";
 
 export const Scene: React.FC = () => {
   const { scene, renderer, camera, orbit } = useContext(InitContext);
-  const { keyControl, move, drop, onKeyDown, onKeyUp } = useControl(scene);
+  const { keyControl, move, drop, calHeight, onKeyDown, onKeyUp } =
+    useControl(scene);
   const { meshesRef, createObject, handleObjectLookAt } = useCreate();
   // const { createOrbit } = useCamera();
   const canvasRef = useRef<HTMLDivElement>();
@@ -40,10 +41,16 @@ export const Scene: React.FC = () => {
 
   useEffect(() => {
     if (isLoaded) {
-      keyPress(keyControl);
       let handleId: any;
       var animate = function () {
         handleId = requestAnimationFrame(animate);
+
+        const obj = Object.values(meshesRef.current)[0];
+        const position = obj.position;
+        const { x, y, z } = keyPress(keyControl, position);
+        obj.position.x = x;
+        obj.position.y = y;
+        obj.position.z = z;
         // keyPress(keyControl);
         orbit.update();
         renderer.render(scene, camera);
@@ -51,7 +58,7 @@ export const Scene: React.FC = () => {
       animate();
       return () => cancelAnimationFrame(handleId);
     }
-  }, [isLoaded, keyControl, orbit]);
+  }, [isLoaded, keyControl, orbit, meshesRef.current]);
 
   useEffect(() => {
     window.addEventListener("keypress", (e: KeyboardEvent) => {
@@ -72,26 +79,23 @@ export const Scene: React.FC = () => {
     };
   }, [meshesRef.current]);
 
-  const keyPress = (e: KeyPress) => {
-    const obj = Object.values(meshesRef.current)[0];
-    const position = obj.position;
-    const key = (e: KeyPress) => {
-      if (e.KeyD) {
-        return move(position, new THREE.Vector3(1, 0, 0));
-      } else if (e.KeyA) {
-        return move(position, new THREE.Vector3(-1, 0, 0));
-      } else if (e.KeyS) {
-        return move(position, new THREE.Vector3(0, 0, 1));
-      } else if (e.KeyW) {
-        return move(position, new THREE.Vector3(0, 0, -1));
-      } else if (e.Space) {
-        return move(position, new THREE.Vector3(0, 1, 0));
-      }
-    };
-    const v = key(e);
-    if (v) {
-      const { x, y, z } = v;
-      obj.position.set(x, y, z);
+  const keyPress = (e: KeyPress, position: THREE.Vector3) => {
+    if (e.KeyD) {
+      return move(position, new THREE.Vector3(1, 0, 0));
+    } else if (e.KeyA) {
+      return move(position, new THREE.Vector3(-1, 0, 0));
+    } else if (e.KeyS) {
+      return move(position, new THREE.Vector3(0, 0, 1));
+    } else if (e.KeyW) {
+      return move(position, new THREE.Vector3(0, 0, -1));
+    } else if (e.Space) {
+      const { x, y, z } = position;
+      // const a = clock.getDelta();
+      // return move(position, new THREE.Vector3(0, 1, 0));
+      const h = calHeight(y);
+      return new THREE.Vector3(x, h, z);
+    } else {
+      return position;
     }
   };
 

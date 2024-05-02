@@ -18,7 +18,8 @@ export const useControl = (scene: THREE.Scene) => {
 
   const gravity = 9.8; // [m/s^2]
   const velocity_x = 1; // [m/s]
-  const velocity_y = 16;
+  const velocity_y = 10;
+  const initialHeight = 0;
 
   const animationFrame = 1 / 60; // [60hz]
 
@@ -33,15 +34,29 @@ export const useControl = (scene: THREE.Scene) => {
   const onKeyUp = (e: KeyboardEvent) => {
     const key = e.code as Keys;
     // const keyPress: KeyPress = keyControl;
-    setKeyControl((prev) => ({
-      ...prev,
-      [key]: false,
-    }));
+    if (key !== "Space")
+      setKeyControl((prev) => ({
+        ...prev,
+        [key]: false,
+      }));
   };
 
   const move = (cVec: THREE.Vector3, tVec: THREE.Vector3) => {
     const coord = calCoord(cVec, tVec);
     return coord;
+  };
+
+  const calHeight = (velocity: number) => {
+    const v = calVelocityY(velocity);
+    if (v < 0) return;
+    const h =
+      velocity * animationFrame - gravity * animationFrame * animationFrame;
+    return velocity_y - gravity * animationFrame;
+  };
+
+  const calVelocityY = (velocity: number) => {
+    if (velocity < 0) return 0;
+    return velocity - gravity * animationFrame;
   };
 
   const drop = (cVec: THREE.Vector3) => {
@@ -113,5 +128,7 @@ export const useControl = (scene: THREE.Scene) => {
     onKeyUp,
     move,
     drop,
+    // jump,
+    calHeight,
   };
 };
