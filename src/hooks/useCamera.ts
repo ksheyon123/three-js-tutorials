@@ -13,16 +13,19 @@ export const useCamera = () => {
   };
   const handleCameraPosition = (
     camera: THREE.PerspectiveCamera,
-    obj: THREE.Mesh
+    obj?: THREE.Mesh
   ) => {
-    camera.position.set(0, 0, 5);
-
-    const coord = obj.position.clone();
-    const position = new THREE.Vector3(0, 0, 5);
+    if (obj) {
+      const coord = obj.position.clone();
+      const { x, y, z } = new THREE.Vector3(coord.x, coord.y, 5);
+      camera.position.set(x, y, z);
+    } else {
+      camera.position.set(0, 0, 5);
+    }
     // camera.matrix.setPosition(position);
   };
 
-  const handleOrbitPosition = (
+  const createOrbit = (
     camera: THREE.PerspectiveCamera,
     renderer: THREE.WebGLRenderer
   ) => {
@@ -30,5 +33,5 @@ export const useCamera = () => {
     controls.target.set(0, 0, 0);
     return controls;
   };
-  return { createCamera, handleCameraPosition, handleOrbitPosition };
+  return { createCamera, handleCameraPosition, createOrbit };
 };

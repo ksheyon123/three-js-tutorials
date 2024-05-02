@@ -7,18 +7,33 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useCamera } from "@/hooks/useCamera";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 interface IProps {
   children: ReactNode;
 }
 
-const InitContext = createContext<{ scene: THREE.Scene | null }>({
+const InitContext = createContext<{
+  scene: THREE.Scene | null;
+  renderer: THREE.WebGLRenderer | null;
+  camera: THREE.PerspectiveCamera | null;
+  orbit: OrbitControls | null;
+}>({
   scene: null,
+  renderer: null,
+  camera: null,
+  orbit: null,
 });
 
 const InitProvider: React.FC<IProps> = ({ children }) => {
+  const { createCamera, handleCameraPosition, createOrbit } = useCamera();
+
   //   const [isWebGlMounted, setIsWebGlMounted] = useState<boolean>(false);
   const [scene, setScene] = useState<THREE.Scene>();
+  const [renderer, setRenderer] = useState<THREE.WebGLRenderer>();
+  const [camera, setCamera] = useState<THREE.PerspectiveCamera>();
+  const [orbit, setOrbit] = useState<OrbitControls>();
 
   /**
    * @param scene THREE.Scene which receives projected object.
@@ -40,11 +55,27 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
     scene.add(axisHelper);
   };
 
+  const createRenderer = () => {
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0xffffff);
+    return renderer;
+  };
+
   const init = () => {
-    var scene = new THREE.Scene();
+    const scene = new THREE.Scene();
+    const camera = createCamera();
+    const renderer = createRenderer();
+    const orbit = createOrbit(camera, renderer);
     // drawGridHelper(scene);
     drawAxisHelper(scene);
+
+    handleCameraPosition(camera); // Initial Camera Position
+
     setScene(scene);
+    setCamera(camera);
+    setRenderer(renderer);
+    setOrbit(orbit);
   };
 
   useEffect(() => {
@@ -59,6 +90,9 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
     <InitContext.Provider
       value={{
         scene,
+        renderer,
+        camera,
+        orbit,
       }}
     >
       {!!scene && children}

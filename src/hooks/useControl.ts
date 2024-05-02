@@ -1,13 +1,51 @@
+import { Key, useRef, useState } from "react";
 import * as THREE from "three";
 
+type Keys = "KeyW" | "KeyS" | "KeyA" | "KeyD" | "Space";
+
+export type KeyPress = {
+  [K in Keys]: boolean;
+};
+
 export const useControl = (scene: THREE.Scene) => {
+  const [keyControl, setKeyControl] = useState<KeyPress>({
+    KeyA: false,
+    KeyS: false,
+    KeyD: false,
+    KeyW: false,
+    Space: false,
+  });
+
+  const gravity = 9.8; // [m/s^2]
+  const velocity_x = 1; // [m/s]
+  const velocity_y = 16;
+
+  const animationFrame = 1 / 60; // [60hz]
+
+  const onKeyDown = (e: KeyboardEvent) => {
+    const key = e.code as Keys;
+    setKeyControl((prev) => ({
+      ...prev,
+      [key]: true,
+    }));
+  };
+
+  const onKeyUp = (e: KeyboardEvent) => {
+    const key = e.code as Keys;
+    // const keyPress: KeyPress = keyControl;
+    setKeyControl((prev) => ({
+      ...prev,
+      [key]: false,
+    }));
+  };
+
   const move = (cVec: THREE.Vector3, tVec: THREE.Vector3) => {
     const coord = calCoord(cVec, tVec);
     return coord;
   };
 
   const drop = (cVec: THREE.Vector3) => {
-    const coord = gravity(cVec);
+    const coord = falling(cVec);
     if (coord.y > 0) {
       return coord;
     } else if (coord.y <= 0) {
@@ -20,7 +58,9 @@ export const useControl = (scene: THREE.Scene) => {
     tVec: THREE.Vector3
   ): THREE.Vector3 => {
     const { x, y, z } = cVec;
-    const newCoord = new THREE.Vector3(x, y, z).add(tVec);
+    const newCoord = new THREE.Vector3(x, y, z).add(
+      tVec.multiplyScalar(animationFrame)
+    );
 
     if (!collisionChk(cVec, newCoord)) {
       return newCoord;
@@ -29,14 +69,14 @@ export const useControl = (scene: THREE.Scene) => {
     }
   };
 
-  const gravity = (cVec: THREE.Vector3): THREE.Vector3 => {
+  const falling = (cVec: THREE.Vector3): THREE.Vector3 => {
     const { x, y, z } = cVec;
     const g = new THREE.Vector3(0, -1, 0);
     const newCoord = new THREE.Vector3(x, y, z).add(g);
 
     if (!collisionChk(cVec, newCoord)) {
       if (newCoord.y > 0) {
-        return gravity(newCoord);
+        return falling(newCoord);
       } else if (newCoord.y < 0) {
         return new THREE.Vector3(x, 0, z);
       } else {
@@ -68,6 +108,9 @@ export const useControl = (scene: THREE.Scene) => {
   };
 
   return {
+    keyControl,
+    onKeyDown,
+    onKeyUp,
     move,
     drop,
   };
