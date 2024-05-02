@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import * as THREE from "three";
 import { useCreate } from "@/hooks/useCreate";
@@ -28,12 +27,20 @@ export const Scene: React.FC = () => {
     if (scene) {
       var renderer = new THREE.WebGLRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0xffffff);
       // document.body.appendChild( renderer.domElement );
       // use ref as a mount point of the Three.js scene instead of the document.body
       canvasRef.current && canvasRef.current.appendChild(renderer.domElement);
 
-      const obj = createObject({ x: 0, y: 0, z: 0 });
+      const obj = createObject({ x: 1, y: 1, z: 1 }, { x: 0, y: 0, z: 0 });
+      const plane = createObject(
+        { x: 30, y: 30 },
+        { x: 0, y: 0, z: 0 },
+        "plane"
+      );
+
       scene.add(obj);
+      scene.add(plane);
       // handleObjectLookAt(obj);
 
       const camera = createCamera();
@@ -59,7 +66,9 @@ export const Scene: React.FC = () => {
     window.addEventListener("keypress", (e: KeyboardEvent) => {
       if (e.code === "Enter") {
         // const obj = createObject({ x: 0, y: 0, z: 0 });
-        const obj = createObject({ x: 1, y: 0, z: 0 });
+        const size = {};
+        const coord = { x: 1, y: 0, z: 0 };
+        const obj = createObject(size, coord);
         scene.add(obj);
       }
     });
@@ -95,7 +104,7 @@ export const Scene: React.FC = () => {
 
   return (
     <div
-      style={{ width: "100%", height: "100%" }}
+      style={{ width: "100%", height: "100%", backgroundColor: "#FFF" }}
       ref={canvasRef as RefObject<HTMLDivElement>}
     />
   );

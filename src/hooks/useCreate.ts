@@ -1,14 +1,36 @@
 import { useRef, useState } from "react";
 import * as THREE from "three";
 
+type Coord = {
+  x?: number;
+  y?: number;
+  z?: number;
+};
+
 export const useCreate = () => {
   const meshesRef = useRef<{ [key: string]: THREE.Mesh }>({});
 
-  const createObject = (coord?: { x: number; y: number; z: number }) => {
-    var geometry = new THREE.BoxGeometry(1, 1, 1);
-    var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    var obj = new THREE.Mesh(geometry, material);
-    obj.position.set(coord?.x || 0, coord?.y || 0, coord?.z || 0);
+  const createObject = (size: Coord, coord: Coord, type = "box") => {
+    let obj: any;
+    if (type === "plane") {
+      const planeGeo = new THREE.PlaneGeometry(size.x || 30, size.y || 30);
+      const planeMat = new THREE.MeshPhongMaterial({
+        color: 0x25004d,
+        side: THREE.DoubleSide,
+      });
+      obj = new THREE.Mesh(planeGeo, planeMat);
+      obj.rotation.x = Math.PI * -0.5; // Rotate plane which is on the x-y plane to the z-x plane
+      obj.position.y = -0.5; // Rotate plane which is on the x-y plane to the z-x plane
+    } else {
+      var geometry = new THREE.BoxGeometry(
+        size.x || 1,
+        size.y || 1,
+        size.z || 1
+      );
+      var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      obj = new THREE.Mesh(geometry, material);
+      obj.position.set(coord.x || 0, coord.y || 0, coord.z || 0);
+    }
 
     meshesRef.current = {
       ...meshesRef.current,

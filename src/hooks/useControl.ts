@@ -1,6 +1,4 @@
 import * as THREE from "three";
-import { useCallback, useState } from "react";
-import { resolve } from "path";
 
 export const useControl = (scene: THREE.Scene) => {
   const move = (cVec: THREE.Vector3, tVec: THREE.Vector3) => {

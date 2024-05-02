@@ -11,7 +11,7 @@ const GlobalStyling = createGlobalStyle`
   }
   body {
     margin : 0px;
-    background-color : #000
+    background-color : #FFF
   }
 `;
 const root = ReactDOM.createRoot(document.getElementById("root"));
