@@ -46,26 +46,15 @@ export const useControl = (scene: THREE.Scene) => {
     return coord;
   };
 
-  const calHeight = (velocity: number) => {
-    const v = calVelocityY(velocity);
-    if (v < 0) return;
-    const h =
-      velocity * animationFrame - gravity * animationFrame * animationFrame;
-    return velocity_y - gravity * animationFrame;
+  const jump = (h: number, velY: number) => {
+    return {
+      height: h + calVelY(velY) * animationFrame,
+      velY: calVelY(velY),
+    };
   };
 
-  const calVelocityY = (velocity: number) => {
-    if (velocity < 0) return 0;
-    return velocity - gravity * animationFrame;
-  };
-
-  const drop = (cVec: THREE.Vector3) => {
-    const coord = falling(cVec);
-    if (coord.y > 0) {
-      return coord;
-    } else if (coord.y <= 0) {
-      return new THREE.Vector3(coord.x, 0, coord.z);
-    }
+  const calVelY = (velY: number) => {
+    return velY - gravity * animationFrame;
   };
 
   const calCoord = (
@@ -127,8 +116,7 @@ export const useControl = (scene: THREE.Scene) => {
     onKeyDown,
     onKeyUp,
     move,
-    drop,
     // jump,
-    calHeight,
+    jump,
   };
 };

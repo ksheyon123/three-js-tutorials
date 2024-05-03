@@ -13,9 +13,10 @@ import { InitContext } from "@/contexts/initContext";
 
 export const Scene: React.FC = () => {
   const { scene, renderer, camera, orbit } = useContext(InitContext);
-  const { keyControl, move, drop, calHeight, onKeyDown, onKeyUp } =
-    useControl(scene);
+  const { keyControl, move, onKeyDown, onKeyUp } = useControl(scene);
   const { meshesRef, createObject, handleObjectLookAt } = useCreate();
+  // const obj = Object.values(meshesRef.current)[0];
+  const [myObj, setMyObj] = useState<any>({ position: { y: 0, x: 0, z: 0 } });
   // const { createOrbit } = useCamera();
   const canvasRef = useRef<HTMLDivElement>();
 
@@ -28,6 +29,7 @@ export const Scene: React.FC = () => {
       canvasRef.current && canvasRef.current.appendChild(renderer.domElement);
 
       const obj = createObject({ x: 1, y: 1, z: 1 }, { x: 0, y: 0, z: 0 });
+      setMyObj(obj);
       scene.add(obj);
       const plane = createObject(
         { x: 30, y: 30 },
@@ -40,25 +42,48 @@ export const Scene: React.FC = () => {
   }, [scene, camera, renderer]);
 
   useEffect(() => {
-    if (isLoaded) {
+    if (isLoaded && myObj) {
+      let { position } = myObj;
+      // const obj = Object.values(meshesRef.current)[0];
       let handleId: any;
-      var animate = function () {
+      let vy = 5;
+      let h = 0;
+      const g = 9.8;
+      const ms = 0.0167; // [1/hz]
+      var animate = () => {
+        // position.y = position.y;
+
+        if (keyControl.Space) {
+          h += vy * ms;
+          vy = vy - g * ms;
+          // h = 0;
+          // vy = 0;
+          if (h < 0) {
+            vy = 0;
+            h = 0;
+            keyControl["Space"] = false;
+          }
+          position.y = h;
+        }
+
+        if (keyControl.KeyA) {
+          position.x -= ms;
+        } else if (keyControl.KeyD) {
+          position.x += ms;
+        }
         handleId = requestAnimationFrame(animate);
 
-        const obj = Object.values(meshesRef.current)[0];
-        const position = obj.position;
-        const { x, y, z } = keyPress(keyControl, position);
-        obj.position.x = x;
-        obj.position.y = y;
-        obj.position.z = z;
-        // keyPress(keyControl);
+        // keyPress(keyControl, position);
+        // obj.position.x = x;
+        // obj.position.z = z;
+
         orbit.update();
         renderer.render(scene, camera);
       };
       animate();
       return () => cancelAnimationFrame(handleId);
     }
-  }, [isLoaded, keyControl, orbit, meshesRef.current]);
+  }, [isLoaded, keyControl, orbit, myObj.position.y]);
 
   useEffect(() => {
     window.addEventListener("keypress", (e: KeyboardEvent) => {
@@ -81,19 +106,14 @@ export const Scene: React.FC = () => {
 
   const keyPress = (e: KeyPress, position: THREE.Vector3) => {
     if (e.KeyD) {
-      return move(position, new THREE.Vector3(1, 0, 0));
+      return (position.x += 1);
+      // return move(position, new THREE.Vector3(1, 0, 0));
     } else if (e.KeyA) {
-      return move(position, new THREE.Vector3(-1, 0, 0));
+      return (position.x -= 1);
     } else if (e.KeyS) {
-      return move(position, new THREE.Vector3(0, 0, 1));
+      return (position.z += 1);
     } else if (e.KeyW) {
-      return move(position, new THREE.Vector3(0, 0, -1));
-    } else if (e.Space) {
-      const { x, y, z } = position;
-      // const a = clock.getDelta();
-      // return move(position, new THREE.Vector3(0, 1, 0));
-      const h = calHeight(y);
-      return new THREE.Vector3(x, h, z);
+      return (position.z -= 1);
     } else {
       return position;
     }
