@@ -8,6 +8,14 @@ export type KeyPress = {
 };
 
 export const useControl = (scene: THREE.Scene) => {
+  const gravity = 9.8; // [m/s^2]
+  const velocity_x = 1; // [m/s]
+  const velocity_y = 10;
+  const initialHeight = 0;
+
+  const animationFrame = 1 / 60; // [60hz]
+
+  const vyRef = useRef<{ vy: number }>({ vy: velocity_y });
   const [keyControl, setKeyControl] = useState<KeyPress>({
     KeyA: false,
     KeyS: false,
@@ -15,13 +23,6 @@ export const useControl = (scene: THREE.Scene) => {
     KeyW: false,
     Space: false,
   });
-
-  const gravity = 9.8; // [m/s^2]
-  const velocity_x = 1; // [m/s]
-  const velocity_y = 10;
-  const initialHeight = 0;
-
-  const animationFrame = 1 / 60; // [60hz]
 
   const onKeyDown = (e: KeyboardEvent) => {
     const key = e.code as Keys;
@@ -46,15 +47,17 @@ export const useControl = (scene: THREE.Scene) => {
     return coord;
   };
 
-  const jump = (h: number, velY: number) => {
-    return {
-      height: h + calVelY(velY) * animationFrame,
-      velY: calVelY(velY),
-    };
+  const calY = (h: number) => {
+    const vel = calVelY();
+    return h + vel * animationFrame;
   };
 
-  const calVelY = (velY: number) => {
-    return velY - gravity * animationFrame;
+  const calVelY = () => {
+    vyRef.current.vy = vyRef.current.vy - gravity * animationFrame;
+    return vyRef.current.vy;
+  };
+  const resetVelY = () => {
+    vyRef.current.vy = velocity_y;
   };
 
   const calCoord = (
@@ -116,7 +119,8 @@ export const useControl = (scene: THREE.Scene) => {
     onKeyDown,
     onKeyUp,
     move,
-    // jump,
-    jump,
+    calY,
+    calVelY,
+    resetVelY,
   };
 };
