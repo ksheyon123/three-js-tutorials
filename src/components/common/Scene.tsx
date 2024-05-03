@@ -13,7 +13,7 @@ import { InitContext } from "@/contexts/initContext";
 
 export const Scene: React.FC = () => {
   const { scene, renderer, camera, orbit } = useContext(InitContext);
-  const { keyControl, move, calY, resetVelY, onKeyDown, onKeyUp } =
+  const { keyControl, calCoord, calY, resetVelY, onKeyDown, onKeyUp } =
     useControl(scene);
   const { meshesRef, createObject, handleObjectLookAt } = useCreate();
   // const obj = Object.values(meshesRef.current)[0];
@@ -44,22 +44,15 @@ export const Scene: React.FC = () => {
 
   useEffect(() => {
     if (isLoaded && myObj) {
-      console.log("Run");
       let { position } = myObj;
       let handleId: any;
 
       var animate = () => {
+        keyPress(keyControl, position);
         if (keyControl.Space) {
-          position.y = calY(position.y);
-
-          if (position.y <= 0) {
-            position.y = 0;
-            resetVelY();
-            keyControl["Space"] = false;
-          }
+          position.y = calY(position).y;
         }
 
-        keyPress(keyControl, position);
         handleId = requestAnimationFrame(animate);
 
         orbit.update();
@@ -91,17 +84,26 @@ export const Scene: React.FC = () => {
 
   const keyPress = (e: KeyPress, position: THREE.Vector3) => {
     if (e.KeyD) {
-      let { x } = move(position, new THREE.Vector3(1, 0, 0));
+      let { x } = calCoord(position, new THREE.Vector3(1, 0, 0));
       position.x = x;
     } else if (e.KeyA) {
-      let { x } = move(position, new THREE.Vector3(-1, 0, 0));
+      let { x } = calCoord(position, new THREE.Vector3(-1, 0, 0));
       position.x = x;
     } else if (e.KeyS) {
-      let { z } = move(position, new THREE.Vector3(0, 0, 1));
+      let { z } = calCoord(position, new THREE.Vector3(0, 0, 1));
       position.z = z;
     } else if (e.KeyW) {
-      let { z } = move(position, new THREE.Vector3(0, 0, -1));
+      let { z } = calCoord(position, new THREE.Vector3(0, 0, -1));
       position.z = z;
+    } else if (e.Space) {
+      // // if (keyControl.Space) {
+      // position.y = calY(position);
+      // if (position.y <= 0) {
+      //   position.y = 0;
+      //   resetVelY();
+      //   keyControl["Space"] = false;
+      // }
+      // // }
     } else {
       return position;
     }

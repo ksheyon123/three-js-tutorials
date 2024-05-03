@@ -10,12 +10,12 @@ export type KeyPress = {
 export const useControl = (scene: THREE.Scene) => {
   const gravity = 9.8; // [m/s^2]
   const velocity_x = 1; // [m/s]
-  const velocity_y = 10;
+  const velocity_y = 5;
   const initialHeight = 0;
 
   const animationFrame = 1 / 60; // [60hz]
 
-  const vyRef = useRef<{ vy: number }>({ vy: velocity_y });
+  const vyRef = useRef<{ vy: number }>({ vy: 0 });
   const [keyControl, setKeyControl] = useState<KeyPress>({
     KeyA: false,
     KeyS: false,
@@ -26,6 +26,9 @@ export const useControl = (scene: THREE.Scene) => {
 
   const onKeyDown = (e: KeyboardEvent) => {
     const key = e.code as Keys;
+    if (key === "Space") {
+      vyRef.current.vy = velocity_y;
+    }
     setKeyControl((prev) => ({
       ...prev,
       [key]: true,
@@ -42,56 +45,40 @@ export const useControl = (scene: THREE.Scene) => {
       }));
   };
 
-  const move = (cVec: THREE.Vector3, tVec: THREE.Vector3) => {
-    const coord = calCoord(cVec, tVec);
-    return coord;
+  const calCoord = (position: THREE.Vector3, direction: THREE.Vector3) => {
+    const { x, y, z } = position;
+    const next = new THREE.Vector3(x, y, z).add(
+      direction.multiplyScalar(animationFrame)
+    );
+    if (collisionChk(position, next)) {
+      return position;
+    } else {
+      return next;
+    }
   };
 
-  const calY = (h: number) => {
+  const calY = (position: THREE.Vector3) => {
     const vel = calVelY();
-    return h + vel * animationFrame;
+    const newH = position.y + vel * animationFrame;
+    const tVec = new THREE.Vector3(position.x, newH, position.z);
+    if (collisionChk(position, tVec)) {
+      resetVelY();
+      return new THREE.Vector3(position.x, position.y, position.z);
+    }
+    return new THREE.Vector3(position.x, newH, position.z);
   };
 
   const calVelY = () => {
     vyRef.current.vy = vyRef.current.vy - gravity * animationFrame;
     return vyRef.current.vy;
   };
+
   const resetVelY = () => {
-    vyRef.current.vy = velocity_y;
-  };
-
-  const calCoord = (
-    cVec: THREE.Vector3,
-    tVec: THREE.Vector3
-  ): THREE.Vector3 => {
-    const { x, y, z } = cVec;
-    const newCoord = new THREE.Vector3(x, y, z).add(
-      tVec.multiplyScalar(animationFrame)
-    );
-
-    if (!collisionChk(cVec, newCoord)) {
-      return newCoord;
-    } else {
-      return cVec;
-    }
-  };
-
-  const falling = (cVec: THREE.Vector3): THREE.Vector3 => {
-    const { x, y, z } = cVec;
-    const g = new THREE.Vector3(0, -1, 0);
-    const newCoord = new THREE.Vector3(x, y, z).add(g);
-
-    if (!collisionChk(cVec, newCoord)) {
-      if (newCoord.y > 0) {
-        return falling(newCoord);
-      } else if (newCoord.y < 0) {
-        return new THREE.Vector3(x, 0, z);
-      } else {
-        return newCoord;
-      }
-    } else {
-      return cVec;
-    }
+    vyRef.current.vy = 0;
+    setKeyControl((prev) => ({
+      ...prev,
+      Space: false,
+    }));
   };
 
   const collisionChk = (cVec: THREE.Vector3, tVec: THREE.Vector3) => {
@@ -105,7 +92,7 @@ export const useControl = (scene: THREE.Scene) => {
     const meshes = onlyMesh.splice(1);
     const intersects = raycaster.intersectObjects(meshes);
 
-    if (intersects.length > 0 && intersects[0].distance < 1) {
+    if (intersects.length > 0 && intersects[0].distance <= 0.5) {
       console.log("Collision detected with", intersects[0].object);
       return true;
     } else {
@@ -118,7 +105,7 @@ export const useControl = (scene: THREE.Scene) => {
     keyControl,
     onKeyDown,
     onKeyUp,
-    move,
+    calCoord,
     calY,
     calVelY,
     resetVelY,
