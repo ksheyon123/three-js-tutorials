@@ -13,7 +13,7 @@ import { InitContext } from "@/contexts/initContext";
 
 export const Scene: React.FC = () => {
   const { scene, renderer, camera, orbit } = useContext(InitContext);
-  const { keyControl, calCoord, calY, resetVelY, onKeyDown, onKeyUp } =
+  const { keyControl, calCoord, calY, drop, resetVelY, onKeyDown, onKeyUp } =
     useControl(scene);
   const { meshesRef, createObject, handleObjectLookAt } = useCreate();
   // const obj = Object.values(meshesRef.current)[0];
@@ -29,7 +29,7 @@ export const Scene: React.FC = () => {
       // use ref as a mount point of the Three.js scene instead of the document.body
       canvasRef.current && canvasRef.current.appendChild(renderer.domElement);
 
-      const obj = createObject({ x: 1, y: 1, z: 1 }, { x: 0, y: 0, z: 0 });
+      const obj = createObject({ x: 1, y: 1, z: 1 }, { x: 0, y: 5, z: 0 });
       setMyObj(obj);
       scene.add(obj);
       const plane = createObject(
@@ -51,6 +51,8 @@ export const Scene: React.FC = () => {
         keyPress(keyControl, position);
         if (keyControl.Space) {
           position.y = calY(position).y;
+        } else {
+          position.y = drop(position).y;
         }
 
         handleId = requestAnimationFrame(animate);
@@ -61,14 +63,14 @@ export const Scene: React.FC = () => {
       animate();
       return () => cancelAnimationFrame(handleId);
     }
-  }, [isLoaded, keyControl, orbit]);
+  }, [isLoaded, keyControl]);
 
   useEffect(() => {
     window.addEventListener("keypress", (e: KeyboardEvent) => {
       if (e.code === "Enter") {
         // const obj = createObject({ x: 0, y: 0, z: 0 });
         const size = {};
-        const coord = { x: 1, y: 0, z: 0 };
+        const coord = { x: 0, y: 0, z: 0 };
         const obj = createObject(size, coord);
         scene.add(obj);
       }
@@ -84,11 +86,15 @@ export const Scene: React.FC = () => {
 
   const keyPress = (e: KeyPress, position: THREE.Vector3) => {
     if (e.KeyD) {
-      let { x } = calCoord(position, new THREE.Vector3(1, 0, 0));
+      let { x, y, z } = calCoord(position, new THREE.Vector3(1, 0, 0));
       position.x = x;
+      position.y = y;
+      position.z = z;
     } else if (e.KeyA) {
-      let { x } = calCoord(position, new THREE.Vector3(-1, 0, 0));
+      let { x, y, z } = calCoord(position, new THREE.Vector3(-1, 0, 0));
       position.x = x;
+      position.y = y;
+      position.z = z;
     } else if (e.KeyS) {
       let { z } = calCoord(position, new THREE.Vector3(0, 0, 1));
       position.z = z;

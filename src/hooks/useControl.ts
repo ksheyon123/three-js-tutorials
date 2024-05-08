@@ -57,15 +57,29 @@ export const useControl = (scene: THREE.Scene) => {
     }
   };
 
-  const calY = (position: THREE.Vector3) => {
+  const drop = (position: THREE.Vector3) => {
+    const { x, y, z } = position;
     const vel = calVelY();
-    const newH = position.y + vel * animationFrame;
-    const tVec = new THREE.Vector3(position.x, newH, position.z);
-    if (collisionChk(position, tVec)) {
-      resetVelY();
-      return new THREE.Vector3(position.x, position.y, position.z);
+    const newY = position.y + vel * animationFrame;
+    // console.log(y, newY);
+    const next = new THREE.Vector3(x, newY, z);
+    if (collisionChk(position, next)) {
+      // resetVelY();
+      return new THREE.Vector3(x, y, z);
     }
-    return new THREE.Vector3(position.x, newH, position.z);
+    return new THREE.Vector3(x, newY, z);
+  };
+
+  const calY = (position: THREE.Vector3) => {
+    const { x, y, z } = position;
+    const vel = calVelY();
+    const newY = position.y + vel * animationFrame;
+    const next = new THREE.Vector3(position.x, newY, position.z);
+    if (collisionChk(position, next)) {
+      resetVelY();
+      return new THREE.Vector3(x, y, z);
+    }
+    return new THREE.Vector3(x, newY, z);
   };
 
   const calVelY = () => {
@@ -93,10 +107,10 @@ export const useControl = (scene: THREE.Scene) => {
     const intersects = raycaster.intersectObjects(meshes);
 
     if (intersects.length > 0 && intersects[0].distance <= 0.5) {
-      console.log("Collision detected with", intersects[0].object);
+      // console.log("Collision detected with", intersects[0].object);
       return true;
     } else {
-      console.log("No collision detected.");
+      // console.log("No collision detected.");
       return false;
     }
   };
@@ -106,6 +120,7 @@ export const useControl = (scene: THREE.Scene) => {
     onKeyDown,
     onKeyUp,
     calCoord,
+    drop,
     calY,
     calVelY,
     resetVelY,
