@@ -105,6 +105,7 @@ export const useControl = (scene: THREE.Scene) => {
     );
     const meshes = onlyMesh.splice(1);
     const intersects = raycaster.intersectObjects(meshes);
+    // console.log(cVec.y, intersects[0]?.distance || 0);
 
     if (intersects.length > 0 && intersects[0].distance <= 0.5) {
       // console.log("Collision detected with", intersects[0].object);

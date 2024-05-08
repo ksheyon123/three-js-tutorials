@@ -10,11 +10,13 @@ import * as THREE from "three";
 import { useCreate } from "@/hooks/useCreate";
 import { useControl, KeyPress } from "@/hooks/useControl";
 import { InitContext } from "@/contexts/initContext";
+import { useCamera } from "@/hooks/useCamera";
 
 export const Scene: React.FC = () => {
   const { scene, renderer, camera, orbit } = useContext(InitContext);
-  const { keyControl, calCoord, calY, drop, resetVelY, onKeyDown, onKeyUp } =
+  const { keyControl, calCoord, calY, drop, onKeyDown, onKeyUp } =
     useControl(scene);
+  const { handleCameraPosition } = useCamera();
   const { meshesRef, createObject, handleObjectLookAt } = useCreate();
   // const obj = Object.values(meshesRef.current)[0];
   const [myObj, setMyObj] = useState<any>({ position: { y: 0, x: 0, z: 0 } });
@@ -43,7 +45,7 @@ export const Scene: React.FC = () => {
   }, [scene, camera, renderer]);
 
   useEffect(() => {
-    if (isLoaded && myObj) {
+    if (isLoaded && myObj && camera && orbit) {
       let { position } = myObj;
       let handleId: any;
 
@@ -54,6 +56,7 @@ export const Scene: React.FC = () => {
         } else {
           position.y = drop(position).y;
         }
+        handleCameraPosition(camera, myObj, orbit);
 
         handleId = requestAnimationFrame(animate);
 
@@ -63,7 +66,7 @@ export const Scene: React.FC = () => {
       animate();
       return () => cancelAnimationFrame(handleId);
     }
-  }, [isLoaded, keyControl]);
+  }, [isLoaded, keyControl, camera, orbit]);
 
   useEffect(() => {
     window.addEventListener("keypress", (e: KeyboardEvent) => {

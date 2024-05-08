@@ -13,12 +13,12 @@ export const useCamera = () => {
   };
   const handleCameraPosition = (
     camera: THREE.PerspectiveCamera,
-    obj?: THREE.Mesh
+    obj?: THREE.Mesh,
+    orbit?: OrbitControls
   ) => {
     if (obj) {
-      const coord = obj.position.clone();
-      const { x, y, z } = new THREE.Vector3(coord.x, coord.y, 5);
-      camera.position.set(x, y, z);
+      const { x, y, z } = obj.position.clone();
+      orbit.target.set(x, y, z);
     } else {
       camera.position.set(0, 0, 5);
     }
