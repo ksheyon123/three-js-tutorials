@@ -25,21 +25,37 @@ export const Scene: React.FC = () => {
 
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
+  console.log(meshesRef, scene.children);
   useEffect(() => {
     if (scene && renderer && camera) {
       // document.body.appendChild( renderer.domElement );
       // use ref as a mount point of the Three.js scene instead of the document.body
       canvasRef.current && canvasRef.current.appendChild(renderer.domElement);
 
-      const obj = createObject({ x: 1, y: 1, z: 1 }, { x: 0, y: 5, z: 0 });
+      // const obj = createObject(
+      //   { x: 1, y: 1, z: 1 },
+      //   { x: 0, y: 10, z: 0 },
+      //   "box"
+      // );
+      const obj = createObject(
+        { r: 1, w: 10, h: 10 },
+        { x: 0, y: 10, z: 0 },
+        "sphere"
+      );
       setMyObj(obj);
       scene.add(obj);
-      const plane = createObject(
-        { x: 30, y: 30 },
+      // const plane = createObject(
+      //   { x: 30, y: 30 },
+      //   { x: 0, y: 0, z: 0 },
+      //   "plane"
+      // );
+      // scene.add(plane);
+      const sphere = createObject(
+        { r: 10, w: 100, h: 100 },
         { x: 0, y: 0, z: 0 },
-        "plane"
+        "sphere"
       );
-      scene.add(plane);
+      scene.add(sphere);
       setIsLoaded(true);
     }
   }, [scene, camera, renderer]);

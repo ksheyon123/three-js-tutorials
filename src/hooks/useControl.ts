@@ -100,14 +100,16 @@ export const useControl = (scene: THREE.Scene) => {
     const raycaster = new THREE.Raycaster();
     const direction = new THREE.Vector3().subVectors(tVec, cVec).normalize(); // Direction the ray should go
     const origin = cVec; // Starting point of the ray
+    // console.log(origin, direction);
     raycaster.set(origin, direction);
     const onlyMesh = scene.children.filter(
       (el) => el.type !== "GridHelper" && el.type !== "AxesHelper"
     );
-    const meshes = onlyMesh.splice(1);
-    const intersects = raycaster.intersectObjects(meshes);
+    // const meshes = onlyMesh.splice(1);
+    // const sphereMesh = meshes.filter((el) => el.name === "sphere");
+    const intersects = raycaster.intersectObjects(onlyMesh);
 
-    if (intersects.length > 0 && intersects[0].distance <= 0.5) {
+    if (intersects.length > 0) {
       return true;
     } else {
       return false;

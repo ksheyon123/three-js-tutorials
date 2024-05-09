@@ -1,6 +1,15 @@
 import { useRef, useState } from "react";
 import * as THREE from "three";
 
+type Size = {
+  x?: number;
+  y?: number;
+  z?: number;
+  r?: number;
+  w?: number;
+  h?: number;
+};
+
 type Coord = {
   x?: number;
   y?: number;
@@ -10,7 +19,7 @@ type Coord = {
 export const useCreate = () => {
   const meshesRef = useRef<{ [key: string]: THREE.Mesh }>({});
 
-  const createObject = (size: Coord, coord: Coord, type = "box") => {
+  const createObject = (size: Size, coord: Coord, type = "box") => {
     let obj: any;
     if (type === "plane") {
       const planeGeo = new THREE.PlaneGeometry(size.x || 30, size.y || 30);
@@ -19,8 +28,18 @@ export const useCreate = () => {
         side: THREE.DoubleSide,
       });
       obj = new THREE.Mesh(planeGeo, planeMat);
+      obj.name = "plane";
       obj.rotation.x = Math.PI * -0.5; // Rotate plane which is on the x-y plane to the z-x plane
       obj.position.y = -0.5; // Rotate plane which is on the x-y plane to the z-x plane
+    } else if (type === "sphere") {
+      const geometry = new THREE.SphereGeometry(size.r, size.w, size.h);
+      const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+      const sphere = new THREE.Mesh(geometry, material);
+      obj = sphere;
+      obj.name = "sphere";
+      obj.position.x = 0;
+      obj.position.y = 0;
+      obj.position.z = 0;
     } else {
       var geometry = new THREE.BoxGeometry(
         size.x || 1,
