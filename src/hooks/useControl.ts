@@ -50,6 +50,7 @@ export const useControl = (scene: THREE.Scene) => {
     const next = new THREE.Vector3(x, y, z).add(
       direction.multiplyScalar(animationFrame)
     );
+    console.log("next", next);
     if (collisionChk(position, next)) {
       return position;
     } else {
@@ -105,13 +106,10 @@ export const useControl = (scene: THREE.Scene) => {
     );
     const meshes = onlyMesh.splice(1);
     const intersects = raycaster.intersectObjects(meshes);
-    // console.log(cVec.y, intersects[0]?.distance || 0);
 
     if (intersects.length > 0 && intersects[0].distance <= 0.5) {
-      // console.log("Collision detected with", intersects[0].object);
       return true;
     } else {
-      // console.log("No collision detected.");
       return false;
     }
   };

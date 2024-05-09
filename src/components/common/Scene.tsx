@@ -50,12 +50,14 @@ export const Scene: React.FC = () => {
       let handleId: any;
 
       var animate = () => {
-        keyPress(keyControl, position);
-        if (keyControl.Space) {
-          position.y = calY(position).y;
-        } else {
-          position.y = drop(position).y;
-        }
+        const cP = camera.position;
+        const oP = orbit.target;
+        const cV2 = new THREE.Vector2(cP.x, cP.z);
+        const oV2 = new THREE.Vector2(oP.x, oP.z);
+        const direction = oV2.sub(cV2).normalize();
+
+        keyPress(keyControl, position, direction);
+        position.y = drop(position).y;
         handleCameraPosition(camera, myObj, orbit);
 
         handleId = requestAnimationFrame(animate);
@@ -87,22 +89,32 @@ export const Scene: React.FC = () => {
     };
   }, [meshesRef.current]);
 
-  const keyPress = (e: KeyPress, position: THREE.Vector3) => {
+  const keyPress = (
+    e: KeyPress,
+    position: THREE.Vector3,
+    direction: THREE.Vector2
+  ) => {
     if (e.KeyD) {
-      let { x, y, z } = calCoord(position, new THREE.Vector3(1, 0, 0));
+      const dirD = direction.rotateAround(new THREE.Vector2(0, 0), Math.PI / 2);
+      let { x, z } = calCoord(position, new THREE.Vector3(dirD.x, 0, dirD.y));
       position.x = x;
-      position.y = y;
       position.z = z;
     } else if (e.KeyA) {
-      let { x, y, z } = calCoord(position, new THREE.Vector3(-1, 0, 0));
+      const dirA = direction
+        .rotateAround(new THREE.Vector2(0, 0), Math.PI / 2)
+        .negate();
+      let { x, z } = calCoord(position, new THREE.Vector3(dirA.x, 0, dirA.y));
       position.x = x;
-      position.y = y;
       position.z = z;
     } else if (e.KeyS) {
-      let { z } = calCoord(position, new THREE.Vector3(0, 0, 1));
+      const dirS = direction.negate();
+      let { x, z } = calCoord(position, new THREE.Vector3(dirS.x, 0, dirS.y));
+      position.x = x;
       position.z = z;
     } else if (e.KeyW) {
-      let { z } = calCoord(position, new THREE.Vector3(0, 0, -1));
+      const dirW = direction;
+      let { x, z } = calCoord(position, new THREE.Vector3(dirW.x, 0, dirW.y));
+      position.x = x;
       position.z = z;
     } else if (e.Space) {
       // // if (keyControl.Space) {
