@@ -19,43 +19,44 @@ export const Scene: React.FC = () => {
   const { handleCameraPosition } = useCamera();
   const { meshesRef, createObject, handleObjectLookAt } = useCreate();
   // const obj = Object.values(meshesRef.current)[0];
-  const [myObj, setMyObj] = useState<any>({ position: { y: 0, x: 0, z: 0 } });
+  const [myObj, setMyObj] = useState<any>();
   // const { createOrbit } = useCamera();
   const canvasRef = useRef<HTMLDivElement>();
 
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
-  console.log(meshesRef, scene.children);
   useEffect(() => {
     if (scene && renderer && camera) {
       // document.body.appendChild( renderer.domElement );
       // use ref as a mount point of the Three.js scene instead of the document.body
       canvasRef.current && canvasRef.current.appendChild(renderer.domElement);
 
-      // const obj = createObject(
-      //   { x: 1, y: 1, z: 1 },
-      //   { x: 0, y: 10, z: 0 },
-      //   "box"
-      // );
       const obj = createObject(
-        { r: 1, w: 10, h: 10 },
-        { x: 0, y: 10, z: 0 },
-        "sphere"
+        { x: 1, y: 1, z: 1 },
+        { x: 0, y: 11, z: 0 },
+        "box"
       );
+
+      // const obj = createObject(
+      //   { r: 1, w: 10, h: 10 },
+      //   { x: 0, y: 10, z: 0 },
+      //   "sphere"
+      // );
       setMyObj(obj);
       scene.add(obj);
-      // const plane = createObject(
+
+      // const ground = createObject(
       //   { x: 30, y: 30 },
       //   { x: 0, y: 0, z: 0 },
       //   "plane"
       // );
-      // scene.add(plane);
-      const sphere = createObject(
-        { r: 10, w: 100, h: 100 },
+
+      const ground = createObject(
+        { r: 10, w: 200, h: 200 },
         { x: 0, y: 0, z: 0 },
         "sphere"
       );
-      scene.add(sphere);
+      scene.add(ground);
       setIsLoaded(true);
     }
   }, [scene, camera, renderer]);
@@ -84,16 +85,23 @@ export const Scene: React.FC = () => {
       animate();
       return () => cancelAnimationFrame(handleId);
     }
-  }, [isLoaded, keyControl, camera, orbit]);
+  }, [isLoaded, keyControl, camera, orbit, myObj]);
 
   useEffect(() => {
     window.addEventListener("keypress", (e: KeyboardEvent) => {
       if (e.code === "Enter") {
         // const obj = createObject({ x: 0, y: 0, z: 0 });
-        const size = {};
-        const coord = { x: 0, y: 0, z: 0 };
-        const obj = createObject(size, coord);
-        scene.add(obj);
+        // const size = {};
+        // const coord = { x: 0, y: 0, z: 0 };
+        // const obj = createObject(size, coord);
+        // scene.add(obj);
+        // const obj = createObject(
+        //   { r: 1, w: 10, h: 10 },
+        //   { x: 0, y: 10, z: 0 },
+        //   "sphere"
+        // );
+        // setMyObj(obj);
+        // scene.add(obj);
       }
     });
 

@@ -19,6 +19,8 @@ export const useCamera = () => {
     if (obj) {
       const { x, y, z } = obj.position.clone();
       orbit.target.set(x, y, z);
+    } else {
+      camera.position.set(0, 15, 10);
     }
   };
 

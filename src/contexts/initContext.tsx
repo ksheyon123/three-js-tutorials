@@ -68,7 +68,7 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
     const renderer = createRenderer();
     const orbit = createOrbit(camera, renderer);
     // drawGridHelper(scene);
-    drawAxisHelper(scene);
+    // drawAxisHelper(scene);
 
     handleCameraPosition(camera); // Initial Camera Position
 

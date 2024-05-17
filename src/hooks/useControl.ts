@@ -105,11 +105,15 @@ export const useControl = (scene: THREE.Scene) => {
     const onlyMesh = scene.children.filter(
       (el) => el.type !== "GridHelper" && el.type !== "AxesHelper"
     );
+
     // const meshes = onlyMesh.splice(1);
     // const sphereMesh = meshes.filter((el) => el.name === "sphere");
     const intersects = raycaster.intersectObjects(onlyMesh);
 
-    if (intersects.length > 0) {
+    // console.log(scene.children, intersects);
+    const collision = intersects.filter((el) => el.distance <= 0.5).length > 0;
+    console.log(collision);
+    if (intersects.length > 0 && collision) {
       return true;
     } else {
       return false;
