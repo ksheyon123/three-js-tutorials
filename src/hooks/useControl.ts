@@ -8,19 +8,21 @@ export type KeyPress = {
 };
 
 export const useControl = (scene: THREE.Scene) => {
-  const gravity = 9.8; // [m/s^2]
   const velocity_x = 1; // [m/s]
-  const velocity_y = 5;
+  const velocity_y = 5; // [m/s]
+  const defaultVelocidy = 20;
+  const gravity = 9.8; // [m/s2]
   const initialHeight = 0;
 
   const animationFrame = 1 / 60; // [60hz]
 
-  const vyRef = useRef<{ vy: number }>({ vy: 0 });
-  const prevVel = useRef<{ vx: number; vy: number; vz: number }>({
+  const velRef = useRef<{ vx: number; vy: number; vz: number; g: number }>({
     vx: 0,
     vy: 0,
     vz: 0,
+    g: 0,
   });
+
   const [keyControl, setKeyControl] = useState<KeyPress>({
     KeyA: false,
     KeyS: false,
@@ -32,7 +34,10 @@ export const useControl = (scene: THREE.Scene) => {
   const onKeyDown = (e: KeyboardEvent) => {
     const key = e.code as Keys;
     if (key === "Space") {
-      vyRef.current.vy = velocity_y;
+      velRef.current.vx = defaultVelocidy;
+      velRef.current.vy = defaultVelocidy;
+      velRef.current.vz = defaultVelocidy;
+      velRef.current.g = gravity;
     }
     setKeyControl((prev) => ({
       ...prev,
@@ -63,35 +68,56 @@ export const useControl = (scene: THREE.Scene) => {
     }
   };
 
-  const dropToCenter = (position: THREE.Vector3) => {
-    const { x, y, z } = position;
-    const { vx, vy, vz } = prevVel.current;
-    const newX = x + (vx - gravity * animationFrame) * animationFrame;
-    const newY = y + (vy - gravity * animationFrame) * animationFrame;
-    const newZ = z + (vz - gravity * animationFrame) * animationFrame;
-    // console.log(newX, newY, newZ);
-    const next = new THREE.Vector3(0, 0, 0).sub(
-      new THREE.Vector3(newX, newY, newZ)
-    );
-    if (collisionChk(position, next)) {
-      // console.log("Drop to Center ", next);
-      return new THREE.Vector3(x, y, z);
+  const jump = (position: THREE.Vector3) => {
+    const { vx, vy, vz } = getVelocity();
+    const newX = position.x + vx * animationFrame;
+    const newY = position.y + vy * animationFrame;
+    const newZ = position.z + vz * animationFrame;
+    const next = new THREE.Vector3(0, 0, 0)
+      .sub(new THREE.Vector3(newX, newY, newZ))
+      .negate();
+    if (!collisionChk(position, next)) {
+      return position;
     }
-    return new THREE.Vector3(newX, newY, newZ);
+    return next;
   };
 
-  const isOnTheSphere = (obj: THREE.Mesh) => {
+  const dropToCenter = (position: THREE.Vector3) => {
+    const { x, y, z } = position;
+    const { vx, vy, vz } = getVelocity();
+    const newX = position.x + vx * animationFrame;
+    const newY = position.y + vy * animationFrame;
+    const newZ = position.z + vz * animationFrame;
+    const next = new THREE.Vector3(0, 0, 0)
+      .sub(new THREE.Vector3(x, y, z))
+      .normalize()
+      .negate()
+      .multiplyScalar(newY);
+
+    if (collisionChk(position, next)) {
+      return position;
+    }
+
+    return next;
+  };
+
+  const isOnTheSphere = () => {
     const onlyMesh = scene.children.filter(
       (el) => el.type !== "GridHelper" && el.type !== "AxesHelper"
     );
     const distance = onlyMesh[0].position.distanceTo(onlyMesh[1].position);
     console.log("distance", distance);
+    if (distance <= 10.5) {
+      initVelocity();
+      return true;
+    }
+    return false;
   };
 
   const drop = (position: THREE.Vector3) => {
     const { x, y, z } = position;
-    const vel = calVelY();
-    const newY = position.y + vel * animationFrame;
+    const { vx, vy, vz } = getVelocity();
+    const newY = position.y + vy * animationFrame;
     // console.log(y, newY);
     const next = new THREE.Vector3(x, newY, z);
     if (collisionChk(position, next)) {
@@ -101,30 +127,29 @@ export const useControl = (scene: THREE.Scene) => {
     return new THREE.Vector3(x, newY, z);
   };
 
-  const calY = (position: THREE.Vector3) => {
-    const { x, y, z } = position;
-    const vel = calVelY();
-    const newY = position.y + vel * animationFrame;
-    const next = new THREE.Vector3(position.x, newY, position.z);
-    if (collisionChk(position, next)) {
-      resetVelY();
-      return new THREE.Vector3(x, y, z);
-    }
-    return new THREE.Vector3(x, newY, z);
+  const getVelocity = () => {
+    velRef.current.vx = velRef.current.vx - velRef.current.g * animationFrame;
+    velRef.current.vy = velRef.current.vy - velRef.current.g * animationFrame;
+    velRef.current.vz = velRef.current.vz - velRef.current.g * animationFrame;
+    return velRef.current;
   };
 
-  const calVelY = () => {
-    vyRef.current.vy = vyRef.current.vy - gravity * animationFrame;
-    return vyRef.current.vy;
+  const initVelocity = () => {
+    velRef.current.vx = 0;
+    velRef.current.vy = 0;
+    velRef.current.vz = 0;
+    velRef.current.g = 0;
   };
 
-  const resetVelY = () => {
-    vyRef.current.vy = 0;
-    setKeyControl((prev) => ({
-      ...prev,
-      Space: false,
-    }));
-  };
+  // const resetVelY = () => {
+  //   velRef.current.vx = 0;
+  //   velRef.current.vy = 0;
+  //   velRef.current.vz = 0;
+  //   setKeyControl((prev) => ({
+  //     ...prev,
+  //     Space: false,
+  //   }));
+  // };
 
   const l = 0.5;
   const collisionChk = (cVec: THREE.Vector3, tVec: THREE.Vector3) => {
@@ -139,9 +164,11 @@ export const useControl = (scene: THREE.Scene) => {
 
     // const longest = Math.sqrt(l * l + Math.pow(Math.sqrt(2) * l, 2));
     const intersects = raycaster.intersectObjects(onlyMesh);
-    const distance = intersects[0]?.distance || 0.4;
-    const isCollide = Math.floor(distance * 100) / 100 < 0.4;
+    const distance = intersects[0]?.distance || 0.5;
+    const isCollide = Math.floor(distance * 100) / 100 <= 0.5;
     if (intersects.length > 0 && isCollide) {
+      // console.log("True");
+      initVelocity();
       return true;
     } else {
       return false;
@@ -154,11 +181,9 @@ export const useControl = (scene: THREE.Scene) => {
     onKeyUp,
     calCoord,
     drop,
-    calY,
-    calVelY,
-    resetVelY,
 
     // Test
+    jump,
     isOnTheSphere,
     dropToCenter,
   };

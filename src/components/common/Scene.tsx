@@ -17,12 +17,13 @@ export const Scene: React.FC = () => {
   const {
     keyControl,
     calCoord,
-    calY,
-    dropToCenter,
-    isOnTheSphere,
     drop,
     onKeyDown,
     onKeyUp,
+    //
+    dropToCenter,
+    jump,
+    isOnTheSphere,
   } = useControl(scene);
   const { handleCameraPosition } = useCamera();
   const { meshesRef, createObject, handleObjectLookAt } = useCreate();
@@ -41,7 +42,7 @@ export const Scene: React.FC = () => {
 
       const obj = createObject(
         { x: 1, y: 1, z: 1 },
-        { x: 0, y: 11, z: 0 },
+        { x: 0, y: 10.5, z: 0 },
         "box"
       );
 
@@ -85,13 +86,11 @@ export const Scene: React.FC = () => {
         position.x = x;
         position.y = y;
         position.z = z;
-        // myObj.rotateZ(-0.0007408324664132101278);
 
-        // position.y = drop(position).y;
-        isOnTheSphere(myObj);
-        position.x = dropToCenter(position).x;
-        position.y = dropToCenter(position).y;
-        position.z = dropToCenter(position).z;
+        const toCenter = dropToCenter(position);
+        position.x = toCenter.x;
+        position.y = toCenter.y;
+        position.z = toCenter.z;
         handleCameraPosition(camera, myObj, orbit);
 
         handleId = requestAnimationFrame(animate);
