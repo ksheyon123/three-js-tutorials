@@ -16,6 +16,11 @@ export const useControl = (scene: THREE.Scene) => {
   const animationFrame = 1 / 60; // [60hz]
 
   const vyRef = useRef<{ vy: number }>({ vy: 0 });
+  const prevVel = useRef<{ vx: number; vy: number; vz: number }>({
+    vx: 0,
+    vy: 0,
+    vz: 0,
+  });
   const [keyControl, setKeyControl] = useState<KeyPress>({
     KeyA: false,
     KeyS: false,
@@ -50,12 +55,37 @@ export const useControl = (scene: THREE.Scene) => {
     const next = new THREE.Vector3(x, y, z).add(
       direction.multiplyScalar(animationFrame)
     );
-    console.log("next", next);
+    // console.log("next", next);
     if (collisionChk(position, next)) {
       return position;
     } else {
       return next;
     }
+  };
+
+  const dropToCenter = (position: THREE.Vector3) => {
+    const { x, y, z } = position;
+    const { vx, vy, vz } = prevVel.current;
+    const newX = x + (vx - gravity * animationFrame) * animationFrame;
+    const newY = y + (vy - gravity * animationFrame) * animationFrame;
+    const newZ = z + (vz - gravity * animationFrame) * animationFrame;
+    // console.log(newX, newY, newZ);
+    const next = new THREE.Vector3(0, 0, 0).sub(
+      new THREE.Vector3(newX, newY, newZ)
+    );
+    if (collisionChk(position, next)) {
+      // console.log("Drop to Center ", next);
+      return new THREE.Vector3(x, y, z);
+    }
+    return new THREE.Vector3(newX, newY, newZ);
+  };
+
+  const isOnTheSphere = (obj: THREE.Mesh) => {
+    const onlyMesh = scene.children.filter(
+      (el) => el.type !== "GridHelper" && el.type !== "AxesHelper"
+    );
+    const distance = onlyMesh[0].position.distanceTo(onlyMesh[1].position);
+    console.log("distance", distance);
   };
 
   const drop = (position: THREE.Vector3) => {
@@ -96,6 +126,7 @@ export const useControl = (scene: THREE.Scene) => {
     }));
   };
 
+  const l = 0.5;
   const collisionChk = (cVec: THREE.Vector3, tVec: THREE.Vector3) => {
     const raycaster = new THREE.Raycaster();
     const direction = new THREE.Vector3().subVectors(tVec, cVec).normalize(); // Direction the ray should go
@@ -106,14 +137,11 @@ export const useControl = (scene: THREE.Scene) => {
       (el) => el.type !== "GridHelper" && el.type !== "AxesHelper"
     );
 
-    // const meshes = onlyMesh.splice(1);
-    // const sphereMesh = meshes.filter((el) => el.name === "sphere");
+    // const longest = Math.sqrt(l * l + Math.pow(Math.sqrt(2) * l, 2));
     const intersects = raycaster.intersectObjects(onlyMesh);
-
-    // console.log(scene.children, intersects);
-    const collision = intersects.filter((el) => el.distance <= 0.5).length > 0;
-    console.log(collision);
-    if (intersects.length > 0 && collision) {
+    const distance = intersects[0]?.distance || 0.4;
+    const isCollide = Math.floor(distance * 100) / 100 < 0.4;
+    if (intersects.length > 0 && isCollide) {
       return true;
     } else {
       return false;
@@ -129,5 +157,9 @@ export const useControl = (scene: THREE.Scene) => {
     calY,
     calVelY,
     resetVelY,
+
+    // Test
+    isOnTheSphere,
+    dropToCenter,
   };
 };

@@ -14,12 +14,20 @@ import { useCamera } from "@/hooks/useCamera";
 
 export const Scene: React.FC = () => {
   const { scene, renderer, camera, orbit } = useContext(InitContext);
-  const { keyControl, calCoord, calY, drop, onKeyDown, onKeyUp } =
-    useControl(scene);
+  const {
+    keyControl,
+    calCoord,
+    calY,
+    dropToCenter,
+    isOnTheSphere,
+    drop,
+    onKeyDown,
+    onKeyUp,
+  } = useControl(scene);
   const { handleCameraPosition } = useCamera();
   const { meshesRef, createObject, handleObjectLookAt } = useCreate();
   // const obj = Object.values(meshesRef.current)[0];
-  const [myObj, setMyObj] = useState<any>();
+  const [myObj, setMyObj] = useState<THREE.Mesh>();
   // const { createOrbit } = useCamera();
   const canvasRef = useRef<HTMLDivElement>();
 
@@ -73,8 +81,17 @@ export const Scene: React.FC = () => {
         const oV2 = new THREE.Vector2(oP.x, oP.z);
         const direction = oV2.sub(cV2).normalize();
 
-        keyPress(keyControl, position, direction);
-        position.y = drop(position).y;
+        const { x, y, z } = keyPress(keyControl, position, direction);
+        position.x = x;
+        position.y = y;
+        position.z = z;
+        // myObj.rotateZ(-0.0007408324664132101278);
+
+        // position.y = drop(position).y;
+        isOnTheSphere(myObj);
+        position.x = dropToCenter(position).x;
+        position.y = dropToCenter(position).y;
+        position.z = dropToCenter(position).z;
         handleCameraPosition(camera, myObj, orbit);
 
         handleId = requestAnimationFrame(animate);
@@ -120,35 +137,35 @@ export const Scene: React.FC = () => {
   ) => {
     if (e.KeyD) {
       const dirD = direction.rotateAround(new THREE.Vector2(0, 0), Math.PI / 2);
-      let { x, z } = calCoord(position, new THREE.Vector3(dirD.x, 0, dirD.y));
-      position.x = x;
-      position.z = z;
+      let { x, y, z } = calCoord(
+        position,
+        new THREE.Vector3(dirD.x, 0, dirD.y)
+      );
+      return { x, y, z };
     } else if (e.KeyA) {
       const dirA = direction
         .rotateAround(new THREE.Vector2(0, 0), Math.PI / 2)
         .negate();
-      let { x, z } = calCoord(position, new THREE.Vector3(dirA.x, 0, dirA.y));
-      position.x = x;
-      position.z = z;
+      let { x, y, z } = calCoord(
+        position,
+        new THREE.Vector3(dirA.x, 0, dirA.y)
+      );
+      return { x, y, z };
     } else if (e.KeyS) {
       const dirS = direction.negate();
-      let { x, z } = calCoord(position, new THREE.Vector3(dirS.x, 0, dirS.y));
-      position.x = x;
-      position.z = z;
+      let { x, y, z } = calCoord(
+        position,
+        new THREE.Vector3(dirS.x, 0, dirS.y)
+      );
+      return { x, y, z };
     } else if (e.KeyW) {
       const dirW = direction;
-      let { x, z } = calCoord(position, new THREE.Vector3(dirW.x, 0, dirW.y));
-      position.x = x;
-      position.z = z;
-    } else if (e.Space) {
-      // // if (keyControl.Space) {
-      // position.y = calY(position);
-      // if (position.y <= 0) {
-      //   position.y = 0;
-      //   resetVelY();
-      //   keyControl["Space"] = false;
-      // }
-      // // }
+      let { x, y, z } = calCoord(
+        position,
+        new THREE.Vector3(dirW.x, 0, dirW.y)
+      );
+
+      return { x, y, z };
     } else {
       return position;
     }
