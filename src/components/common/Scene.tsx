@@ -15,8 +15,7 @@ import { useCamera } from "@/hooks/useCamera";
 export const Scene: React.FC = () => {
   const { scene, renderer, camera, orbit } = useContext(InitContext);
   const {
-    keyControl,
-    calCoord,
+    move,
     drop,
     onKeyDown,
     onKeyUp,
@@ -81,17 +80,12 @@ export const Scene: React.FC = () => {
         const oV2 = new THREE.Vector2(oP.x, oP.z);
         const direction = oV2.sub(cV2).normalize();
 
-        // const { x, y, z } = keyPress(keyControl, position, direction);
-        const { x, y, z } = calCoord(position, direction);
-        position.x = x;
-        position.y = y;
-        position.z = z;
-
-        const toCenter = dropToCenter(position);
+        const mvCoord = move(position, direction);
+        const toCenter = dropToCenter(mvCoord);
         position.x = toCenter.x;
         position.y = toCenter.y;
         position.z = toCenter.z;
-
+        isOnTheSphere(toCenter);
         handleCameraPosition(camera, myObj, orbit);
 
         handleId = requestAnimationFrame(animate);

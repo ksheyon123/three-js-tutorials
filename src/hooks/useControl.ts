@@ -19,7 +19,7 @@ export const useControl = (scene: THREE.Scene) => {
 
   const velRef = useRef<{ delV: number; g: number }>({
     delV: 0,
-    g: 0,
+    g,
   });
 
   const keyPressRef = useRef<{
@@ -27,13 +27,8 @@ export const useControl = (scene: THREE.Scene) => {
     KeyS: boolean;
     KeyD: boolean;
     KeyW: boolean;
+    Space: boolean;
   }>({
-    KeyA: false,
-    KeyS: false,
-    KeyD: false,
-    KeyW: false,
-  });
-  const [keyControl, setKeyControl] = useState<KeyPress>({
     KeyA: false,
     KeyS: false,
     KeyD: false,
@@ -51,10 +46,6 @@ export const useControl = (scene: THREE.Scene) => {
       ...keyPressRef.current,
       [key]: true,
     };
-    setKeyControl((prev) => ({
-      ...prev,
-      [key]: true,
-    }));
   };
 
   const onKeyUp = (e: KeyboardEvent) => {
@@ -64,68 +55,60 @@ export const useControl = (scene: THREE.Scene) => {
         ...keyPressRef.current,
         [key]: false,
       };
-      setKeyControl((prev) => ({
-        ...prev,
-        [key]: false,
-      }));
     }
   };
 
-  const calCoord = (position: THREE.Vector3, direction: THREE.Vector2) => {
+  const move = (position: THREE.Vector3, direction: THREE.Vector2) => {
     const { x, y, z } = position;
     const { KeyA, KeyD, KeyS, KeyW } = keyPressRef.current;
-    let _direction: THREE.Vector3;
+    let _direction: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
+
+    if (!KeyA && !KeyD && !KeyS && !KeyW) {
+      return position;
+    }
+
     if (KeyA) {
       const dirA = direction
         .rotateAround(new THREE.Vector2(0, 0), Math.PI / 2)
         .negate();
-      _direction = new THREE.Vector3(dirA.x, 0, dirA.y);
-    } else if (KeyD) {
-      const dirD = direction.rotateAround(new THREE.Vector2(0, 0), Math.PI / 2);
-      _direction = new THREE.Vector3(dirD.x, 0, dirD.y);
-    } else if (KeyS) {
-      const dirS = direction.negate();
-      _direction = new THREE.Vector3(dirS.x, 0, dirS.y);
-    } else if (KeyW) {
-      const dirW = direction;
-      _direction = new THREE.Vector3(dirW.x, 0, dirW.y);
-    } else {
-      return { ...position };
+      const newDirection0 = new THREE.Vector3(dirA.x, 0, dirA.y);
+      _direction.add(newDirection0);
     }
+    if (KeyD) {
+      const dirD = direction.rotateAround(new THREE.Vector2(0, 0), Math.PI / 2);
+      const newDirection1 = new THREE.Vector3(dirD.x, 0, dirD.y);
+      _direction.add(newDirection1);
+    }
+    if (KeyS) {
+      const dirS = direction.negate();
+      const newDirection2 = new THREE.Vector3(dirS.x, 0, dirS.y);
+      _direction.add(newDirection2);
+    }
+    if (KeyW) {
+      const dirW = direction;
+      const newDirection3 = new THREE.Vector3(dirW.x, 0, dirW.y);
+      _direction.add(newDirection3);
+    }
+
     const next = new THREE.Vector3(x, y, z).add(
       _direction.multiplyScalar(animationFrame)
     );
 
-    // console.log("next", next);
-    // if (isOnTheSphere(next)) {
-    //   return position;
-    // } else {
     return next;
-    // }
   };
 
   const dropToCenter = (position: THREE.Vector3) => {
+    const { Space } = keyPressRef.current;
     const { x, y, z } = position;
     const { delV } = getVelocity();
-    const newX = position.x + delV * animationFrame;
-    const newY = position.y + delV * animationFrame;
-    const newZ = position.z + delV * animationFrame;
-    const next = new THREE.Vector3(0, 0, 0)
+    const jumpDirection = new THREE.Vector3(0, 0, 0)
       .sub(new THREE.Vector3(x, y, z))
       .normalize()
       .negate();
-    const newVector = new THREE.Vector3(
-      next.x * newX,
-      next.y * newY,
-      next.z * newZ
-    );
+    const d = delV * animationFrame;
+    const nextCoord = position.add(jumpDirection.multiplyScalar(d));
 
-    if (!isOnTheSphere(newVector)) {
-      console.log(newVector.x, newVector.y, newVector.z);
-      return newVector;
-    }
-
-    return position;
+    return nextCoord;
   };
 
   const isOnTheSphere = (nextPosition: THREE.Vector3) => {
@@ -133,12 +116,11 @@ export const useControl = (scene: THREE.Scene) => {
       (el) => el.type !== "GridHelper" && el.type !== "AxesHelper"
     );
     const distance = nextPosition.distanceTo(onlyMesh[1].position);
+
     // console.log("distance", distance);
     if (distance < 10.5) {
       initVelocity();
-      return true;
     }
-    return false;
   };
 
   const drop = (position: THREE.Vector3) => {
@@ -200,10 +182,9 @@ export const useControl = (scene: THREE.Scene) => {
   };
 
   return {
-    keyControl,
     onKeyDown,
     onKeyUp,
-    calCoord,
+    move,
     drop,
 
     // Test
