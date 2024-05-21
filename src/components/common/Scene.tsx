@@ -22,7 +22,6 @@ export const Scene: React.FC = () => {
     onKeyUp,
     //
     dropToCenter,
-    jump,
     isOnTheSphere,
   } = useControl(scene);
   const { handleCameraPosition } = useCamera();
@@ -82,7 +81,8 @@ export const Scene: React.FC = () => {
         const oV2 = new THREE.Vector2(oP.x, oP.z);
         const direction = oV2.sub(cV2).normalize();
 
-        const { x, y, z } = keyPress(keyControl, position, direction);
+        // const { x, y, z } = keyPress(keyControl, position, direction);
+        const { x, y, z } = calCoord(position, direction);
         position.x = x;
         position.y = y;
         position.z = z;
@@ -91,6 +91,7 @@ export const Scene: React.FC = () => {
         position.x = toCenter.x;
         position.y = toCenter.y;
         position.z = toCenter.z;
+
         handleCameraPosition(camera, myObj, orbit);
 
         handleId = requestAnimationFrame(animate);
@@ -101,7 +102,7 @@ export const Scene: React.FC = () => {
       animate();
       return () => cancelAnimationFrame(handleId);
     }
-  }, [isLoaded, keyControl, camera, orbit, myObj]);
+  }, [isLoaded, camera, orbit, myObj]);
 
   useEffect(() => {
     window.addEventListener("keypress", (e: KeyboardEvent) => {
@@ -129,46 +130,46 @@ export const Scene: React.FC = () => {
     };
   }, [meshesRef.current]);
 
-  const keyPress = (
-    e: KeyPress,
-    position: THREE.Vector3,
-    direction: THREE.Vector2
-  ) => {
-    if (e.KeyD) {
-      const dirD = direction.rotateAround(new THREE.Vector2(0, 0), Math.PI / 2);
-      let { x, y, z } = calCoord(
-        position,
-        new THREE.Vector3(dirD.x, 0, dirD.y)
-      );
-      return { x, y, z };
-    } else if (e.KeyA) {
-      const dirA = direction
-        .rotateAround(new THREE.Vector2(0, 0), Math.PI / 2)
-        .negate();
-      let { x, y, z } = calCoord(
-        position,
-        new THREE.Vector3(dirA.x, 0, dirA.y)
-      );
-      return { x, y, z };
-    } else if (e.KeyS) {
-      const dirS = direction.negate();
-      let { x, y, z } = calCoord(
-        position,
-        new THREE.Vector3(dirS.x, 0, dirS.y)
-      );
-      return { x, y, z };
-    } else if (e.KeyW) {
-      const dirW = direction;
-      let { x, y, z } = calCoord(
-        position,
-        new THREE.Vector3(dirW.x, 0, dirW.y)
-      );
+  // const keyPress = (
+  //   e: KeyPress,
+  //   position: THREE.Vector3,
+  //   direction: THREE.Vector2
+  // ) => {
+  //   if (e.KeyD) {
+  //     const dirD = direction.rotateAround(new THREE.Vector2(0, 0), Math.PI / 2);
+  //     let { x, y, z } = calCoord(
+  //       position,
+  //       new THREE.Vector3(dirD.x, 0, dirD.y)
+  //     );
+  //     return { x, y, z };
+  //   } else if (e.KeyA) {
+  //     const dirA = direction
+  //       .rotateAround(new THREE.Vector2(0, 0), Math.PI / 2)
+  //       .negate();
+  //     let { x, y, z } = calCoord(
+  //       position,
+  //       new THREE.Vector3(dirA.x, 0, dirA.y)
+  //     );
+  //     return { x, y, z };
+  //   } else if (e.KeyS) {
+  //     const dirS = direction.negate();
+  //     let { x, y, z } = calCoord(
+  //       position,
+  //       new THREE.Vector3(dirS.x, 0, dirS.y)
+  //     );
+  //     return { x, y, z };
+  //   } else if (e.KeyW) {
+  //     const dirW = direction;
+  //     let { x, y, z } = calCoord(
+  //       position,
+  //       new THREE.Vector3(dirW.x, 0, dirW.y)
+  //     );
 
-      return { x, y, z };
-    } else {
-      return position;
-    }
-  };
+  //     return { x, y, z };
+  //   } else {
+  //     return position;
+  //   }
+  // };
 
   return (
     <div
