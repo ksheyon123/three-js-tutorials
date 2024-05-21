@@ -1,4 +1,5 @@
-import { Key, useRef, useState } from "react";
+import { InitContext } from "@/contexts/initContext";
+import { Key, useContext, useRef, useState } from "react";
 import * as THREE from "three";
 
 type Keys = "KeyW" | "KeyS" | "KeyA" | "KeyD" | "Space";
@@ -8,12 +9,11 @@ export type KeyPress = {
 };
 
 export const useControl = (scene: THREE.Scene) => {
+  const { radius } = useContext(InitContext);
   const velocity_x = 1; // [m/s]
   const velocity_y = 5; // [m/s]
-  const jumpVel = 10;
-  const mvVel = 3;
+  const jumpVel = 10; // [m/s]
   const g = 9.8; // [m/s2]
-  const initialHeight = 0;
 
   const animationFrame = 1 / 60; // [60hz]
 
@@ -118,27 +118,14 @@ export const useControl = (scene: THREE.Scene) => {
     const onlyMesh = scene.children.filter(
       (el) => el.type !== "GridHelper" && el.type !== "AxesHelper"
     );
-    const distance = nextPosition.distanceTo(onlyMesh[1].position);
+    const distance = nextPosition.distanceTo(onlyMesh[0].position);
 
-    if (distance <= 100.5) {
+    if (distance <= radius + 0.5) {
       initVelocity();
       return curPosition;
     } else {
       return nextPosition;
     }
-  };
-
-  const drop = (position: THREE.Vector3) => {
-    const { x, y, z } = position;
-    const { delV } = getVelocity();
-    const newY = position.y + delV * animationFrame;
-    // console.log(y, newY);
-    const next = new THREE.Vector3(x, newY, z);
-    if (collisionChk(position, next)) {
-      // resetVelY();
-      return new THREE.Vector3(x, y, z);
-    }
-    return new THREE.Vector3(x, newY, z);
   };
 
   const getVelocity = () => {
@@ -149,20 +136,8 @@ export const useControl = (scene: THREE.Scene) => {
 
   const initVelocity = () => {
     velRef.current.delV = 0;
-    // velRef.current.g = 0;
   };
 
-  // const resetVelY = () => {
-  //   velRef.current.vx = 0;
-  //   velRef.current.vy = 0;
-  //   velRef.current.vz = 0;
-  //   setKeyControl((prev) => ({
-  //     ...prev,
-  //     Space: false,
-  //   }));
-  // };
-
-  const l = 0.5;
   const collisionChk = (cVec: THREE.Vector3, tVec: THREE.Vector3) => {
     const raycaster = new THREE.Raycaster();
     const direction = new THREE.Vector3().subVectors(tVec, cVec).normalize(); // Direction the ray should go
@@ -175,11 +150,7 @@ export const useControl = (scene: THREE.Scene) => {
 
     // const longest = Math.sqrt(l * l + Math.pow(Math.sqrt(2) * l, 2));
     const intersects = raycaster.intersectObjects(onlyMesh);
-    const distance = intersects[0]?.distance || 0.5;
-    const isCollide = Math.floor(distance * 100) / 100 <= 0.4;
-    if (intersects.length > 0 && isCollide) {
-      // console.log("True");
-      initVelocity();
+    if (intersects.length > 0) {
       return true;
     } else {
       return false;
@@ -190,10 +161,6 @@ export const useControl = (scene: THREE.Scene) => {
     onKeyDown,
     onKeyUp,
     move,
-    drop,
-
-    // Test
-    isOnTheSphere,
     dropToCenter,
   };
 };

@@ -1,13 +1,8 @@
 import WebGL from "three/addons/capabilities/WebGL.js";
 import * as THREE from "three";
-import React, {
-  ReactNode,
-  createContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ReactNode, createContext, useEffect, useState } from "react";
 import { useCamera } from "@/hooks/useCamera";
+import { useCreate } from "@/hooks/useCreate";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 interface IProps {
@@ -19,21 +14,29 @@ const InitContext = createContext<{
   renderer: THREE.WebGLRenderer | null;
   camera: THREE.PerspectiveCamera | null;
   orbit: OrbitControls | null;
+  radius: number;
+  obj: THREE.Mesh | null;
 }>({
   scene: null,
   renderer: null,
   camera: null,
   orbit: null,
+  radius: 0,
+  obj: null,
 });
 
 const InitProvider: React.FC<IProps> = ({ children }) => {
   const { createCamera, handleCameraPosition, createOrbit } = useCamera();
-
-  //   const [isWebGlMounted, setIsWebGlMounted] = useState<boolean>(false);
+  const { createObject } = useCreate();
   const [scene, setScene] = useState<THREE.Scene>();
   const [renderer, setRenderer] = useState<THREE.WebGLRenderer>();
   const [camera, setCamera] = useState<THREE.PerspectiveCamera>();
   const [orbit, setOrbit] = useState<OrbitControls>();
+  const [obj, setObj] = useState<THREE.Mesh>();
+
+  const radius = 10;
+  const squareSize = 1;
+  const height = 1;
 
   /**
    * @param scene THREE.Scene which receives projected object.
@@ -72,6 +75,22 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
 
     handleCameraPosition(camera); // Initial Camera Position
 
+    const world = createObject(
+      { r: radius, w: 20 * radius, h: 20 * radius },
+      { x: 0, y: 0, z: 0 },
+      "sphere"
+    );
+    scene.add(world);
+
+    const obj = createObject(
+      { x: squareSize, y: height, z: squareSize },
+      { x: 0, y: radius + height / 2, z: 0 },
+      "box"
+    );
+
+    setObj(obj);
+    scene.add(obj);
+
     setScene(scene);
     setCamera(camera);
     setRenderer(renderer);
@@ -93,6 +112,8 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
         renderer,
         camera,
         orbit,
+        radius,
+        obj,
       }}
     >
       {!!scene && children}
