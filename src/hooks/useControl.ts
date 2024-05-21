@@ -98,7 +98,6 @@ export const useControl = (scene: THREE.Scene) => {
   };
 
   const dropToCenter = (position: THREE.Vector3) => {
-    const { Space } = keyPressRef.current;
     const { x, y, z } = position;
     const { delV } = getVelocity();
     const jumpDirection = new THREE.Vector3(0, 0, 0)
@@ -106,20 +105,26 @@ export const useControl = (scene: THREE.Scene) => {
       .normalize()
       .negate();
     const d = delV * animationFrame;
-    const nextCoord = position.add(jumpDirection.multiplyScalar(d));
-
-    return nextCoord;
+    const tempP = new THREE.Vector3(x, y, z);
+    const nextCoord = tempP.add(jumpDirection.multiplyScalar(d));
+    return isOnTheSphere(position, nextCoord);
+    // return nextCoord;
   };
 
-  const isOnTheSphere = (nextPosition: THREE.Vector3) => {
+  const isOnTheSphere = (
+    curPosition: THREE.Vector3,
+    nextPosition: THREE.Vector3
+  ) => {
     const onlyMesh = scene.children.filter(
       (el) => el.type !== "GridHelper" && el.type !== "AxesHelper"
     );
     const distance = nextPosition.distanceTo(onlyMesh[1].position);
 
-    // console.log("distance", distance);
-    if (distance < 10.5) {
+    if (distance <= 100.5) {
       initVelocity();
+      return curPosition;
+    } else {
+      return nextPosition;
     }
   };
 
@@ -144,7 +149,7 @@ export const useControl = (scene: THREE.Scene) => {
 
   const initVelocity = () => {
     velRef.current.delV = 0;
-    velRef.current.g = 0;
+    // velRef.current.g = 0;
   };
 
   // const resetVelY = () => {

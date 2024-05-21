@@ -40,7 +40,7 @@ export const Scene: React.FC = () => {
 
       const obj = createObject(
         { x: 1, y: 1, z: 1 },
-        { x: 0, y: 10.5, z: 0 },
+        { x: 0, y: 100.5, z: 0 },
         "box"
       );
 
@@ -59,7 +59,7 @@ export const Scene: React.FC = () => {
       // );
 
       const ground = createObject(
-        { r: 10, w: 200, h: 200 },
+        { r: 100, w: 2000, h: 2000 },
         { x: 0, y: 0, z: 0 },
         "sphere"
       );
@@ -85,7 +85,6 @@ export const Scene: React.FC = () => {
         position.x = toCenter.x;
         position.y = toCenter.y;
         position.z = toCenter.z;
-        isOnTheSphere(toCenter);
         handleCameraPosition(camera, myObj, orbit);
 
         handleId = requestAnimationFrame(animate);
