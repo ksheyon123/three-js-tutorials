@@ -46,7 +46,10 @@ export const useCreate = () => {
         size.y || 1,
         size.z || 1
       );
-      var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      var material = new THREE.MeshBasicMaterial({
+        color: 0x00ff00,
+        wireframe: true,
+      });
       obj = new THREE.Mesh(geometry, material);
       obj.position.set(coord.x || 0, coord.y || 0, coord.z || 0);
     }

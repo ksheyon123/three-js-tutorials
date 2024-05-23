@@ -61,9 +61,12 @@ export const useControl = (scene: THREE.Scene) => {
   const rotate = (vBefore: THREE.Vector3, vAfter: THREE.Vector3) => {
     const vbn = vBefore.normalize();
     const van = vAfter.normalize();
-
-    const degree = Math.acos(vbn.dot(van) / (vbn.length() * van.length()));
-    return degree;
+    const quaternion = new THREE.Quaternion();
+    quaternion.setFromUnitVectors(
+      vbn.multiplyScalar(10),
+      van.multiplyScalar(10)
+    );
+    return quaternion;
   };
 
   const move = (position: THREE.Vector3, direction: THREE.Vector2) => {

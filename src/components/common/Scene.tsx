@@ -53,9 +53,10 @@ export const Scene: React.FC = () => {
           position.x,
           position.y,
           position.z
-        ).sub(new THREE.Vector3(0, 0, 0));
+        ).normalize();
         const distanceCtoO = 10;
 
+        console.log(position.length());
         const mvCoord = move(position, direction);
         const toCenter = dropToCenter(mvCoord);
 
@@ -63,13 +64,13 @@ export const Scene: React.FC = () => {
           toCenter.x,
           toCenter.y,
           toCenter.z
-        ).sub(new THREE.Vector3(0, 0, 0));
+        ).normalize();
 
-        const angle = rotate(vBefore, vAfter);
-
-        obj.rotateZ(-angle);
-        obj.rotateX(-angle);
-        obj.rotateY(-angle);
+        // const prevQuaternion = obj.quaternion;
+        // const quaternion = rotate(vBefore, vAfter);
+        // const resultQuaternion = new THREE.Quaternion();
+        // resultQuaternion.multiplyQuaternions(quaternion, prevQuaternion);
+        // obj.quaternion.copy(resultQuaternion);
 
         position.x = toCenter.x;
         position.y = toCenter.y;
@@ -81,7 +82,7 @@ export const Scene: React.FC = () => {
         //   position.y + distanceCtoO,
         //   position.z + distanceCtoO
         // );
-        camera.lookAt(position.x, position.y, position.z);
+        // camera.lookAt(position.x, position.y, position.z);
         // moveCamera(camera.position, position);
         // zoomInOut(camera);
         handleId = requestAnimationFrame(animate);

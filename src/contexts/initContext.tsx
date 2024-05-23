@@ -69,7 +69,7 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
     // drawGridHelper(scene);
     // drawAxisHelper(scene);
 
-    camera.position.set(0, 0, 20);
+    camera.position.set(0, 10, 20);
     // handleCameraPosition(camera); // Initial Camera Position
 
     const world = createObject(
