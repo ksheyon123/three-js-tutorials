@@ -2,6 +2,9 @@ import { useRef } from "react";
 import * as THREE from "three";
 
 export const useCamera = () => {
+  const yRadianRef = useRef<number>();
+  const xRadianRef = useRef<number>();
+  const zRadianRef = useRef<number>();
   const keyPressRef = useRef<{
     ArrowRight: boolean;
     ArrowLeft: boolean;
@@ -14,7 +17,9 @@ export const useCamera = () => {
     ArrowDown: false,
   });
 
-  const keyDownCamera = (e: KeyboardEvent) => {
+  const zoomRef = useRef<number>();
+
+  const keyDownCameraEvent = (e: KeyboardEvent) => {
     const key = e.code;
     keyPressRef.current = {
       ...keyPressRef.current,
@@ -22,12 +27,16 @@ export const useCamera = () => {
     };
   };
 
-  const keyUpCamera = (e: KeyboardEvent) => {
+  const keyUpCameraEvent = (e: KeyboardEvent) => {
     const key = e.code;
     keyPressRef.current = {
       ...keyPressRef.current,
       [key]: false,
     };
+  };
+
+  const zoomInOutCameraEvent = (e: any) => {
+    zoomRef.current = e.wheelDelta;
   };
 
   const createCamera = () => {
@@ -40,12 +49,28 @@ export const useCamera = () => {
     return camera;
   };
 
-  const moveCamera = (camera: THREE.PerspectiveCamera, objP: THREE.Vector3) => {
+  const moveCamera = (cP: THREE.Vector3, vDirection: THREE.Vector3) => {
     const { ArrowRight, ArrowLeft, ArrowDown, ArrowUp } = keyPressRef.current;
+    const { x, y, z } = vDirection;
     if (ArrowRight) {
-      camera.rotateY(-Math.PI / 60);
     }
   };
 
-  return { createCamera, moveCamera, keyDownCamera, keyUpCamera };
+  const zoomInOut = (camera: THREE.PerspectiveCamera) => {
+    if (zoomRef.current > 0) {
+      camera.zoom = camera.zoom + 1;
+    } else {
+      camera.zoom = camera.zoom - 1;
+    }
+    camera.updateMatrixWorld();
+  };
+
+  return {
+    createCamera,
+    moveCamera,
+    zoomInOut,
+    keyDownCameraEvent,
+    keyUpCameraEvent,
+    zoomInOutCameraEvent,
+  };
 };

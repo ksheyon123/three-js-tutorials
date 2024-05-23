@@ -14,8 +14,15 @@ import { useCamera } from "@/hooks/useCamera";
 
 export const Scene: React.FC = () => {
   const { scene, renderer, camera, obj } = useContext(InitContext);
-  const { move, keyDownObject, keyUpObject, dropToCenter } = useControl(scene);
-  const { moveCamera, keyDownCamera, keyUpCamera } = useCamera();
+  const { move, rotate, keyDownObject, keyUpObject, dropToCenter } =
+    useControl(scene);
+  const {
+    moveCamera,
+    zoomInOut,
+    keyDownCameraEvent,
+    keyUpCameraEvent,
+    zoomInOutCameraEvent,
+  } = useCamera();
   const { meshesRef, createObject, handleObjectLookAt } = useCreate();
   const canvasRef = useRef<HTMLDivElement>();
 
@@ -42,15 +49,41 @@ export const Scene: React.FC = () => {
         const oV2 = new THREE.Vector2(oP.x, oP.z);
         const direction = oV2.sub(cV2).normalize();
 
+        const vBefore = new THREE.Vector3(
+          position.x,
+          position.y,
+          position.z
+        ).sub(new THREE.Vector3(0, 0, 0));
+        const distanceCtoO = 10;
+
         const mvCoord = move(position, direction);
         const toCenter = dropToCenter(mvCoord);
+
+        const vAfter = new THREE.Vector3(
+          toCenter.x,
+          toCenter.y,
+          toCenter.z
+        ).sub(new THREE.Vector3(0, 0, 0));
+
+        const angle = rotate(vBefore, vAfter);
+
+        obj.rotateZ(-angle);
+        obj.rotateX(-angle);
+        obj.rotateY(-angle);
+
         position.x = toCenter.x;
         position.y = toCenter.y;
         position.z = toCenter.z;
-        // handleCameraPosition(camera, obj);
-        camera.position.set(position.x, position.y + 15, position.z + 20);
+
+        // Handle Camera Position
+        // camera.position.set(
+        //   position.x,
+        //   position.y + distanceCtoO,
+        //   position.z + distanceCtoO
+        // );
         camera.lookAt(position.x, position.y, position.z);
-        moveCamera(camera, position);
+        // moveCamera(camera.position, position);
+        // zoomInOut(camera);
         handleId = requestAnimationFrame(animate);
 
         renderer.render(scene, camera);
@@ -62,12 +95,16 @@ export const Scene: React.FC = () => {
 
   useEffect(() => {
     window.addEventListener("keydown", keyDownObject);
-    window.addEventListener("keydown", keyDownCamera);
+    window.addEventListener("keydown", keyDownCameraEvent);
     window.addEventListener("keyup", keyUpObject);
-    window.addEventListener("keyup", keyUpCamera);
+    window.addEventListener("keyup", keyUpCameraEvent);
+    window.addEventListener("wheel", zoomInOutCameraEvent);
     return () => {
       window.removeEventListener("keydown", keyDownObject);
+      window.removeEventListener("keydown", keyDownCameraEvent);
       window.removeEventListener("keyup", keyUpObject);
+      window.removeEventListener("keyup", keyUpCameraEvent);
+      window.removeEventListener("wheel", zoomInOutCameraEvent);
     };
   }, [meshesRef.current]);
 
