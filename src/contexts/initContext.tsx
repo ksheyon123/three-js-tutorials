@@ -13,25 +13,22 @@ const InitContext = createContext<{
   scene: THREE.Scene | null;
   renderer: THREE.WebGLRenderer | null;
   camera: THREE.PerspectiveCamera | null;
-  orbit: OrbitControls | null;
   radius: number;
   obj: THREE.Mesh | null;
 }>({
   scene: null,
   renderer: null,
   camera: null,
-  orbit: null,
   radius: 0,
   obj: null,
 });
 
 const InitProvider: React.FC<IProps> = ({ children }) => {
-  const { createCamera, handleCameraPosition, createOrbit } = useCamera();
+  const { createCamera } = useCamera();
   const { createObject } = useCreate();
   const [scene, setScene] = useState<THREE.Scene>();
   const [renderer, setRenderer] = useState<THREE.WebGLRenderer>();
   const [camera, setCamera] = useState<THREE.PerspectiveCamera>();
-  const [orbit, setOrbit] = useState<OrbitControls>();
   const [obj, setObj] = useState<THREE.Mesh>();
 
   const radius = 10;
@@ -69,11 +66,11 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
     const scene = new THREE.Scene();
     const camera = createCamera();
     const renderer = createRenderer();
-    const orbit = createOrbit(camera, renderer);
     // drawGridHelper(scene);
     // drawAxisHelper(scene);
 
-    handleCameraPosition(camera); // Initial Camera Position
+    camera.position.set(0, 15, 10);
+    // handleCameraPosition(camera); // Initial Camera Position
 
     const world = createObject(
       { r: radius, w: 20 * radius, h: 20 * radius },
@@ -94,7 +91,6 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
     setScene(scene);
     setCamera(camera);
     setRenderer(renderer);
-    setOrbit(orbit);
   };
 
   useEffect(() => {
@@ -111,7 +107,6 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
         scene,
         renderer,
         camera,
-        orbit,
         radius,
         obj,
       }}

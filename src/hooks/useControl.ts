@@ -36,7 +36,7 @@ export const useControl = (scene: THREE.Scene) => {
     Space: false,
   });
 
-  const onKeyDown = (e: KeyboardEvent) => {
+  const keyDownObject = (e: KeyboardEvent) => {
     const key = e.code as Keys;
     if (key === "Space") {
       velRef.current.delV = jumpVel;
@@ -48,7 +48,7 @@ export const useControl = (scene: THREE.Scene) => {
     };
   };
 
-  const onKeyUp = (e: KeyboardEvent) => {
+  const keyUpObject = (e: KeyboardEvent) => {
     const key = e.code as Keys;
     if (key !== "Space") {
       keyPressRef.current = {
@@ -158,8 +158,8 @@ export const useControl = (scene: THREE.Scene) => {
   };
 
   return {
-    onKeyDown,
-    onKeyUp,
+    keyDownObject,
+    keyUpObject,
     move,
     dropToCenter,
   };

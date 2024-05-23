@@ -1,7 +1,35 @@
+import { useRef } from "react";
 import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 export const useCamera = () => {
+  const keyPressRef = useRef<{
+    ArrowRight: boolean;
+    ArrowLeft: boolean;
+    ArrowUp: boolean;
+    ArrowDown: boolean;
+  }>({
+    ArrowRight: false,
+    ArrowLeft: false,
+    ArrowUp: false,
+    ArrowDown: false,
+  });
+
+  const keyDownCamera = (e: KeyboardEvent) => {
+    const key = e.code;
+    keyPressRef.current = {
+      ...keyPressRef.current,
+      [key]: true,
+    };
+  };
+
+  const keyUpCamera = (e: KeyboardEvent) => {
+    const key = e.code;
+    keyPressRef.current = {
+      ...keyPressRef.current,
+      [key]: false,
+    };
+  };
+
   const createCamera = () => {
     var camera = new THREE.PerspectiveCamera(
       75, // 카메라 시야각
@@ -11,26 +39,13 @@ export const useCamera = () => {
     );
     return camera;
   };
-  const handleCameraPosition = (
-    camera: THREE.PerspectiveCamera,
-    obj?: THREE.Mesh,
-    orbit?: OrbitControls
-  ) => {
-    if (obj) {
-      const { x, y, z } = obj.position.clone();
-      orbit.target.set(x, y, z);
-    } else {
-      camera.position.set(0, 15, 10);
+
+  const moveCamera = (camera: THREE.PerspectiveCamera, objP: THREE.Vector3) => {
+    const { ArrowRight, ArrowLeft, ArrowDown, ArrowUp } = keyPressRef.current;
+    if (ArrowRight) {
+      camera.rotateY(-Math.PI / 60);
     }
   };
 
-  const createOrbit = (
-    camera: THREE.PerspectiveCamera,
-    renderer: THREE.WebGLRenderer
-  ) => {
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 0, 0);
-    return controls;
-  };
-  return { createCamera, handleCameraPosition, createOrbit };
+  return { createCamera, moveCamera, keyDownCamera, keyUpCamera };
 };
