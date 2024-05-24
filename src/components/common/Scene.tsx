@@ -54,6 +54,8 @@ export const Scene: React.FC = () => {
         const { x: cX, y: cY, z: cZ } = moveCamera(position, camera.position);
         camera.position.set(cX, cY, cZ);
 
+        // Move function의 direction 성분을 고정 값이 아니라 원의 접선 방향의 단위 벡터로 정의해야함.
+
         const mvCoord = move(position);
         const toCenter = dropToCenter(mvCoord);
 
