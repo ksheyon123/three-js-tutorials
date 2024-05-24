@@ -62,10 +62,7 @@ export const useControl = (scene: THREE.Scene) => {
     const vbn = vBefore.normalize();
     const van = vAfter.normalize();
     const quaternion = new THREE.Quaternion();
-    quaternion.setFromUnitVectors(
-      vbn.multiplyScalar(10),
-      van.multiplyScalar(10)
-    );
+    quaternion.setFromUnitVectors(vbn, van);
     return quaternion;
   };
 

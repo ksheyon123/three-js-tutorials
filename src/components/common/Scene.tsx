@@ -49,28 +49,27 @@ export const Scene: React.FC = () => {
         const oV2 = new THREE.Vector2(oP.x, oP.z);
         const direction = oV2.sub(cV2).normalize();
 
-        const vBefore = new THREE.Vector3(
-          position.x,
-          position.y,
-          position.z
-        ).normalize();
-        const distanceCtoO = 10;
+        const distanceCtoO = 10.5;
 
-        console.log(position.length());
+        const vBefore = position
+          .clone()
+          .normalize()
+          .multiplyScalar(distanceCtoO);
         const mvCoord = move(position, direction);
         const toCenter = dropToCenter(mvCoord);
 
-        const vAfter = new THREE.Vector3(
-          toCenter.x,
-          toCenter.y,
-          toCenter.z
-        ).normalize();
+        const vAfter = toCenter
+          .clone()
+          .normalize()
+          .multiplyScalar(distanceCtoO);
 
-        // const prevQuaternion = obj.quaternion;
-        // const quaternion = rotate(vBefore, vAfter);
-        // const resultQuaternion = new THREE.Quaternion();
-        // resultQuaternion.multiplyQuaternions(quaternion, prevQuaternion);
-        // obj.quaternion.copy(resultQuaternion);
+        // if (Math.floor(position.length() * 100) / 100 === 10.5) {
+        const prevQuaternion = obj.quaternion;
+        const quaternion = rotate(vBefore, vAfter);
+        const resultQuaternion = new THREE.Quaternion();
+        resultQuaternion.multiplyQuaternions(quaternion, prevQuaternion);
+        obj.quaternion.copy(resultQuaternion);
+        // }
 
         position.x = toCenter.x;
         position.y = toCenter.y;
