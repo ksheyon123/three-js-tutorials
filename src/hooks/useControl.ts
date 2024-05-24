@@ -17,6 +17,7 @@ export const useControl = (scene: THREE.Scene) => {
 
   const animationFrame = 1 / 60; // [60hz]
 
+  const directionRef = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 0));
   const velRef = useRef<{ delV: number; g: number }>({
     delV: 0,
     g,
@@ -66,8 +67,7 @@ export const useControl = (scene: THREE.Scene) => {
     return quaternion;
   };
 
-  const move = (position: THREE.Vector3, direction: THREE.Vector2) => {
-    const { x, y, z } = position;
+  const move = (position: THREE.Vector3) => {
     const { KeyA, KeyD, KeyS, KeyW } = keyPressRef.current;
     let _direction: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
 
@@ -76,31 +76,24 @@ export const useControl = (scene: THREE.Scene) => {
     }
 
     if (KeyA) {
-      const dirA = direction
-        .rotateAround(new THREE.Vector2(0, 0), Math.PI / 2)
-        .negate();
-      const newDirection0 = new THREE.Vector3(dirA.x, 0, dirA.y);
+      const newDirection0 = new THREE.Vector3(-1, 0, 0);
       _direction.add(newDirection0);
     }
     if (KeyD) {
-      const dirD = direction.rotateAround(new THREE.Vector2(0, 0), Math.PI / 2);
-      const newDirection1 = new THREE.Vector3(dirD.x, 0, dirD.y);
+      const newDirection1 = new THREE.Vector3(1, 0, 0);
       _direction.add(newDirection1);
     }
     if (KeyS) {
-      const dirS = direction.negate();
-      const newDirection2 = new THREE.Vector3(dirS.x, 0, dirS.y);
+      const newDirection2 = new THREE.Vector3(0, 0, 1);
       _direction.add(newDirection2);
     }
     if (KeyW) {
-      const dirW = direction;
-      const newDirection3 = new THREE.Vector3(dirW.x, 0, dirW.y);
+      const newDirection3 = new THREE.Vector3(0, 0, -1);
       _direction.add(newDirection3);
     }
-
-    const next = new THREE.Vector3(x, y, z).add(
-      _direction.multiplyScalar(animationFrame)
-    );
+    const next = position
+      .clone()
+      .add(_direction.multiplyScalar(animationFrame));
 
     return next;
   };

@@ -3,7 +3,7 @@ import * as THREE from "three";
 
 export const useCamera = () => {
   const thetaRef = useRef<number>(0); // on xz plane
-  const piRef = useRef<number>(0); // about y Axis
+  const piRef = useRef<number>(60); // about y Axis
 
   const keyPressRef = useRef<{
     ArrowRight: boolean;
@@ -91,7 +91,11 @@ export const useCamera = () => {
         z: z + r * direction.z,
       };
     } else {
-      return cP;
+      return {
+        x: x + r * direction.x,
+        y: y + r * direction.y,
+        z: z + r * direction.z,
+      };
     }
   };
 

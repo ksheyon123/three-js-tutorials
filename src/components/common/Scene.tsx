@@ -43,14 +43,16 @@ export const Scene: React.FC = () => {
       let handleId: any;
 
       var animate = () => {
-        const cP = camera.position;
-        const oP = obj.position;
-        const cV2 = new THREE.Vector2(cP.x, cP.z);
-        const oV2 = new THREE.Vector2(oP.x, oP.z);
-        const direction = oV2.sub(cV2).normalize();
+        // const cP = camera.position;
+        // const oP = obj.position;
+        // const cV2 = new THREE.Vector2(cP.x, cP.z);
+        // const oV2 = new THREE.Vector2(oP.x, oP.z);
+        // const direction = oV2.sub(cV2).normalize();
 
-        const mvCoord = move(position, direction);
+        const mvCoord = move(position);
         const toCenter = dropToCenter(mvCoord);
+        const direction = toCenter.clone().sub(position);
+        console.log(direction);
 
         const prevQuaternion = obj.quaternion;
         const quaternion = rotate(position, toCenter);
