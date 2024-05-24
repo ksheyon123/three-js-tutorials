@@ -59,8 +59,8 @@ export const useControl = (scene: THREE.Scene) => {
   };
 
   const rotate = (vBefore: THREE.Vector3, vAfter: THREE.Vector3) => {
-    const vbn = vBefore.normalize();
-    const van = vAfter.normalize();
+    const vbn = vBefore.clone().normalize();
+    const van = vAfter.clone().normalize();
     const quaternion = new THREE.Quaternion();
     quaternion.setFromUnitVectors(vbn, van);
     return quaternion;

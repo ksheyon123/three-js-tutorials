@@ -49,40 +49,24 @@ export const Scene: React.FC = () => {
         const oV2 = new THREE.Vector2(oP.x, oP.z);
         const direction = oV2.sub(cV2).normalize();
 
-        const distanceCtoO = 10.5;
-
-        const vBefore = position
-          .clone()
-          .normalize()
-          .multiplyScalar(distanceCtoO);
         const mvCoord = move(position, direction);
         const toCenter = dropToCenter(mvCoord);
 
-        const vAfter = toCenter
-          .clone()
-          .normalize()
-          .multiplyScalar(distanceCtoO);
-
-        // if (Math.floor(position.length() * 100) / 100 === 10.5) {
         const prevQuaternion = obj.quaternion;
-        const quaternion = rotate(vBefore, vAfter);
+        const quaternion = rotate(position, toCenter);
         const resultQuaternion = new THREE.Quaternion();
         resultQuaternion.multiplyQuaternions(quaternion, prevQuaternion);
         obj.quaternion.copy(resultQuaternion);
-        // }
 
         position.x = toCenter.x;
         position.y = toCenter.y;
         position.z = toCenter.z;
 
         // Handle Camera Position
-        // camera.position.set(
-        //   position.x,
-        //   position.y + distanceCtoO,
-        //   position.z + distanceCtoO
-        // );
-        // camera.lookAt(position.x, position.y, position.z);
-        // moveCamera(camera.position, position);
+        camera.lookAt(position.x, position.y, position.z);
+        const { x: cX, y: cY, z: cZ } = moveCamera(position, camera.position);
+        camera.position.set(cX, cY, cZ);
+
         // zoomInOut(camera);
         handleId = requestAnimationFrame(animate);
 
