@@ -58,14 +58,15 @@ export const Scene: React.FC = () => {
         resultQuaternion.multiplyQuaternions(quaternion, prevQuaternion);
         obj.quaternion.copy(resultQuaternion);
 
-        position.x = toCenter.x;
-        position.y = toCenter.y;
-        position.z = toCenter.z;
-
         // Handle Camera Position
         camera.lookAt(position.x, position.y, position.z);
         const { x: cX, y: cY, z: cZ } = moveCamera(position, camera.position);
         camera.position.set(cX, cY, cZ);
+
+        // Set Position
+        position.x = toCenter.x;
+        position.y = toCenter.y;
+        position.z = toCenter.z;
 
         // zoomInOut(camera);
         handleId = requestAnimationFrame(animate);
