@@ -2,7 +2,7 @@ import { useRef } from "react";
 import * as THREE from "three";
 
 export const useCamera = () => {
-  const thetaRef = useRef<number>(0); // on xz plane
+  const thetaRef = useRef<number>(90); // on xz plane
   const piRef = useRef<number>(60); // about y Axis
 
   const keyPressRef = useRef<{

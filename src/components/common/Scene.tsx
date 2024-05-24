@@ -49,21 +49,19 @@ export const Scene: React.FC = () => {
         // const oV2 = new THREE.Vector2(oP.x, oP.z);
         // const direction = oV2.sub(cV2).normalize();
 
+        // Handle Camera Position
+        camera.lookAt(position.x, position.y, position.z);
+        const { x: cX, y: cY, z: cZ } = moveCamera(position, camera.position);
+        camera.position.set(cX, cY, cZ);
+
         const mvCoord = move(position);
         const toCenter = dropToCenter(mvCoord);
-        const direction = toCenter.clone().sub(position);
-        console.log(direction);
 
         const prevQuaternion = obj.quaternion;
         const quaternion = rotate(position, toCenter);
         const resultQuaternion = new THREE.Quaternion();
         resultQuaternion.multiplyQuaternions(quaternion, prevQuaternion);
         obj.quaternion.copy(resultQuaternion);
-
-        // Handle Camera Position
-        camera.lookAt(position.x, position.y, position.z);
-        const { x: cX, y: cY, z: cZ } = moveCamera(position, camera.position);
-        camera.position.set(cX, cY, cZ);
 
         // Set Position
         position.x = toCenter.x;

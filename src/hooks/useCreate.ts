@@ -41,15 +41,19 @@ export const useCreate = () => {
       obj.position.y = 0;
       obj.position.z = 0;
     } else {
+      const material = [
+        new THREE.MeshBasicMaterial({ color: 0xff0000 }), // +x 면
+        new THREE.MeshBasicMaterial({ color: 0xff0000 }), // -x 면
+        new THREE.MeshBasicMaterial({ color: 0xff0000 }), // +y 면 (파란색으로 다른 면과 차별화)
+        new THREE.MeshBasicMaterial({ color: 0xff0000 }), // -y 면
+        new THREE.MeshBasicMaterial({ color: 0xff0000 }), // +z 면
+        new THREE.MeshBasicMaterial({ color: 0x0000ff }), // -z 면
+      ];
       var geometry = new THREE.BoxGeometry(
         size.x || 1,
         size.y || 1,
         size.z || 1
       );
-      var material = new THREE.MeshBasicMaterial({
-        color: 0x00ff00,
-        wireframe: true,
-      });
       obj = new THREE.Mesh(geometry, material);
       obj.position.set(coord.x || 0, coord.y || 0, coord.z || 0);
     }
