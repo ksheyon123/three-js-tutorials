@@ -68,12 +68,18 @@ export const useControl = (scene: THREE.Scene) => {
   };
 
   const move = (position: THREE.Vector3) => {
+    const { x, y, z } = position;
     const { KeyA, KeyD, KeyS, KeyW } = keyPressRef.current;
+    // 1 이라는 Scalar 값을 분해
     let _direction: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
-
     if (!KeyA && !KeyD && !KeyS && !KeyW) {
       return position;
     }
+
+    const theta = Math.asin(y / 10.5);
+    const phi = Math.atan2(z, x);
+
+    console.log(theta, phi);
 
     if (KeyA) {
       const newDirection0 = new THREE.Vector3(-1, 0, 0);
@@ -91,6 +97,7 @@ export const useControl = (scene: THREE.Scene) => {
       const newDirection3 = new THREE.Vector3(0, 0, -1);
       _direction.add(newDirection3);
     }
+
     const next = position
       .clone()
       .add(_direction.multiplyScalar(animationFrame));

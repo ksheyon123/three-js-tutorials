@@ -55,20 +55,19 @@ export const Scene: React.FC = () => {
         camera.position.set(cX, cY, cZ);
 
         // Move function의 direction 성분을 고정 값이 아니라 원의 접선 방향의 단위 벡터로 정의해야함.
-
-        const mvCoord = move(position);
-        const toCenter = dropToCenter(mvCoord);
+        const toCenter = dropToCenter(position);
+        const mvCoord = move(toCenter);
 
         const prevQuaternion = obj.quaternion;
-        const quaternion = rotate(position, toCenter);
+        const quaternion = rotate(position, mvCoord);
         const resultQuaternion = new THREE.Quaternion();
         resultQuaternion.multiplyQuaternions(quaternion, prevQuaternion);
         obj.quaternion.copy(resultQuaternion);
 
         // Set Position
-        position.x = toCenter.x;
-        position.y = toCenter.y;
-        position.z = toCenter.z;
+        position.x = mvCoord.x;
+        position.y = mvCoord.y;
+        position.z = mvCoord.z;
 
         // zoomInOut(camera);
         handleId = requestAnimationFrame(animate);

@@ -54,6 +54,15 @@ export const useCamera = () => {
     const { ArrowRight, ArrowLeft, ArrowDown, ArrowUp } = keyPressRef.current;
     const { x, y, z } = oP;
 
+    if (ArrowRight) {
+      thetaRef.current = thetaRef.current - 1;
+    } else if (ArrowLeft) {
+      thetaRef.current = thetaRef.current + 1;
+    } else if (ArrowUp) {
+      piRef.current = piRef.current + 1;
+    } else if (ArrowDown) {
+      piRef.current = piRef.current - 1;
+    }
     const theta = THREE.MathUtils.degToRad(thetaRef.current);
     const phi = THREE.MathUtils.degToRad(piRef.current);
     const direction = new THREE.Vector3(
@@ -61,42 +70,11 @@ export const useCamera = () => {
       Math.sin(phi), // Y 방향
       Math.cos(phi) * Math.sin(theta) // Z 방향
     );
-    if (ArrowRight) {
-      thetaRef.current = thetaRef.current - 1;
-      return {
-        x: x + r * direction.x,
-        y: y + r * direction.y,
-        z: z + r * direction.z,
-      };
-    } else if (ArrowLeft) {
-      thetaRef.current = thetaRef.current + 1;
-
-      return {
-        x: x + r * direction.x,
-        y: y + r * direction.y,
-        z: z + r * direction.z,
-      };
-    } else if (ArrowUp) {
-      piRef.current = piRef.current + 1;
-      return {
-        x: x + r * direction.x,
-        y: y + r * direction.y,
-        z: z + r * direction.z,
-      };
-    } else if (ArrowDown) {
-      piRef.current = piRef.current - 1;
-      return {
-        x: x + r * direction.x,
-        y: y + r * direction.y,
-        z: z + r * direction.z,
-      };
-    } else {
-      return {
-        x: x + r * direction.x,
-        y: y + r * direction.y,
-        z: z + r * direction.z,
-      };
-    }
+    return {
+      x: x + r * direction.x,
+      y: y + r * direction.y,
+      z: z + r * direction.z,
+    };
   };
 
   const zoomInOut = (camera: THREE.PerspectiveCamera) => {
