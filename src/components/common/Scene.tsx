@@ -23,7 +23,7 @@ export const Scene: React.FC = () => {
     keyUpCameraEvent,
     zoomInOutCameraEvent,
   } = useCamera();
-  const { meshesRef, createObject, handleObjectLookAt } = useCreate();
+  const { meshesRef, createObject } = useCreate();
   const canvasRef = useRef<HTMLDivElement>();
 
   const [isLoaded, setIsLoaded] = useState<boolean>(false);

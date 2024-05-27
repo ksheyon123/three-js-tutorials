@@ -3,7 +3,6 @@ import * as THREE from "three";
 import React, { ReactNode, createContext, useEffect, useState } from "react";
 import { useCamera } from "@/hooks/useCamera";
 import { useCreate } from "@/hooks/useCreate";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 interface IProps {
   children: ReactNode;
@@ -25,7 +24,7 @@ const InitContext = createContext<{
 
 const InitProvider: React.FC<IProps> = ({ children }) => {
   const { createCamera } = useCamera();
-  const { createObject } = useCreate();
+  const { createObject, createSphere } = useCreate();
   const [scene, setScene] = useState<THREE.Scene>();
   const [renderer, setRenderer] = useState<THREE.WebGLRenderer>();
   const [camera, setCamera] = useState<THREE.PerspectiveCamera>();
@@ -72,11 +71,7 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
     camera.position.set(0, 10, 20);
     // handleCameraPosition(camera); // Initial Camera Position
 
-    const world = createObject(
-      { r: radius, w: 20 * radius, h: 20 * radius },
-      { x: 0, y: 0, z: 0 },
-      "sphere"
-    );
+    const world = createSphere({ r: radius, w: 20 * radius, h: 20 * radius });
     scene.add(world);
 
     const obj = createObject(
