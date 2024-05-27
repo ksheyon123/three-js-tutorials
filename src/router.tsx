@@ -4,7 +4,7 @@ import Sphere from "@/pages/Sphere";
 import { Error } from "@/pages/Error";
 import Plane from "./pages/Plane";
 import App from "./pages/App";
-import ThreeJsLayout from "./components/common/ThreeJsLayout";
+import ThreeJsLayout from "./components/Three/Layout/Layout";
 
 const router = createBrowserRouter(
   [
