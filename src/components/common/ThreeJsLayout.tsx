@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 
-const App: React.FC = () => {
+const ThreeJsLayout: React.FC = () => {
   return (
     <div>
       <Outlet />
@@ -9,4 +9,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default ThreeJsLayout;

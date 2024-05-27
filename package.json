@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "webpack": "webpack --config config/webpack.config.js",
-    "start": "webpack-dev-server --config config/webpack.config.js",
+    "start": "webpack-dev-server --config config/webpack.config.dev.js",
     "build": "webpack --config config/webpack.config.js"
   },
   "repository": {

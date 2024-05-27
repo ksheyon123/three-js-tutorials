@@ -2,7 +2,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 
 module.exports = {
-  mode: process.env.NODE_ENV === "development" ? "development" : "production",
+  mode: "development",
+  devtool: "inline-source-map",
   devServer: {
     port: 3000,
     hot: true,
@@ -11,6 +12,7 @@ module.exports = {
   entry: "./src/index.tsx",
   output: {
     filename: "main.js",
+    publicPath: "/",
     path: path.join(__dirname, "..", "dist"),
   },
   resolve: {
