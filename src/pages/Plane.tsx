@@ -5,15 +5,17 @@ import { useCreate } from "@/hooks/useCreate";
 import React, { RefObject, useContext, useEffect, useRef } from "react";
 
 const Plane: React.FC = () => {
-  const { scene } = useContext(InitContext);
+  const { scene, renderer } = useContext(InitContext);
   const canvasRef = useRef<HTMLDivElement>();
   const {} = useCamera();
   const {} = useControl(scene);
-  const { createObject } = useCreate();
+  const { createObject, createPlane } = useCreate();
 
   useEffect(() => {
-    // create Plane
-  }, []);
+    if (renderer) {
+      canvasRef.current && canvasRef.current.appendChild(renderer.domElement);
+    }
+  }, [renderer]);
 
   return (
     <div>

@@ -12,27 +12,17 @@ const InitContext = createContext<{
   scene: THREE.Scene | null;
   renderer: THREE.WebGLRenderer | null;
   camera: THREE.PerspectiveCamera | null;
-  radius: number;
-  obj: THREE.Mesh | null;
 }>({
   scene: null,
   renderer: null,
   camera: null,
-  radius: 0,
-  obj: null,
 });
 
 const InitProvider: React.FC<IProps> = ({ children }) => {
   const { createCamera } = useCamera();
-  const { createObject, createSphere } = useCreate();
   const [scene, setScene] = useState<THREE.Scene>();
   const [renderer, setRenderer] = useState<THREE.WebGLRenderer>();
   const [camera, setCamera] = useState<THREE.PerspectiveCamera>();
-  const [obj, setObj] = useState<THREE.Mesh>();
-
-  const radius = 10;
-  const squareSize = 1;
-  const height = 1;
 
   /**
    * @param scene THREE.Scene which receives projected object.
@@ -68,21 +58,6 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
     // drawGridHelper(scene);
     // drawAxisHelper(scene);
 
-    camera.position.set(0, 10, 20);
-    // handleCameraPosition(camera); // Initial Camera Position
-
-    const world = createSphere({ r: radius, w: 20 * radius, h: 20 * radius });
-    scene.add(world);
-
-    const obj = createObject(
-      { x: squareSize, y: height, z: squareSize },
-      { x: 0, y: radius + height / 2, z: 0 },
-      "box"
-    );
-
-    setObj(obj);
-    scene.add(obj);
-
     setScene(scene);
     setCamera(camera);
     setRenderer(renderer);
@@ -102,8 +77,6 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
         scene,
         renderer,
         camera,
-        radius,
-        obj,
       }}
     >
       {!!scene && children}

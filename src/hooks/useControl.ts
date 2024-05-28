@@ -9,7 +9,7 @@ export type KeyPress = {
 };
 
 export const useControl = (scene: THREE.Scene) => {
-  const { radius } = useContext(InitContext);
+  const radius = 10;
   const velocity_x = 1; // [m/s]
   const velocity_y = 5; // [m/s]
   const jumpVel = 10; // [m/s]

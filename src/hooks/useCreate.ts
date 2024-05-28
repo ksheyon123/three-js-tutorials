@@ -22,7 +22,7 @@ type Coord = {
 export const useCreate = () => {
   const meshesRef = useRef<{ [key: string]: THREE.Mesh }>({});
 
-  const createPlane = (size: any) => {
+  const createPlane = (size?: any) => {
     const planeGeo = new THREE.PlaneGeometry(size.x || 30, size.y || 30);
     const planeMat = new THREE.MeshPhongMaterial({
       color: 0x25004d,
@@ -46,7 +46,7 @@ export const useCreate = () => {
     return sphere;
   };
 
-  const createObject = (size: Size, coord: Coord, type = "box") => {
+  const createObject = (size?: Size, coord?: Coord, type = "box") => {
     const material = [
       new THREE.MeshBasicMaterial({ color: 0xff0000 }), // +x 면
       new THREE.MeshBasicMaterial({ color: 0xff0000 }), // -x 면

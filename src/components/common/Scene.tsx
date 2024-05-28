@@ -13,7 +13,7 @@ import { InitContext } from "@/contexts/initContext";
 import { useCamera } from "@/hooks/useCamera";
 
 export const Scene: React.FC = () => {
-  const { scene, renderer, camera, obj } = useContext(InitContext);
+  const { scene, renderer, camera } = useContext(InitContext);
   const { move, rotate, keyDownObject, keyUpObject, dropToCenter } =
     useControl(scene);
   const {
@@ -27,12 +27,16 @@ export const Scene: React.FC = () => {
   const canvasRef = useRef<HTMLDivElement>();
 
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [obj, setObj] = useState<any>();
 
   useEffect(() => {
     if (scene && renderer && camera) {
       // document.body.appendChild( renderer.domElement );
       // use ref as a mount point of the Three.js scene instead of the document.body
       canvasRef.current && canvasRef.current.appendChild(renderer.domElement);
+      const obj = createObject();
+      setObj(obj);
+      scene.add(obj);
       setIsLoaded(true);
     }
   }, [scene, camera, renderer]);

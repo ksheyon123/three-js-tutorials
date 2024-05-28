@@ -16,12 +16,12 @@ const GlobalStyling = createGlobalStyle`
 `;
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  // <React.StrictMode>
-  <InitProvider>
-    <ThemeProvider theme={{}}>
-      <GlobalStyling />
-      <RouterProvider router={router} />
-    </ThemeProvider>
-  </InitProvider>
-  // </React.StrictMode>
+  <React.StrictMode>
+    <InitProvider>
+      <ThemeProvider theme={{}}>
+        <GlobalStyling />
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </InitProvider>
+  </React.StrictMode>
 );
