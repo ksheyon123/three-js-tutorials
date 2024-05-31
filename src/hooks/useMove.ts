@@ -34,6 +34,8 @@ export const useMove = () => {
 
   const keyDownEventHandler = (e: KeyboardEvent) => {
     const code = e.code;
+    console.log("KEYDOWN", code);
+
     keyStateRef.current = {
       ...keyStateRef.current,
       [code]: true,
@@ -44,18 +46,19 @@ export const useMove = () => {
       objectStateRef.current.isJump = true;
     }
     if (code === "ShiftLeft") {
-      objectStateRef.current.isAcc = true;
+      objectStateRef.current.isAcc = !objectStateRef.current.isAcc;
     }
   };
   const keyUpEventHandler = (e: KeyboardEvent) => {
     const code = e.code;
+    console.log("KEYUP", code);
     keyStateRef.current = {
       ...keyStateRef.current,
       [code]: false,
     };
 
-    if (code === "ShiftLeft") {
-      objectStateRef.current.isAcc = false;
+    if (code === "KeyZ") {
+      // objectStateRef.current.isAcc = false;
     }
   };
 
@@ -117,8 +120,8 @@ export const useMove = () => {
   const accelerate = () => {
     if (objectStateRef.current.isAcc) {
       const curVel = objectStateRef.current.vel;
-      if (curVel !== vel * 2) {
-        objectStateRef.current.vel += 0.02;
+      if (curVel <= vel * 10) {
+        objectStateRef.current.vel += 0.05;
       }
     }
   };
@@ -126,8 +129,8 @@ export const useMove = () => {
   const decelerate = () => {
     if (!objectStateRef.current.isAcc) {
       const curVel = objectStateRef.current.vel;
-      if (curVel !== vel) {
-        objectStateRef.current.vel -= 0.02;
+      if (curVel >= vel) {
+        objectStateRef.current.vel -= 0.05;
       }
     }
   };
