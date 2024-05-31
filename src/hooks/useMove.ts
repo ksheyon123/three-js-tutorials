@@ -77,7 +77,26 @@ export const useMove = () => {
     direction: THREE.Vector3
   ) => {};
 
-  const lookAt = () => {};
+  const move = (forward: THREE.Vector3, curPosition: THREE.Vector3) => {
+    const copyOfForward = forward.clone();
+    const copyOfCurPosition = curPosition.clone();
+    const weightedForward = copyOfForward.multiplyScalar(
+      objectStateRef.current.vel * hz
+    );
+    const newPosition = copyOfCurPosition.add(weightedForward);
+    return newPosition;
+  };
+
+  // Forward === direction
+  const lookAt = (forward: THREE.Vector3, quaternion: THREE.Quaternion) => {
+    // Apply the object's quaternion to the forward vector
+    const direction = forward.clone().applyQuaternion(quaternion);
+
+    // Normalize the direction vector (optional, depends on your use case)
+    const newForward = direction.normalize();
+    console.log(newForward.angleTo(forward));
+    return newForward.angleTo(forward);
+  };
 
   const gravity = (curPosition: THREE.Vector3) => {
     if (objectStateRef.current.isJump) {
@@ -93,7 +112,27 @@ export const useMove = () => {
     }
   };
 
-  const onTheGround = () => {};
+  const decelerate = () => {
+    const curVel = objectStateRef.current.vel;
+    if (curVel !== vel) {
+      objectStateRef.current.vel -= 0.02;
+    }
+  };
 
-  return {};
+  const onTheGround = (obj: THREE.Mesh, target: THREE.Mesh) => {
+    const copiedObj = obj.clone();
+    const copiedTarget = target.clone();
+    const objPosition = copiedObj.position;
+    const targetPosition = copiedTarget.position;
+    const area = new THREE.Sphere();
+    return new THREE.Vector3(0, 0, 0);
+  };
+
+  return {
+    keyDownEventHandler,
+    keyUpEventHandler,
+    getQuaternion,
+    move,
+    lookAt,
+  };
 };

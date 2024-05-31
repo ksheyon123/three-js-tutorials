@@ -7,23 +7,11 @@ type Sphere = {
   h: number;
 };
 
-type Size = {
-  x: number;
-  y: number;
-  z: number;
-};
-
-type Coord = {
-  x: number;
-  y: number;
-  z: number;
-};
-
 export const useCreate = () => {
   const meshesRef = useRef<{ [key: string]: THREE.Mesh }>({});
 
-  const createPlane = (size?: any) => {
-    const planeGeo = new THREE.PlaneGeometry(size.x || 30, size.y || 30);
+  const createPlane = () => {
+    const planeGeo = new THREE.PlaneGeometry(30, 30);
     const planeMat = new THREE.MeshPhongMaterial({
       color: 0x25004d,
       side: THREE.DoubleSide,
@@ -46,7 +34,7 @@ export const useCreate = () => {
     return sphere;
   };
 
-  const createObject = (size?: Size, coord?: Coord, type = "box") => {
+  const createObject = () => {
     const material = [
       new THREE.MeshBasicMaterial({ color: 0xff0000 }), // +x 면
       new THREE.MeshBasicMaterial({ color: 0xff0000 }), // -x 면
@@ -55,9 +43,9 @@ export const useCreate = () => {
       new THREE.MeshBasicMaterial({ color: 0xff0000 }), // +z 면
       new THREE.MeshBasicMaterial({ color: 0x0000ff }), // -z 면
     ];
-    var geometry = new THREE.BoxGeometry(size.x || 1, size.y || 1, size.z || 1);
+    var geometry = new THREE.BoxGeometry(1, 1, 1);
     const obj = new THREE.Mesh(geometry, material);
-    obj.position.set(coord.x || 0, coord.y || 0, coord.z || 0);
+    obj.position.set(0, 0, 0);
 
     meshesRef.current = {
       ...meshesRef.current,

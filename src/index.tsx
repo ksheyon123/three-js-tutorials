@@ -7,10 +7,11 @@ import { InitProvider } from "./contexts/initContext";
 
 const GlobalStyling = createGlobalStyle`
   * {
-    box-sizing  : content-box;
+    box-sizing  : border-box;
   }
   body {
     margin : 0px;
+    padding : 0px;
     background-color : #FFF
   }
 `;

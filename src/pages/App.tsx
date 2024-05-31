@@ -6,7 +6,7 @@ import { Layout } from "@/components/common/Layout/Layout";
 const App: React.FC = () => {
   return (
     <Layout>
-      <Header />
+      {/* <Header /> */}
       <Outlet />
     </Layout>
   );

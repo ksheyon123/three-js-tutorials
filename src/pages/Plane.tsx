@@ -11,9 +11,9 @@ import React, {
 } from "react";
 
 const Plane: React.FC = () => {
-  const { scene, renderer } = useContext(InitContext);
+  const { scene, renderer, camera } = useContext(InitContext);
   const canvasRef = useRef<HTMLDivElement>();
-  const {} = useCamera();
+  const { handleMouseDownEvent, handleMouseUpEvent } = useCamera();
   const {} = useControl(scene);
   const { createObject, createPlane } = useCreate();
 
@@ -26,6 +26,23 @@ const Plane: React.FC = () => {
     }
   }, [renderer]);
 
+  // const resizeCanvasToDisplaySize = () => {
+  //   const canvas = renderer.domElement;
+  //   // look up the size the canvas is being displayed
+  //   const width = canvas.clientWidth;
+  //   const height = canvas.clientHeight;
+
+  //   // adjust displayBuffer size to match
+  //   if (canvas.width !== width || canvas.height !== height) {
+  //     // you must pass false here or three.js sadly fights the browser
+  //     renderer.setSize(width, height, false);
+  //     camera.aspect = width / height;
+  //     camera.updateProjectionMatrix();
+
+  //     // update any render target sizes here
+  //   }
+  // };
+
   useEffect(() => {
     let animationHandleId: any;
     if (isRender) {
@@ -35,17 +52,30 @@ const Plane: React.FC = () => {
       scene.add(obj);
       scene.add(plane);
       const animate = () => {
+        // resizeCanvasToDisplaySize();
+        // Write code from here...
+
+        renderer.render(scene, camera);
         animationHandleId = requestAnimationFrame(animate);
       };
+      animate();
       return () => cancelAnimationFrame(animationHandleId);
     }
-  }, [isRender]);
+  }, [isRender, scene, camera]);
 
-  return (
-    <div>
-      <div ref={canvasRef as RefObject<HTMLDivElement>} />
-    </div>
-  );
+  useEffect(() => {
+    const ref = canvasRef.current;
+    if (ref) {
+      ref.addEventListener("mousedown", handleMouseDownEvent);
+      ref.addEventListener("mouseup", handleMouseUpEvent);
+      return () => {
+        ref.removeEventListener("mousedown", handleMouseDownEvent);
+        ref.removeEventListener("mouseup", handleMouseUpEvent);
+      };
+    }
+  }, [canvasRef]);
+
+  return <div ref={canvasRef as RefObject<HTMLDivElement>} />;
 };
 
 export default Plane;

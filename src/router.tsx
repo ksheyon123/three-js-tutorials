@@ -4,7 +4,7 @@ import Sphere from "@/pages/Sphere";
 import { Error } from "@/pages/Error";
 import Plane from "./pages/Plane";
 import App from "./pages/App";
-import ThreeJsLayout from "./components/Three/Layout/Layout";
+import ThreeLayout from "./components/Three/ThreeLayout/ThreeLayout";
 
 const router = createBrowserRouter(
   [
@@ -14,8 +14,8 @@ const router = createBrowserRouter(
       errorElement: <Error />,
       children: [
         {
-          path: "map/",
-          element: <ThreeJsLayout />,
+          path: "map",
+          element: <ThreeLayout />,
           children: [
             {
               path: "sphere",

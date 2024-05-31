@@ -2,7 +2,6 @@ import WebGL from "three/addons/capabilities/WebGL.js";
 import * as THREE from "three";
 import React, { ReactNode, createContext, useEffect, useState } from "react";
 import { useCamera } from "@/hooks/useCamera";
-import { useCreate } from "@/hooks/useCreate";
 
 interface IProps {
   children: ReactNode;
@@ -52,6 +51,7 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
   };
 
   const init = () => {
+    console.log("INITIALIZED");
     const scene = new THREE.Scene();
     const camera = createCamera();
     const renderer = createRenderer();

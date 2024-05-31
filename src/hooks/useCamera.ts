@@ -5,6 +5,8 @@ export const useCamera = () => {
   const thetaRef = useRef<number>(90); // on xz plane
   const piRef = useRef<number>(60); // about y Axis
 
+  const mouseActiveRef = useRef<boolean>();
+
   const keyPressRef = useRef<{
     ArrowRight: boolean;
     ArrowLeft: boolean;
@@ -86,6 +88,15 @@ export const useCamera = () => {
     camera.updateMatrixWorld();
   };
 
+  const handleMouseDownEvent = (e: MouseEvent) => {
+    console.log("IS MOUSE DOWN");
+    mouseActiveRef.current = true;
+  };
+  const handleMouseUpEvent = (e: MouseEvent) => {
+    console.log("IS MOUSE UP");
+    mouseActiveRef.current = false;
+  };
+
   return {
     createCamera,
     moveCamera,
@@ -93,5 +104,7 @@ export const useCamera = () => {
     keyDownCameraEvent,
     keyUpCameraEvent,
     zoomInOutCameraEvent,
+    handleMouseDownEvent,
+    handleMouseUpEvent,
   };
 };
