@@ -3,6 +3,7 @@ import { useCamera } from "@/hooks/useCamera";
 import { useControl } from "@/hooks/useControl";
 import { useCreate } from "@/hooks/useCreate";
 import { useMove } from "@/hooks/useMove";
+import { useRaycaster } from "@/hooks/useRaycaster";
 import React, {
   RefObject,
   useContext,
@@ -25,6 +26,7 @@ const Plane: React.FC = () => {
   } = useCamera();
   const { move, lookAt, keyUpEventHandler, keyDownEventHandler } = useMove();
   const { createObject, createPlane } = useCreate();
+  const { handleClick } = useRaycaster(scene, camera);
 
   const [isRender, setIsRender] = useState<boolean>(false);
 
@@ -73,8 +75,8 @@ const Plane: React.FC = () => {
 
         const d = lookAtDirection(camera);
         d.y = 0;
-        const { x: newX, y: newY, z: newZ } = move(d, position);
-        obj.position.set(newX, newY, newZ);
+        // const { x: newX, y: newY, z: newZ } = move(d, position);
+        // obj.position.set(newX, newY, newZ);
         const p = lookAt(d, obj.position);
         obj.lookAt(p);
         camera.lookAt(position.x, position.y, position.z);
@@ -112,12 +114,14 @@ const Plane: React.FC = () => {
       };
 
       ref.addEventListener("mousedown", handleMouseDownEvent);
+      ref.addEventListener("click", handleClick);
       ref.addEventListener("mouseup", handleMouseUpEvent);
       ref.addEventListener("mousemove", handleMouseMoveEvent);
       ref.addEventListener("mouseout", handleMouseUpEvent);
       ref.addEventListener("wheel", handleMouseWheelEvent);
       return () => {
         ref.removeEventListener("mousedown", handleMouseDownEvent);
+        ref.removeEventListener("click", handleClick);
         ref.removeEventListener("mouseup", handleMouseUpEvent);
         ref.removeEventListener("mousemove", handleMouseMoveEvent);
         ref.removeEventListener("mouseout", handleMouseUpEvent);
