@@ -43,18 +43,19 @@ export const useMove = () => {
       objectStateRef.current.g = g;
       objectStateRef.current.isJump = true;
     }
-    if (code === "Shift") {
+    if (code === "ShiftLeft") {
       objectStateRef.current.isAcc = true;
     }
   };
   const keyUpEventHandler = (e: KeyboardEvent) => {
     const code = e.code;
+    console.log(code);
     keyStateRef.current = {
       ...keyStateRef.current,
       [code]: false,
     };
 
-    if (code === "Shift") {
+    if (code === "ShiftLeft") {
       objectStateRef.current.isAcc = false;
     }
   };
@@ -78,8 +79,11 @@ export const useMove = () => {
   ) => {};
 
   const move = (forward: THREE.Vector3, curPosition: THREE.Vector3) => {
+    accelerate();
+    decelerate();
     const copyOfForward = forward.clone();
     const copyOfCurPosition = curPosition.clone();
+    console.log(objectStateRef.current.vel);
     const weightedForward = copyOfForward.multiplyScalar(
       objectStateRef.current.vel * hz
     );
@@ -87,15 +91,22 @@ export const useMove = () => {
     return newPosition;
   };
 
-  // Forward === direction
-  const lookAt = (forward: THREE.Vector3, quaternion: THREE.Quaternion) => {
-    // Apply the object's quaternion to the forward vector
-    const direction = forward.clone().applyQuaternion(quaternion);
+  // // Forward === direction
+  // const lookAt = (forward: THREE.Vector3, quaternion: THREE.Quaternion) => {
+  //   // Apply the object's quaternion to the forward vector
+  //   const direction = forward.clone().applyQuaternion(quaternion);
 
-    // Normalize the direction vector (optional, depends on your use case)
-    const newForward = direction.normalize();
-    console.log(newForward.angleTo(forward));
-    return newForward.angleTo(forward);
+  //   // Normalize the direction vector (optional, depends on your use case)
+  //   const newForward = direction.normalize();
+  //   // console.log(newForward.angleTo(forward));
+  //   // return newForward.angleTo(forward);
+  //   return newForward;
+  // };
+
+  const lookAt = (forward: THREE.Vector3, position: THREE.Vector3) => {
+    // Calculate a point in the desired direction from the cube's current position
+    const targetPosition = new THREE.Vector3().addVectors(position, forward);
+    return targetPosition;
   };
 
   const gravity = (curPosition: THREE.Vector3) => {
@@ -106,16 +117,22 @@ export const useMove = () => {
   };
 
   const accelerate = () => {
-    const curVel = objectStateRef.current.vel;
-    if (curVel !== vel * 2) {
-      objectStateRef.current.vel += 0.02;
+    if (objectStateRef.current.isAcc) {
+      const curVel = objectStateRef.current.vel;
+      if (curVel !== vel * 2) {
+        console.log("ACC");
+        objectStateRef.current.vel += 0.02;
+      }
     }
   };
 
   const decelerate = () => {
-    const curVel = objectStateRef.current.vel;
-    if (curVel !== vel) {
-      objectStateRef.current.vel -= 0.02;
+    if (!objectStateRef.current.isAcc) {
+      const curVel = objectStateRef.current.vel;
+      if (curVel !== vel) {
+        console.log("DE");
+        objectStateRef.current.vel -= 0.02;
+      }
     }
   };
 

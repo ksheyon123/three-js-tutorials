@@ -2,6 +2,7 @@ import { InitContext } from "@/contexts/initContext";
 import { useCamera } from "@/hooks/useCamera";
 import { useControl } from "@/hooks/useControl";
 import { useCreate } from "@/hooks/useCreate";
+import { useMove } from "@/hooks/useMove";
 import React, {
   RefObject,
   useContext,
@@ -16,11 +17,12 @@ const Plane: React.FC = () => {
   const {
     moveCamera,
     zoomCamera,
+    lookAtDirection,
     handleMouseDownEvent,
     handleMouseUpEvent,
     handleMouseMoveEvent,
   } = useCamera();
-  const {} = useControl(scene);
+  const { move, lookAt, keyUpEventHandler, keyDownEventHandler } = useMove();
   const { createObject, createPlane } = useCreate();
 
   const [isRender, setIsRender] = useState<boolean>(false);
@@ -68,6 +70,13 @@ const Plane: React.FC = () => {
         const { x: cX, y: cY, z: cZ } = moveCamera(position);
         camera.position.set(cX, cY, cZ);
 
+        const d = lookAtDirection(camera);
+        d.y = 0;
+        const { x: newX, y: newY, z: newZ } = move(d, position);
+        obj.position.set(newX, newY, newZ);
+        const p = lookAt(d, obj.position);
+        obj.lookAt(p);
+
         animationHandleId = requestAnimationFrame(animate);
         renderer.render(scene, camera);
       };
@@ -76,14 +85,21 @@ const Plane: React.FC = () => {
     }
   }, [isRender, scene, camera]);
 
+  // For Object
+  useEffect(() => {
+    window.addEventListener("keydown", keyDownEventHandler);
+    window.addEventListener("keydown", keyUpEventHandler);
+    return () => {
+      window.removeEventListener("keyup", keyDownEventHandler);
+      window.removeEventListener("keyup", keyUpEventHandler);
+    };
+  }, []);
+
+  // For Camera
   useEffect(() => {
     const ref = canvasRef.current;
     if (ref) {
-      ref.addEventListener("mousedown", handleMouseDownEvent);
-      ref.addEventListener("mouseup", handleMouseUpEvent);
-      ref.addEventListener("mousemove", handleMouseMoveEvent);
-      ref.addEventListener("mouseout", handleMouseUpEvent);
-      ref.addEventListener("wheel", (e) => {
+      const handleMouseWheelEvent = (e: WheelEvent) => {
         if (e.deltaY > 0) {
           zoomCamera(camera, true);
         }
@@ -91,15 +107,19 @@ const Plane: React.FC = () => {
         if (e.deltaY < 0) {
           zoomCamera(camera, false);
         }
-      });
+      };
+
+      ref.addEventListener("mousedown", handleMouseDownEvent);
+      ref.addEventListener("mouseup", handleMouseUpEvent);
+      ref.addEventListener("mousemove", handleMouseMoveEvent);
+      ref.addEventListener("mouseout", handleMouseUpEvent);
+      ref.addEventListener("wheel", handleMouseWheelEvent);
       return () => {
         ref.removeEventListener("mousedown", handleMouseDownEvent);
         ref.removeEventListener("mouseup", handleMouseUpEvent);
         ref.removeEventListener("mousemove", handleMouseMoveEvent);
         ref.removeEventListener("mouseout", handleMouseUpEvent);
-        ref.removeEventListener("wheel", (e) => {
-          console.log(e);
-        });
+        ref.removeEventListener("wheel", handleMouseWheelEvent);
       };
     }
   }, [canvasRef]);

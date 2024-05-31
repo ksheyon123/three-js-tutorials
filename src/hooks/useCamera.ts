@@ -41,6 +41,15 @@ export const useCamera = () => {
     zoomRef.current = e.wheelDelta;
   };
 
+  const lookAtDirection = (camera: THREE.PerspectiveCamera) => {
+    const lookDirection = new THREE.Vector3();
+    camera.getWorldDirection(lookDirection);
+
+    // Calculate the "look at" coordinate some distance D in front of the camera
+    const lookAtCoord = lookDirection.add(camera.position).normalize();
+    return lookAtCoord;
+  };
+
   const createCamera = () => {
     var camera = new THREE.PerspectiveCamera(
       75, // 카메라 시야각
@@ -109,6 +118,7 @@ export const useCamera = () => {
     createCamera,
     moveCamera,
     zoomCamera,
+    lookAtDirection,
     keyDownCameraEvent,
     keyUpCameraEvent,
     zoomInOutCameraEvent,
