@@ -10,6 +10,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import * as THREE from "three";
 
 const Plane: React.FC = () => {
   const { scene, renderer, camera } = useContext(InitContext);
@@ -59,13 +60,13 @@ const Plane: React.FC = () => {
 
       scene.add(obj);
       scene.add(plane);
+      const objectRotation = new THREE.Euler(0, 0, 0);
       const animate = () => {
         const position = obj.position.clone();
         // console.log(position);
 
         // resizeCanvasToDisplaySize();
         // Write code from here...
-        camera.lookAt(position.x, position.y, position.z);
 
         const { x: cX, y: cY, z: cZ } = moveCamera(position);
         camera.position.set(cX, cY, cZ);
@@ -76,6 +77,7 @@ const Plane: React.FC = () => {
         obj.position.set(newX, newY, newZ);
         const p = lookAt(d, obj.position);
         obj.lookAt(p);
+        camera.lookAt(position.x, position.y, position.z);
 
         animationHandleId = requestAnimationFrame(animate);
         renderer.render(scene, camera);
