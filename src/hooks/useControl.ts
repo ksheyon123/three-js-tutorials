@@ -79,8 +79,6 @@ export const useControl = (scene: THREE.Scene) => {
     const theta = Math.asin(y / 10.5);
     const phi = Math.atan2(z, x);
 
-    console.log(theta, phi);
-
     if (KeyA) {
       const newDirection0 = new THREE.Vector3(-1, 0, 0);
       _direction.add(newDirection0);

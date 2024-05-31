@@ -49,7 +49,6 @@ export const useMove = () => {
   };
   const keyUpEventHandler = (e: KeyboardEvent) => {
     const code = e.code;
-    console.log(code);
     keyStateRef.current = {
       ...keyStateRef.current,
       [code]: false,
@@ -83,7 +82,6 @@ export const useMove = () => {
     decelerate();
     const copyOfForward = forward.clone();
     const copyOfCurPosition = curPosition.clone();
-    console.log(objectStateRef.current.vel);
     const weightedForward = copyOfForward.multiplyScalar(
       objectStateRef.current.vel * hz
     );
@@ -120,7 +118,6 @@ export const useMove = () => {
     if (objectStateRef.current.isAcc) {
       const curVel = objectStateRef.current.vel;
       if (curVel !== vel * 2) {
-        console.log("ACC");
         objectStateRef.current.vel += 0.02;
       }
     }
@@ -130,7 +127,6 @@ export const useMove = () => {
     if (!objectStateRef.current.isAcc) {
       const curVel = objectStateRef.current.vel;
       if (curVel !== vel) {
-        console.log("DE");
         objectStateRef.current.vel -= 0.02;
       }
     }

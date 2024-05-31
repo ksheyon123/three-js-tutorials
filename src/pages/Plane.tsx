@@ -26,7 +26,7 @@ const Plane: React.FC = () => {
   } = useCamera();
   const { move, lookAt, keyUpEventHandler, keyDownEventHandler } = useMove();
   const { createObject, createPlane } = useCreate();
-  const { handleClick } = useRaycaster(scene, camera);
+  const { chkIsArrived, handleClick } = useRaycaster(scene, camera);
 
   const [isRender, setIsRender] = useState<boolean>(false);
 
@@ -70,13 +70,16 @@ const Plane: React.FC = () => {
         // resizeCanvasToDisplaySize();
         // Write code from here...
 
+        const { isArrived, normal } = chkIsArrived(position);
+
         const { x: cX, y: cY, z: cZ } = moveCamera(position);
         camera.position.set(cX, cY, cZ);
 
-        const d = lookAtDirection(camera);
+        // const d = lookAtDirection(camera);
+        const d = normal || new THREE.Vector3(0, 0, 0);
         d.y = 0;
-        // const { x: newX, y: newY, z: newZ } = move(d, position);
-        // obj.position.set(newX, newY, newZ);
+        const { x: newX, y: newY, z: newZ } = move(d, position);
+        obj.position.set(newX, newY, newZ);
         const p = lookAt(d, obj.position);
         obj.lookAt(p);
         camera.lookAt(position.x, position.y, position.z);

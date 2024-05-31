@@ -5,7 +5,26 @@ export const useRaycaster = (
   scene: THREE.Scene,
   camera: THREE.PerspectiveCamera
 ) => {
-  const coordRef = useRef<{ x: number; y: number; z: number }>();
+  const coordRef = useRef<THREE.Vector3 | null>(null);
+
+  const chkIsArrived = (position: THREE.Vector3) => {
+    if (!coordRef.current) {
+      return { isArrived: true, normal: null as any };
+    } else {
+      const { x: cX, z: cZ } = coordRef.current;
+      const v1 = new THREE.Vector2(cX, cZ);
+      const { x: pX, z: pZ } = position;
+      const v2 = new THREE.Vector2(pX, pZ);
+      const distanceTo = v1.distanceTo(v2);
+
+      if (distanceTo < 0.1) {
+        coordRef.current = null;
+        return { isArrived: true, normal: null };
+      }
+      const normal = coordRef.current.clone().sub(position).normalize();
+      return { isArrived: false, normal };
+    }
+  };
 
   const handleClick = (event: MouseEvent) => {
     const mouse = new THREE.Vector2();
@@ -23,10 +42,12 @@ export const useRaycaster = (
     if (intersects.length > 0) {
       // 교차점을 얻고 해당 교차점의 좌표를 출력합니다.
       const intersection = intersects[0].point;
-      console.log("Intersection point:", intersection);
+      console.log("intersection", intersection);
+      coordRef.current = intersection;
     }
   };
   return {
+    chkIsArrived,
     handleClick,
   };
 };
