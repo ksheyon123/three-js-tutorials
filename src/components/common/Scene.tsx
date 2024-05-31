@@ -18,7 +18,7 @@ export const Scene: React.FC = () => {
     useControl(scene);
   const {
     moveCamera,
-    zoomInOut,
+    zoomCamera,
     keyDownCameraEvent,
     keyUpCameraEvent,
     zoomInOutCameraEvent,

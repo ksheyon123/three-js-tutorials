@@ -70,27 +70,27 @@ export const useCamera = () => {
     };
   };
 
-  const zoomInOut = (camera: THREE.PerspectiveCamera) => {
-    if (zoomRef.current > 0) {
-      camera.zoom = camera.zoom + 1;
+  const zoomCamera = (camera: THREE.PerspectiveCamera, zoomIn: boolean) => {
+    const minFov = 15;
+    const maxFov = 75;
+    const zoomSpeed = 0.5;
+    if (zoomIn) {
+      camera.fov = Math.max(camera.fov - zoomSpeed, minFov);
     } else {
-      camera.zoom = camera.zoom - 1;
+      camera.fov = Math.min(camera.fov + zoomSpeed, maxFov);
     }
-    camera.updateMatrixWorld();
+    camera.updateProjectionMatrix();
   };
 
   const handleMouseDownEvent = (e: MouseEvent) => {
-    console.log("IS MOUSE DOWN");
     mouseActiveRef.current = true;
   };
   const handleMouseUpEvent = (e: MouseEvent) => {
-    console.log("IS MOUSE UP");
     mouseActiveRef.current = false;
   };
 
   const handleMouseMoveEvent = (e: MouseEvent) => {
     if (mouseActiveRef.current) {
-      console.log(e.movementX);
       if (e.movementX < 0) {
         thetaRef.current -= 1;
       } else if (e.movementX > 0) {
@@ -108,7 +108,7 @@ export const useCamera = () => {
   return {
     createCamera,
     moveCamera,
-    zoomInOut,
+    zoomCamera,
     keyDownCameraEvent,
     keyUpCameraEvent,
     zoomInOutCameraEvent,

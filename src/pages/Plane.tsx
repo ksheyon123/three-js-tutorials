@@ -9,13 +9,13 @@ import React, {
   useRef,
   useState,
 } from "react";
-import * as THREE from "three";
 
 const Plane: React.FC = () => {
   const { scene, renderer, camera } = useContext(InitContext);
   const canvasRef = useRef<HTMLDivElement>();
   const {
     moveCamera,
+    zoomCamera,
     handleMouseDownEvent,
     handleMouseUpEvent,
     handleMouseMoveEvent,
@@ -83,11 +83,23 @@ const Plane: React.FC = () => {
       ref.addEventListener("mouseup", handleMouseUpEvent);
       ref.addEventListener("mousemove", handleMouseMoveEvent);
       ref.addEventListener("mouseout", handleMouseUpEvent);
+      ref.addEventListener("wheel", (e) => {
+        if (e.deltaY > 0) {
+          zoomCamera(camera, true);
+        }
+
+        if (e.deltaY < 0) {
+          zoomCamera(camera, false);
+        }
+      });
       return () => {
         ref.removeEventListener("mousedown", handleMouseDownEvent);
         ref.removeEventListener("mouseup", handleMouseUpEvent);
         ref.removeEventListener("mousemove", handleMouseMoveEvent);
         ref.removeEventListener("mouseout", handleMouseUpEvent);
+        ref.removeEventListener("wheel", (e) => {
+          console.log(e);
+        });
       };
     }
   }, [canvasRef]);
