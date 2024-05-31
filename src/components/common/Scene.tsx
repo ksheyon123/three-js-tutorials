@@ -55,7 +55,7 @@ export const Scene: React.FC = () => {
 
         // Handle Camera Position
         camera.lookAt(position.x, position.y, position.z);
-        const { x: cX, y: cY, z: cZ } = moveCamera(position, camera.position);
+        const { x: cX, y: cY, z: cZ } = moveCamera(position);
         camera.position.set(cX, cY, cZ);
 
         // Move function의 direction 성분을 고정 값이 아니라 원의 접선 방향의 단위 벡터로 정의해야함.

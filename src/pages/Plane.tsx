@@ -9,11 +9,17 @@ import React, {
   useRef,
   useState,
 } from "react";
+import * as THREE from "three";
 
 const Plane: React.FC = () => {
   const { scene, renderer, camera } = useContext(InitContext);
   const canvasRef = useRef<HTMLDivElement>();
-  const { handleMouseDownEvent, handleMouseUpEvent } = useCamera();
+  const {
+    moveCamera,
+    handleMouseDownEvent,
+    handleMouseUpEvent,
+    handleMouseMoveEvent,
+  } = useCamera();
   const {} = useControl(scene);
   const { createObject, createPlane } = useCreate();
 
@@ -52,11 +58,18 @@ const Plane: React.FC = () => {
       scene.add(obj);
       scene.add(plane);
       const animate = () => {
+        const position = obj.position.clone();
+        // console.log(position);
+
         // resizeCanvasToDisplaySize();
         // Write code from here...
+        camera.lookAt(position.x, position.y, position.z);
 
-        renderer.render(scene, camera);
+        const { x: cX, y: cY, z: cZ } = moveCamera(position);
+        camera.position.set(cX, cY, cZ);
+
         animationHandleId = requestAnimationFrame(animate);
+        renderer.render(scene, camera);
       };
       animate();
       return () => cancelAnimationFrame(animationHandleId);
@@ -68,9 +81,13 @@ const Plane: React.FC = () => {
     if (ref) {
       ref.addEventListener("mousedown", handleMouseDownEvent);
       ref.addEventListener("mouseup", handleMouseUpEvent);
+      ref.addEventListener("mousemove", handleMouseMoveEvent);
+      ref.addEventListener("mouseout", handleMouseUpEvent);
       return () => {
         ref.removeEventListener("mousedown", handleMouseDownEvent);
         ref.removeEventListener("mouseup", handleMouseUpEvent);
+        ref.removeEventListener("mousemove", handleMouseMoveEvent);
+        ref.removeEventListener("mouseout", handleMouseUpEvent);
       };
     }
   }, [canvasRef]);

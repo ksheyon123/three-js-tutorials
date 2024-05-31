@@ -51,20 +51,11 @@ export const useCamera = () => {
     return camera;
   };
 
-  const moveCamera = (oP: THREE.Vector3, cP: THREE.Vector3) => {
+  const moveCamera = (oP: THREE.Vector3) => {
     const r = 10;
-    const { ArrowRight, ArrowLeft, ArrowDown, ArrowUp } = keyPressRef.current;
+    // const { ArrowRight, ArrowLeft, ArrowDown, ArrowUp } = keyPressRef.current;
     const { x, y, z } = oP;
 
-    if (ArrowRight) {
-      thetaRef.current = thetaRef.current - 1;
-    } else if (ArrowLeft) {
-      thetaRef.current = thetaRef.current + 1;
-    } else if (ArrowUp) {
-      piRef.current = piRef.current + 1;
-    } else if (ArrowDown) {
-      piRef.current = piRef.current - 1;
-    }
     const theta = THREE.MathUtils.degToRad(thetaRef.current);
     const phi = THREE.MathUtils.degToRad(piRef.current);
     const direction = new THREE.Vector3(
@@ -97,6 +88,23 @@ export const useCamera = () => {
     mouseActiveRef.current = false;
   };
 
+  const handleMouseMoveEvent = (e: MouseEvent) => {
+    if (mouseActiveRef.current) {
+      console.log(e.movementX);
+      if (e.movementX < 0) {
+        thetaRef.current -= 1;
+      } else if (e.movementX > 0) {
+        thetaRef.current += 1;
+      }
+
+      if (e.movementY < 0) {
+        piRef.current -= 1;
+      } else if (e.movementY > 0) {
+        piRef.current += 1;
+      }
+    }
+  };
+
   return {
     createCamera,
     moveCamera,
@@ -106,5 +114,6 @@ export const useCamera = () => {
     zoomInOutCameraEvent,
     handleMouseDownEvent,
     handleMouseUpEvent,
+    handleMouseMoveEvent,
   };
 };
