@@ -9,7 +9,7 @@ export const useRaycaster = (
 
   const chkIsArrived = (position: THREE.Vector3) => {
     if (!coordRef.current) {
-      return { isArrived: true, normal: null as any };
+      return { normal: null };
     } else {
       const { x: cX, z: cZ } = coordRef.current;
       const v1 = new THREE.Vector2(cX, cZ);
@@ -19,35 +19,52 @@ export const useRaycaster = (
 
       if (distanceTo < 0.1) {
         coordRef.current = null;
-        return { isArrived: true, normal: null };
+        return { normal: null };
       }
       const normal = coordRef.current.clone().sub(position).normalize();
-      return { isArrived: false, normal };
+      return { normal };
     }
   };
 
-  const handleClick = (event: MouseEvent) => {
-    const mouse = new THREE.Vector2();
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  const mouseDownCoord = useRef<any>({
+    screenX: 0,
+    screenY: 0,
+  });
 
-    // 카메라와 연관된 광선 생성
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, camera);
+  const handleRayUpEvent = (e: MouseEvent) => {
+    if (
+      e.screenX === mouseDownCoord.current.screenX &&
+      e.screenY === mouseDownCoord.current.screenY
+    ) {
+      const mouse = new THREE.Vector2();
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
-    // Raycaster를 사용하여 광선이 교차하는 모든 객체의 배열을 얻습니다.
-    const plane = scene.children.filter((el) => el.name === "plane")[0];
-    const intersects = raycaster.intersectObject(plane);
+      // 카메라와 연관된 광선 생성
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, camera);
 
-    if (intersects.length > 0) {
-      // 교차점을 얻고 해당 교차점의 좌표를 출력합니다.
-      const intersection = intersects[0].point;
-      console.log("intersection", intersection);
-      coordRef.current = intersection;
+      // Raycaster를 사용하여 광선이 교차하는 모든 객체의 배열을 얻습니다.
+      const plane = scene.children.filter((el) => el.name === "plane")[0];
+      const intersects = raycaster.intersectObject(plane);
+
+      if (intersects.length > 0) {
+        // 교차점을 얻고 해당 교차점의 좌표를 출력합니다.
+        const intersection = intersects[0].point;
+        coordRef.current = intersection;
+      }
     }
+  };
+
+  const handleRayDownEvent = (e: MouseEvent) => {
+    mouseDownCoord.current = {
+      screenX: e.screenX,
+      screenY: e.screenY,
+    };
   };
   return {
     chkIsArrived,
-    handleClick,
+    handleRayUpEvent,
+    handleRayDownEvent,
   };
 };

@@ -5,7 +5,7 @@ export const useCamera = () => {
   const thetaRef = useRef<number>(90); // on xz plane
   const piRef = useRef<number>(60); // about y Axis
 
-  const mouseActiveRef = useRef<boolean>();
+  const mouseActiveRef = useRef<boolean>(false);
 
   const keyPressRef = useRef<{
     ArrowRight: boolean;

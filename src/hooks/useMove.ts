@@ -64,7 +64,9 @@ export const useMove = () => {
 
   const calJumpVelocity = () => {
     const { jVel } = objectStateRef.current;
-    objectStateRef.current.jVel = jVel - g * hz;
+    const newJVel = jVel - g * hz;
+    objectStateRef.current.jVel = newJVel;
+    return newJVel;
   };
 
   const getQuaternion = (vBefore: THREE.Vector3, vAfter: THREE.Vector3) => {
@@ -90,6 +92,17 @@ export const useMove = () => {
     );
     const newPosition = copyOfCurPosition.add(weightedForward);
     return newPosition;
+  };
+
+  const jump = (position: THREE.Vector3) => {
+    if (objectStateRef.current.isJump) {
+      const _p = position.clone();
+      const vel = calJumpVelocity();
+      const newP = new THREE.Vector3(_p.x, _p.y + vel * hz, _p.z);
+      return newP;
+    } else {
+      return position;
+    }
   };
 
   // // Forward === direction
@@ -150,5 +163,6 @@ export const useMove = () => {
     getQuaternion,
     move,
     lookAt,
+    jump,
   };
 };

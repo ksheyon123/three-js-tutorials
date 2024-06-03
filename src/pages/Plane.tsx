@@ -24,9 +24,13 @@ const Plane: React.FC = () => {
     handleMouseUpEvent,
     handleMouseMoveEvent,
   } = useCamera();
-  const { move, lookAt, keyUpEventHandler, keyDownEventHandler } = useMove();
+  const { move, jump, lookAt, keyUpEventHandler, keyDownEventHandler } =
+    useMove();
   const { createObject, createPlane } = useCreate();
-  const { chkIsArrived, handleClick } = useRaycaster(scene, camera);
+  const { chkIsArrived, handleRayUpEvent, handleRayDownEvent } = useRaycaster(
+    scene,
+    camera
+  );
 
   const [isRender, setIsRender] = useState<boolean>(false);
 
@@ -62,27 +66,28 @@ const Plane: React.FC = () => {
 
       scene.add(obj);
       scene.add(plane);
-      const objectRotation = new THREE.Euler(0, 0, 0);
       const animate = () => {
         const position = obj.position.clone();
         // console.log(position);
 
         // resizeCanvasToDisplaySize();
         // Write code from here...
-
-        const { isArrived, normal } = chkIsArrived(position);
-
         const { x: cX, y: cY, z: cZ } = moveCamera(position);
         camera.position.set(cX, cY, cZ);
+        camera.lookAt(position.x, position.y, position.z);
 
+        const dd = position.clone().sub(camera.position.clone()).normalize();
+        dd.y = 0;
+        const { normal } = chkIsArrived(position);
+        // const cameraNormal = new THREE.Vector3(cX, 0, cZ).normalize().negate();
         // const d = lookAtDirection(camera);
         const d = normal || new THREE.Vector3(0, 0, 0);
         d.y = 0;
-        const { x: newX, y: newY, z: newZ } = move(d, position);
+        // const { x: newX, y: newY, z: newZ } = move(d, position);
+        const { x: newX, y: newY, z: newZ } = jump(move(d, position));
         obj.position.set(newX, newY, newZ);
-        const p = lookAt(d, obj.position);
+        const p = lookAt(dd, obj.position);
         obj.lookAt(p);
-        camera.lookAt(position.x, position.y, position.z);
 
         animationHandleId = requestAnimationFrame(animate);
         renderer.render(scene, camera);
@@ -116,16 +121,26 @@ const Plane: React.FC = () => {
         }
       };
 
-      ref.addEventListener("mousedown", handleMouseDownEvent);
-      ref.addEventListener("click", handleClick);
-      ref.addEventListener("mouseup", handleMouseUpEvent);
+      ref.addEventListener("mousedown", (e) => {
+        handleMouseDownEvent(e);
+        handleRayDownEvent(e);
+      });
+      ref.addEventListener("mouseup", (e) => {
+        handleMouseUpEvent(e);
+        handleRayUpEvent(e);
+      });
       ref.addEventListener("mousemove", handleMouseMoveEvent);
       ref.addEventListener("mouseout", handleMouseUpEvent);
       ref.addEventListener("wheel", handleMouseWheelEvent);
       return () => {
-        ref.removeEventListener("mousedown", handleMouseDownEvent);
-        ref.removeEventListener("click", handleClick);
-        ref.removeEventListener("mouseup", handleMouseUpEvent);
+        ref.removeEventListener("mousedown", (e) => {
+          handleMouseDownEvent(e);
+          handleRayDownEvent(e);
+        });
+        ref.removeEventListener("mouseup", (e) => {
+          handleMouseUpEvent(e);
+          handleRayUpEvent(e);
+        });
         ref.removeEventListener("mousemove", handleMouseMoveEvent);
         ref.removeEventListener("mouseout", handleMouseUpEvent);
         ref.removeEventListener("wheel", handleMouseWheelEvent);
