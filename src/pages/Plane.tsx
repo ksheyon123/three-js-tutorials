@@ -24,8 +24,14 @@ const Plane: React.FC = () => {
     handleMouseUpEvent,
     handleMouseMoveEvent,
   } = useCamera();
-  const { move, jump, lookAt, keyUpEventHandler, keyDownEventHandler } =
-    useMove(scene);
+  const {
+    move,
+    jump,
+    lookAt,
+    direction,
+    keyUpEventHandler,
+    keyDownEventHandler,
+  } = useMove(scene);
   const { createObject, createPlane } = useCreate();
   const { chkIsArrived, chkIsMoving, handleRayUpEvent, handleRayDownEvent } =
     useRaycaster(scene, camera);
@@ -90,11 +96,14 @@ const Plane: React.FC = () => {
           .clone()
           .sub(camera.position.clone())
           .normalize();
+        const a = direction(cameraDirection);
+        console.log(a);
+
         cameraDirection.y = 0;
         const { normal } = chkIsArrived(position);
         // const cameraNormal = new THREE.Vector3(cX, 0, cZ).normalize().negate();
         // const d = lookAtDirection(camera);
-        const d = normal || new THREE.Vector3(0, 0, 0);
+        const d = normal || new THREE.Vector3(0, 0, 0).normalize();
         d.y = 0;
         // const { x: newX, y: newY, z: newZ } = move(d, position);
         const { x: newX, y: newY, z: newZ } = jump(move(d, position));

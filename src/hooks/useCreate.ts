@@ -36,10 +36,10 @@ export const useCreate = () => {
 
   const createObject = (size?: any, coord?: any, type = "object") => {
     const material = [
-      new THREE.MeshBasicMaterial({ color: 0xff0000 }), // +x 면
-      new THREE.MeshBasicMaterial({ color: 0xff0000 }), // -x 면
-      new THREE.MeshBasicMaterial({ color: 0xff0000 }), // +y 면 (파란색으로 다른 면과 차별화)
-      new THREE.MeshBasicMaterial({ color: 0xff0000 }), // -y 면
+      new THREE.MeshBasicMaterial({ color: 0xffd400 }), // +x 면
+      new THREE.MeshBasicMaterial({ color: 0xffd400 }), // -x 면
+      new THREE.MeshBasicMaterial({ color: 0xffd400 }), // +y 면 (파란색으로 다른 면과 차별화)
+      new THREE.MeshBasicMaterial({ color: 0xffd400 }), // -y 면
       new THREE.MeshBasicMaterial({ color: 0xff0000 }), // +z 면
       new THREE.MeshBasicMaterial({ color: 0x0000ff }), // -z 면
     ];

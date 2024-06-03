@@ -101,15 +101,15 @@ export const useCamera = () => {
   const handleMouseMoveEvent = (e: MouseEvent) => {
     if (mouseActiveRef.current) {
       if (e.movementX < 0) {
-        thetaRef.current -= 1;
+        thetaRef.current -= 4;
       } else if (e.movementX > 0) {
-        thetaRef.current += 1;
+        thetaRef.current += 4;
       }
 
       if (e.movementY < 0) {
-        piRef.current -= 1;
+        piRef.current -= 2;
       } else if (e.movementY > 0) {
-        piRef.current += 1;
+        piRef.current += 2;
       }
     }
   };

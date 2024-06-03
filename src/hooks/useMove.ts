@@ -26,15 +26,14 @@ export const useMove = (scene: THREE.Scene) => {
     isAcc: false,
   });
   const keyStateRef = useRef<KeyState>({
-    W: false,
-    S: false,
-    D: false,
-    A: false,
+    KeyW: false,
+    KeyS: false,
+    KeyD: false,
+    KeyA: false,
   });
 
   const keyDownEventHandler = (e: KeyboardEvent) => {
     const code = e.code;
-    console.log("KEYDOWN", code);
 
     keyStateRef.current = {
       ...keyStateRef.current,
@@ -51,7 +50,6 @@ export const useMove = (scene: THREE.Scene) => {
   };
   const keyUpEventHandler = (e: KeyboardEvent) => {
     const code = e.code;
-    console.log("KEYUP", code);
     keyStateRef.current = {
       ...keyStateRef.current,
       [code]: false,
@@ -75,6 +73,48 @@ export const useMove = (scene: THREE.Scene) => {
     const quaternion = new THREE.Quaternion();
     quaternion.setFromUnitVectors(vbn, van);
     return quaternion;
+  };
+  const direction = (direction: THREE.Vector3) => {
+    let _direction = new THREE.Vector3();
+    const { KeyW, KeyS, KeyA, KeyD } = keyStateRef.current;
+    if (KeyW) {
+      const copyOfDir = direction.clone();
+
+      _direction.add(copyOfDir);
+    }
+
+    if (KeyS) {
+      const copyOfDir = direction.clone();
+
+      _direction.add(copyOfDir.negate());
+    }
+    if (KeyA) {
+      const copyOfDir = direction.clone();
+
+      const angle = Math.PI / 2; // 90도는 π/2 라디안
+      const axis = new THREE.Vector3(0, 1, 0); // Y축
+
+      const quaternion = new THREE.Quaternion();
+      quaternion.setFromAxisAngle(axis, angle);
+
+      // 벡터에 쿼터니언을 적용하여 회전
+      copyOfDir.applyQuaternion(quaternion);
+      _direction.add(copyOfDir);
+    }
+    if (KeyD) {
+      const copyOfDir = direction.clone();
+
+      const angle = -Math.PI / 2; // 90도는 π/2 라디안
+      const axis = new THREE.Vector3(0, 1, 0); // Y축
+
+      const quaternion = new THREE.Quaternion();
+      quaternion.setFromAxisAngle(axis, angle);
+
+      // 벡터에 쿼터니언을 적용하여 회전
+      copyOfDir.applyQuaternion(quaternion);
+      _direction.add(copyOfDir);
+    }
+    return _direction;
   };
 
   const move = (forward: THREE.Vector3, curPosition: THREE.Vector3) => {
@@ -155,7 +195,6 @@ export const useMove = (scene: THREE.Scene) => {
     // Check if there is an intersection close to the object
     for (let i = 0; i < intersects.length; i++) {
       if (intersects[i].distance <= 0.5) {
-        console.log(intersects[i]);
         // 점프 중인 경우
         if (objectStateRef.current.isJump) {
           objectStateRef.current.isJump = false;
@@ -174,5 +213,6 @@ export const useMove = (scene: THREE.Scene) => {
     move,
     lookAt,
     jump,
+    direction,
   };
 };
