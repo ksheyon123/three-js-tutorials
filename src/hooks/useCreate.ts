@@ -34,7 +34,7 @@ export const useCreate = () => {
     return sphere;
   };
 
-  const createObject = () => {
+  const createObject = (size?: any, coord?: any, type = "object") => {
     const material = [
       new THREE.MeshBasicMaterial({ color: 0xff0000 }), // +x 면
       new THREE.MeshBasicMaterial({ color: 0xff0000 }), // -x 면
@@ -43,10 +43,15 @@ export const useCreate = () => {
       new THREE.MeshBasicMaterial({ color: 0xff0000 }), // +z 면
       new THREE.MeshBasicMaterial({ color: 0x0000ff }), // -z 면
     ];
-    var geometry = new THREE.BoxGeometry(1, 1, 1);
+    var geometry = new THREE.BoxGeometry(
+      size?.w || 1,
+      size?.h || 1,
+      size?.d || 1
+    );
     const obj = new THREE.Mesh(geometry, material);
-    obj.position.set(0, 0, 0);
+    obj.position.set(coord?.x || 0, coord?.y || 0, coord?.z || 0);
 
+    obj.name = type;
     meshesRef.current = {
       ...meshesRef.current,
       [obj.uuid]: obj,

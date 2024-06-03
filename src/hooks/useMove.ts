@@ -77,11 +77,6 @@ export const useMove = (scene: THREE.Scene) => {
     return quaternion;
   };
 
-  const getPosition = (
-    curPosition: THREE.Vector3,
-    direction: THREE.Vector3
-  ) => {};
-
   const move = (forward: THREE.Vector3, curPosition: THREE.Vector3) => {
     accelerate();
     decelerate();
@@ -90,23 +85,22 @@ export const useMove = (scene: THREE.Scene) => {
     const weightedForward = copyOfForward.multiplyScalar(
       objectStateRef.current.vel * hz
     );
-    const newPosition = copyOfCurPosition.add(weightedForward);
-    return newPosition;
+    if (!chkIsCollided(curPosition, forward)) {
+      const newPosition = copyOfCurPosition.add(weightedForward);
+      return newPosition;
+    }
+    return curPosition;
   };
 
   const jump = (position: THREE.Vector3) => {
-    if (objectStateRef.current.isJump) {
-      const _p = position.clone();
-      const vel = calJumpVelocity();
-      const newP = new THREE.Vector3(_p.x, _p.y + vel * hz, _p.z);
-      const direction = newP.clone().sub(_p);
-      if (chkIsCollided(_p, direction)) {
-        return position;
-      } else {
-        return newP;
-      }
-    } else {
+    const _p = position.clone();
+    const vel = calJumpVelocity();
+    const newP = new THREE.Vector3(_p.x, _p.y + vel * hz, _p.z);
+    const direction = newP.clone().sub(_p);
+    if (chkIsCollided(_p, direction)) {
       return position;
+    } else {
+      return newP;
     }
   };
 
@@ -126,13 +120,6 @@ export const useMove = (scene: THREE.Scene) => {
     // Calculate a point in the desired direction from the cube's current position
     const targetPosition = new THREE.Vector3().addVectors(position, forward);
     return targetPosition;
-  };
-
-  const gravity = (curPosition: THREE.Vector3) => {
-    if (objectStateRef.current.isJump) {
-      return;
-    }
-    return curPosition;
   };
 
   const accelerate = () => {
@@ -158,7 +145,9 @@ export const useMove = (scene: THREE.Scene) => {
     const raycaster = new THREE.Raycaster();
     raycaster.set(position, direction);
 
-    const objects = scene.children.filter((el) => el.name === "plane");
+    const objects = scene.children.filter(
+      (el) => el.name === "plane" || el.name === "obstacle"
+    );
 
     // Perform the raycasting
     const intersects = raycaster.intersectObjects(objects);
@@ -166,7 +155,11 @@ export const useMove = (scene: THREE.Scene) => {
     // Check if there is an intersection close to the object
     for (let i = 0; i < intersects.length; i++) {
       if (intersects[i].distance <= 0.5) {
-        objectStateRef.current.isJump = false;
+        console.log(intersects[i]);
+        // 점프 중인 경우
+        if (objectStateRef.current.isJump) {
+          objectStateRef.current.isJump = false;
+        }
         // Adjust the distance threshold as needed
         return true;
       }

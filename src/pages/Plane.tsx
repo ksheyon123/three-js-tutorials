@@ -56,20 +56,32 @@ const Plane: React.FC = () => {
   //   }
   // };
 
+  const createObstacle = () => {
+    const min = -30;
+    const max = 30;
+    const obj = createObject(
+      { w: 1, h: 1, d: 1 },
+      { x: 0, y: 0, z: 2 },
+      "obstacle"
+    );
+    return obj;
+  };
+
   useEffect(() => {
     let animationHandleId: any;
     if (isRender) {
       const obj = createObject();
       const plane = createPlane();
+      const obstacle = createObstacle();
 
       scene.add(obj);
       scene.add(plane);
+      scene.add(obstacle);
+
       const animate = () => {
         const position = obj.position.clone();
-        // console.log(position);
 
         // resizeCanvasToDisplaySize();
-        // Write code from here...
         const { x: cX, y: cY, z: cZ } = moveCamera(position);
         camera.position.set(cX, cY, cZ);
         camera.lookAt(position.x, position.y, position.z);
