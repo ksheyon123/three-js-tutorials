@@ -10,14 +10,14 @@ type Sphere = {
 export const useCreate = () => {
   const meshesRef = useRef<{ [key: string]: THREE.Mesh }>({});
 
-  const createPlane = () => {
-    const planeGeo = new THREE.PlaneGeometry(30, 30);
+  const createPlane = (name = "plane") => {
+    const planeGeo = new THREE.PlaneGeometry(60, 60);
     const planeMat = new THREE.MeshPhongMaterial({
       color: 0x25004d,
       side: THREE.DoubleSide,
     });
     const obj = new THREE.Mesh(planeGeo, planeMat);
-    obj.name = "plane";
+    obj.name = name;
     obj.rotation.x = Math.PI * -0.5; // Rotate plane which is on the x-y plane to the z-x plane
     obj.position.y = -0.5;
     return obj;

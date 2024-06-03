@@ -25,12 +25,10 @@ const Plane: React.FC = () => {
     handleMouseMoveEvent,
   } = useCamera();
   const { move, jump, lookAt, keyUpEventHandler, keyDownEventHandler } =
-    useMove();
+    useMove(scene);
   const { createObject, createPlane } = useCreate();
-  const { chkIsArrived, handleRayUpEvent, handleRayDownEvent } = useRaycaster(
-    scene,
-    camera
-  );
+  const { chkIsArrived, chkIsMoving, handleRayUpEvent, handleRayDownEvent } =
+    useRaycaster(scene, camera);
 
   const [isRender, setIsRender] = useState<boolean>(false);
 
@@ -76,8 +74,11 @@ const Plane: React.FC = () => {
         camera.position.set(cX, cY, cZ);
         camera.lookAt(position.x, position.y, position.z);
 
-        const dd = position.clone().sub(camera.position.clone()).normalize();
-        dd.y = 0;
+        const cameraDirection = position
+          .clone()
+          .sub(camera.position.clone())
+          .normalize();
+        cameraDirection.y = 0;
         const { normal } = chkIsArrived(position);
         // const cameraNormal = new THREE.Vector3(cX, 0, cZ).normalize().negate();
         // const d = lookAtDirection(camera);
@@ -86,8 +87,16 @@ const Plane: React.FC = () => {
         // const { x: newX, y: newY, z: newZ } = move(d, position);
         const { x: newX, y: newY, z: newZ } = jump(move(d, position));
         obj.position.set(newX, newY, newZ);
-        const p = lookAt(dd, obj.position);
-        obj.lookAt(p);
+
+        const isMoving = chkIsMoving();
+        // if (!isMoving) {
+        //   const p = lookAt(d, obj.position);
+        //   obj.lookAt(p);
+        //   console.log("MOVING", isMoving);
+        // } else {
+        //   const p = lookAt(cameraDirection, obj.position);
+        //   obj.lookAt(p);
+        // }
 
         animationHandleId = requestAnimationFrame(animate);
         renderer.render(scene, camera);

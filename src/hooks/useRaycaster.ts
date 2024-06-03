@@ -21,20 +21,24 @@ export const useRaycaster = (
         coordRef.current = null;
         return { normal: null };
       }
+
       const normal = coordRef.current.clone().sub(position).normalize();
+      mouseDownRef.current.isMoving = false;
+
       return { normal };
     }
   };
 
-  const mouseDownCoord = useRef<any>({
+  const mouseDownRef = useRef<any>({
     screenX: 0,
     screenY: 0,
+    isMoving: false,
   });
 
   const handleRayUpEvent = (e: MouseEvent) => {
     if (
-      e.screenX === mouseDownCoord.current.screenX &&
-      e.screenY === mouseDownCoord.current.screenY
+      e.screenX === mouseDownRef.current.screenX &&
+      e.screenY === mouseDownRef.current.screenY
     ) {
       const mouse = new THREE.Vector2();
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -51,19 +55,26 @@ export const useRaycaster = (
       if (intersects.length > 0) {
         // 교차점을 얻고 해당 교차점의 좌표를 출력합니다.
         const intersection = intersects[0].point;
+        mouseDownRef.current.isMoving = true;
         coordRef.current = intersection;
       }
     }
   };
 
+  const chkIsMoving = () => {
+    return mouseDownRef.current.isMoving;
+  };
+
   const handleRayDownEvent = (e: MouseEvent) => {
-    mouseDownCoord.current = {
+    mouseDownRef.current = {
+      ...mouseDownRef.current,
       screenX: e.screenX,
       screenY: e.screenY,
     };
   };
   return {
     chkIsArrived,
+    chkIsMoving,
     handleRayUpEvent,
     handleRayDownEvent,
   };

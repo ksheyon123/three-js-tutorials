@@ -13,7 +13,7 @@ type ObjectState = {
   isAcc: boolean;
 };
 
-export const useMove = () => {
+export const useMove = (scene: THREE.Scene) => {
   const hz = 1 / 60;
   const vel = 3;
   const jVel = 5;
@@ -99,7 +99,12 @@ export const useMove = () => {
       const _p = position.clone();
       const vel = calJumpVelocity();
       const newP = new THREE.Vector3(_p.x, _p.y + vel * hz, _p.z);
-      return newP;
+      const direction = newP.clone().sub(_p);
+      if (chkIsCollided(_p, direction)) {
+        return position;
+      } else {
+        return newP;
+      }
     } else {
       return position;
     }
@@ -148,13 +153,25 @@ export const useMove = () => {
     }
   };
 
-  const onTheGround = (obj: THREE.Mesh, target: THREE.Mesh) => {
-    const copiedObj = obj.clone();
-    const copiedTarget = target.clone();
-    const objPosition = copiedObj.position;
-    const targetPosition = copiedTarget.position;
-    const area = new THREE.Sphere();
-    return new THREE.Vector3(0, 0, 0);
+  const chkIsCollided = (position: THREE.Vector3, direction: THREE.Vector3) => {
+    // Set the raycaster position and direction
+    const raycaster = new THREE.Raycaster();
+    raycaster.set(position, direction);
+
+    const objects = scene.children.filter((el) => el.name === "plane");
+
+    // Perform the raycasting
+    const intersects = raycaster.intersectObjects(objects);
+
+    // Check if there is an intersection close to the object
+    for (let i = 0; i < intersects.length; i++) {
+      if (intersects[i].distance <= 0.5) {
+        objectStateRef.current.isJump = false;
+        // Adjust the distance threshold as needed
+        return true;
+      }
+    }
+    return false;
   };
 
   return {
