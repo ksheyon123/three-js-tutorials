@@ -36,7 +36,6 @@ export const useMove = (scene: THREE.Scene) => {
 
   const keyDownEventHandler = (e: KeyboardEvent) => {
     const code = e.code;
-
     keyStateRef.current = {
       ...keyStateRef.current,
       [code]: true,
@@ -47,7 +46,7 @@ export const useMove = (scene: THREE.Scene) => {
       objectStateRef.current.isJump = true;
     }
     if (code === "ShiftLeft") {
-      objectStateRef.current.isAcc = !objectStateRef.current.isAcc;
+      objectStateRef.current.isAcc = true;
     }
   };
   const keyUpEventHandler = (e: KeyboardEvent) => {
@@ -57,8 +56,8 @@ export const useMove = (scene: THREE.Scene) => {
       [code]: false,
     };
 
-    if (code === "KeyZ") {
-      // objectStateRef.current.isAcc = false;
+    if (code === "ShiftLeft") {
+      objectStateRef.current.isAcc = false;
     }
   };
 
@@ -123,6 +122,7 @@ export const useMove = (scene: THREE.Scene) => {
   const move = (forward: THREE.Vector3, curPosition: THREE.Vector3) => {
     accelerate();
     decelerate();
+    console.log("VEL : ", objectStateRef.current.vel);
     const copyOfForward = forward.clone();
     const copyOfCurPosition = curPosition.clone();
     const weightedForward = copyOfForward.multiplyScalar(
@@ -161,7 +161,7 @@ export const useMove = (scene: THREE.Scene) => {
   const accelerate = () => {
     if (objectStateRef.current.isAcc) {
       const curVel = objectStateRef.current.vel;
-      if (curVel <= vel * 10) {
+      if (curVel <= vel * 3) {
         objectStateRef.current.vel += 0.05;
       }
     }
