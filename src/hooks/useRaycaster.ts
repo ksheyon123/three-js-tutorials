@@ -9,7 +9,7 @@ export const useRaycaster = (
 
   const chkIsArrived = (position: THREE.Vector3) => {
     if (!coordRef.current) {
-      return { normal: null };
+      return null;
     } else {
       const { x: cX, z: cZ } = coordRef.current;
       const v1 = new THREE.Vector2(cX, cZ);
@@ -19,13 +19,13 @@ export const useRaycaster = (
 
       if (distanceTo < 0.1) {
         coordRef.current = null;
-        return { normal: null };
+        return null;
       }
 
       const normal = coordRef.current.clone().sub(position).normalize();
       mouseDownRef.current.isMoving = false;
 
-      return { normal };
+      return normal;
     }
   };
 

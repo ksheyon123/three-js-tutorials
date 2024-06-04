@@ -11,6 +11,7 @@ type ObjectState = {
   jVel: number;
   isJump: boolean;
   isAcc: boolean;
+  isMoving: boolean;
 };
 
 export const useMove = (scene: THREE.Scene) => {
@@ -24,6 +25,7 @@ export const useMove = (scene: THREE.Scene) => {
     jVel,
     isJump: false,
     isAcc: false,
+    isMoving: false,
   });
   const keyStateRef = useRef<KeyState>({
     KeyW: false,
@@ -75,22 +77,23 @@ export const useMove = (scene: THREE.Scene) => {
     return quaternion;
   };
   const direction = (direction: THREE.Vector3) => {
-    let _direction = new THREE.Vector3();
+    let _direction: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
     const { KeyW, KeyS, KeyA, KeyD } = keyStateRef.current;
-    if (KeyW) {
-      const copyOfDir = direction.clone();
 
-      _direction.add(copyOfDir);
+    if (!KeyW && !KeyS && !KeyA && !KeyD) {
+      return null;
     }
 
+    if (KeyW) {
+      const copyOfDirection = direction.clone();
+      _direction.add(copyOfDirection);
+    }
     if (KeyS) {
-      const copyOfDir = direction.clone();
-
-      _direction.add(copyOfDir.negate());
+      const copyOfDirection = direction.clone().negate();
+      _direction.add(copyOfDirection);
     }
     if (KeyA) {
-      const copyOfDir = direction.clone();
-
+      const copyOfDirection = direction.clone();
       const angle = Math.PI / 2; // 90도는 π/2 라디안
       const axis = new THREE.Vector3(0, 1, 0); // Y축
 
@@ -98,11 +101,11 @@ export const useMove = (scene: THREE.Scene) => {
       quaternion.setFromAxisAngle(axis, angle);
 
       // 벡터에 쿼터니언을 적용하여 회전
-      copyOfDir.applyQuaternion(quaternion);
-      _direction.add(copyOfDir);
+      copyOfDirection.applyQuaternion(quaternion);
+      _direction.add(copyOfDirection);
     }
     if (KeyD) {
-      const copyOfDir = direction.clone();
+      const copyOfDirection = direction.clone();
 
       const angle = -Math.PI / 2; // 90도는 π/2 라디안
       const axis = new THREE.Vector3(0, 1, 0); // Y축
@@ -111,8 +114,8 @@ export const useMove = (scene: THREE.Scene) => {
       quaternion.setFromAxisAngle(axis, angle);
 
       // 벡터에 쿼터니언을 적용하여 회전
-      copyOfDir.applyQuaternion(quaternion);
-      _direction.add(copyOfDir);
+      copyOfDirection.applyQuaternion(quaternion);
+      _direction.add(copyOfDirection);
     }
     return _direction;
   };
@@ -144,21 +147,14 @@ export const useMove = (scene: THREE.Scene) => {
     }
   };
 
-  // // Forward === direction
-  // const lookAt = (forward: THREE.Vector3, quaternion: THREE.Quaternion) => {
-  //   // Apply the object's quaternion to the forward vector
-  //   const direction = forward.clone().applyQuaternion(quaternion);
-
-  //   // Normalize the direction vector (optional, depends on your use case)
-  //   const newForward = direction.normalize();
-  //   // console.log(newForward.angleTo(forward));
-  //   // return newForward.angleTo(forward);
-  //   return newForward;
-  // };
-
   const lookAt = (forward: THREE.Vector3, position: THREE.Vector3) => {
     // Calculate a point in the desired direction from the cube's current position
-    const targetPosition = new THREE.Vector3().addVectors(position, forward);
+    const copyOfForwar = forward.clone();
+    copyOfForwar.y = 0;
+    const targetPosition = new THREE.Vector3().addVectors(
+      position,
+      copyOfForwar.negate()
+    );
     return targetPosition;
   };
 

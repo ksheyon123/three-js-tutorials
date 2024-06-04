@@ -96,28 +96,32 @@ const Plane: React.FC = () => {
           .clone()
           .sub(camera.position.clone())
           .normalize();
-        const a = direction(cameraDirection);
-        console.log(a);
 
-        cameraDirection.y = 0;
-        const { normal } = chkIsArrived(position);
-        // const cameraNormal = new THREE.Vector3(cX, 0, cZ).normalize().negate();
-        // const d = lookAtDirection(camera);
-        const d = normal || new THREE.Vector3(0, 0, 0).normalize();
-        d.y = 0;
-        // const { x: newX, y: newY, z: newZ } = move(d, position);
-        const { x: newX, y: newY, z: newZ } = jump(move(d, position));
+        // Key normal direction
+        const keyDirection =
+          direction(cameraDirection.clone())?.normalize() || null;
+
+        // Raycaster normal direction
+        const rayDirection = chkIsArrived(position);
+
+        const curDirection =
+          rayDirection ||
+          keyDirection ||
+          new THREE.Vector3(0, 0, 0).normalize();
+
+        curDirection.y = 0;
+        const {
+          x: newX,
+          y: newY,
+          z: newZ,
+        } = jump(move(curDirection, position));
         obj.position.set(newX, newY, newZ);
 
-        const isMoving = chkIsMoving();
-        // if (!isMoving) {
-        //   const p = lookAt(d, obj.position);
-        //   obj.lookAt(p);
-        //   console.log("MOVING", isMoving);
-        // } else {
-        //   const p = lookAt(cameraDirection, obj.position);
-        //   obj.lookAt(p);
-        // }
+        const p = lookAt(
+          !rayDirection && !keyDirection ? cameraDirection : curDirection,
+          obj.position
+        );
+        obj.lookAt(p);
 
         animationHandleId = requestAnimationFrame(animate);
         renderer.render(scene, camera);
@@ -130,9 +134,9 @@ const Plane: React.FC = () => {
   // For Object
   useEffect(() => {
     window.addEventListener("keydown", keyDownEventHandler);
-    window.addEventListener("keydown", keyUpEventHandler);
+    window.addEventListener("keyup", keyUpEventHandler);
     return () => {
-      window.removeEventListener("keyup", keyDownEventHandler);
+      window.removeEventListener("keydown", keyDownEventHandler);
       window.removeEventListener("keyup", keyUpEventHandler);
     };
   }, []);
