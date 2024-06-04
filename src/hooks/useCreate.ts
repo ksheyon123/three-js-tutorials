@@ -8,7 +8,15 @@ type Sphere = {
 };
 
 export const useCreate = () => {
-  const meshesRef = useRef<{ [key: string]: THREE.Mesh }>({});
+  const [meshes, setMeshes] = useState<{ [key: string]: THREE.Mesh }>({});
+  // const meshesRef = useRef<{ [key: string]: THREE.Mesh }>({});
+
+  const highlight = (scene: THREE.Scene, obj: THREE.Mesh) => {
+    const edges = new THREE.EdgesGeometry(obj.geometry);
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000 }); // Outline color
+    const outline = new THREE.LineSegments(edges, lineMaterial);
+    scene.add(outline);
+  };
 
   const createPlane = (name = "plane") => {
     const planeGeo = new THREE.PlaneGeometry(60, 60);
@@ -52,17 +60,23 @@ export const useCreate = () => {
     obj.position.set(coord?.x || 0, coord?.y || 0, coord?.z || 0);
 
     obj.name = type;
-    meshesRef.current = {
-      ...meshesRef.current,
+    setMeshes((prev) => ({
+      ...prev,
       [obj.uuid]: obj,
-    };
+    }));
+    // meshesRef.current = {
+    //   ...meshesRef.current,
+    //   [obj.uuid]: obj,
+    // };
+    // console.log(meshesRef.current);
     return obj;
   };
 
   return {
-    meshesRef,
+    meshes,
     createObject,
     createSphere,
     createPlane,
+    highlight,
   };
 };

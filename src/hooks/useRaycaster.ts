@@ -1,10 +1,13 @@
 import { useRef } from "react";
 import * as THREE from "three";
+import { useCreate } from "./useCreate";
 
 export const useRaycaster = (
   scene: THREE.Scene,
   camera: THREE.PerspectiveCamera
 ) => {
+  const { highlight, meshes } = useCreate();
+
   const coordRef = useRef<THREE.Vector3 | null>(null);
 
   const chkIsArrived = (position: THREE.Vector3) => {
@@ -61,8 +64,31 @@ export const useRaycaster = (
     }
   };
 
-  const chkIsMoving = () => {
-    return mouseDownRef.current.isMoving;
+  const hoverObjRef = useRef<any>();
+
+  const handleRayHover = (e: MouseEvent) => {
+    const mouse = new THREE.Vector2();
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+    // 카메라와 연관된 광선 생성
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+
+    // Raycaster를 사용하여 광선이 교차하는 모든 객체의 배열을 얻습니다.
+    const obstacle = scene.children.filter((el) => el.name === "obstacle")[0];
+    const intersects = raycaster.intersectObject(obstacle);
+
+    if (intersects.length > 0) {
+      // 교차점을 얻고 해당 교차점의 좌표를 출력합니다.
+      // const intersection = intersects[0].point;
+      console.log(meshes);
+      const obj = meshes[obstacle.uuid];
+      console.log(obj);
+      // highlight(scene, obj);
+    } else {
+      hoverObjRef.current = undefined;
+    }
   };
 
   const handleRayDownEvent = (e: MouseEvent) => {
@@ -72,10 +98,11 @@ export const useRaycaster = (
       screenY: e.screenY,
     };
   };
+
   return {
     chkIsArrived,
-    chkIsMoving,
     handleRayUpEvent,
     handleRayDownEvent,
+    handleRayHover,
   };
 };
