@@ -33,7 +33,13 @@ const Plane: React.FC = () => {
     keyUpEventHandler,
     keyDownEventHandler,
   } = useMove(scene);
-  const { createObject, createPlane, meshes, highlight } = useCreate();
+  const {
+    createObject,
+    createPlane,
+    drawOutLine,
+    removeOutLine,
+    getMeshObjects,
+  } = useCreate();
   const {
     chkIsArrived,
     handleRayUpEvent,
@@ -129,10 +135,16 @@ const Plane: React.FC = () => {
         );
         obj.lookAt(p);
 
-        const uuid = hoverObj();
-        if (!!uuid) {
-          highlight(scene, obstacle);
-        }
+        // const uuid = hoverObj();
+        // if (!!uuid) {
+        //   const { obj } = getMeshObjects()[uuid];
+        //   drawOutLine(scene, obj);
+        // } else {
+        //   const { outline } = getMeshObjects()[uuid];
+        //   if (outline) {
+        //     removeOutLine(scene, outline);
+        //   }
+        // }
 
         animationHandleId = requestAnimationFrame(animate);
         renderer.render(scene, camera);
@@ -197,7 +209,7 @@ const Plane: React.FC = () => {
         ref.removeEventListener("wheel", handleMouseWheelEvent);
       };
     }
-  }, [canvasRef, meshes]);
+  }, [canvasRef]);
 
   return <div ref={canvasRef as RefObject<HTMLDivElement>} />;
 };

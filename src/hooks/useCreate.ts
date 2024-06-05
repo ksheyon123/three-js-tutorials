@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import * as THREE from "three";
 
 type Sphere = {
@@ -8,15 +8,27 @@ type Sphere = {
 };
 
 export const useCreate = () => {
-  const [meshes, setMeshes] = useState<{ [key: string]: THREE.Mesh }>({});
-  // const meshesRef = useRef<{ [key: string]: THREE.Mesh }>({});
+  const meshesRef = useRef<{
+    [key: string]: { obj: THREE.Mesh; outline?: THREE.LineSegments };
+  }>({});
 
-  const highlight = (scene: THREE.Scene, obj: THREE.Mesh) => {
+  const drawOutLine = (scene: THREE.Scene, obj: THREE.Mesh) => {
     const { x, y, z } = obj.clone().position;
     const edges = new THREE.EdgesGeometry(obj.geometry);
     const lineMaterial = new THREE.LineBasicMaterial({ color: 0x0aff000 }); // Outline color
     const outline = new THREE.LineSegments(edges, lineMaterial);
     outline.position.set(x, y, z);
+    meshesRef.current = {
+      ...meshesRef.current,
+      [obj.uuid]: {
+        ...meshesRef.current[obj.uuid],
+        outline: outline,
+      },
+    };
+    scene.add(outline);
+  };
+
+  const removeOutLine = (scene: THREE.Scene, outline: THREE.LineSegments) => {
     scene.add(outline);
   };
 
@@ -62,23 +74,26 @@ export const useCreate = () => {
     obj.position.set(coord?.x || 0, coord?.y || 0, coord?.z || 0);
 
     obj.name = type;
-    setMeshes((prev) => ({
-      ...prev,
-      [obj.uuid]: obj,
-    }));
-    // meshesRef.current = {
-    //   ...meshesRef.current,
-    //   [obj.uuid]: obj,
-    // };
-    // console.log(meshesRef.current);
+
+    meshesRef.current = {
+      ...meshesRef.current,
+      [obj.uuid]: {
+        obj,
+      },
+    };
     return obj;
   };
 
+  const getMeshObjects = () => {
+    return meshesRef.current;
+  };
+
   return {
-    meshes,
     createObject,
     createSphere,
     createPlane,
-    highlight,
+    drawOutLine,
+    removeOutLine,
+    getMeshObjects,
   };
 };

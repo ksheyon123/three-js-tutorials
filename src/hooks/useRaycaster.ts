@@ -6,8 +6,7 @@ export const useRaycaster = (
   scene: THREE.Scene,
   camera: THREE.PerspectiveCamera
 ) => {
-  const { highlight, meshes } = useCreate();
-
+  const { getMeshObjects, drawOutLine, removeOutLine } = useCreate();
   const coordRef = useRef<THREE.Vector3 | null>(null);
 
   const chkIsArrived = (position: THREE.Vector3) => {
@@ -81,8 +80,16 @@ export const useRaycaster = (
 
     if (intersects.length > 0) {
       hoverObjRef.current = obstacle.uuid;
+      console.log(obstacle.uuid);
+      const { obj } = getMeshObjects()[obstacle.uuid];
+      console.log(obj);
+      drawOutLine(scene, obj);
     } else {
-      hoverObjRef.current = undefined;
+      // hoverObjRef.current = undefined;
+      const o = getMeshObjects()[obstacle.uuid];
+      if (o?.outline) {
+        removeOutLine(scene, o.outline);
+      }
     }
   };
 
