@@ -80,12 +80,7 @@ export const useRaycaster = (
     const intersects = raycaster.intersectObject(obstacle);
 
     if (intersects.length > 0) {
-      // 교차점을 얻고 해당 교차점의 좌표를 출력합니다.
-      // const intersection = intersects[0].point;
-      console.log(meshes);
-      const obj = meshes[obstacle.uuid];
-      console.log(obj);
-      // highlight(scene, obj);
+      hoverObjRef.current = obstacle.uuid;
     } else {
       hoverObjRef.current = undefined;
     }
@@ -99,10 +94,15 @@ export const useRaycaster = (
     };
   };
 
+  const hoverObj = () => {
+    return hoverObjRef.current;
+  };
+
   return {
     chkIsArrived,
     handleRayUpEvent,
     handleRayDownEvent,
     handleRayHover,
+    hoverObj,
   };
 };

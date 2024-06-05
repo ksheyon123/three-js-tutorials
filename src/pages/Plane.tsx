@@ -6,6 +6,7 @@ import { useMove } from "@/hooks/useMove";
 import { useRaycaster } from "@/hooks/useRaycaster";
 import React, {
   RefObject,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -32,9 +33,14 @@ const Plane: React.FC = () => {
     keyUpEventHandler,
     keyDownEventHandler,
   } = useMove(scene);
-  const { createObject, createPlane, meshes } = useCreate();
-  const { chkIsArrived, handleRayUpEvent, handleRayDownEvent, handleRayHover } =
-    useRaycaster(scene, camera);
+  const { createObject, createPlane, meshes, highlight } = useCreate();
+  const {
+    chkIsArrived,
+    handleRayUpEvent,
+    handleRayDownEvent,
+    handleRayHover,
+    hoverObj,
+  } = useRaycaster(scene, camera);
 
   const [isRender, setIsRender] = useState<boolean>(false);
 
@@ -123,6 +129,11 @@ const Plane: React.FC = () => {
         );
         obj.lookAt(p);
 
+        const uuid = hoverObj();
+        if (!!uuid) {
+          highlight(scene, obstacle);
+        }
+
         animationHandleId = requestAnimationFrame(animate);
         renderer.render(scene, camera);
       };
@@ -186,7 +197,7 @@ const Plane: React.FC = () => {
         ref.removeEventListener("wheel", handleMouseWheelEvent);
       };
     }
-  }, [canvasRef]);
+  }, [canvasRef, meshes]);
 
   return <div ref={canvasRef as RefObject<HTMLDivElement>} />;
 };

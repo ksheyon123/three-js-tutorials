@@ -12,9 +12,11 @@ export const useCreate = () => {
   // const meshesRef = useRef<{ [key: string]: THREE.Mesh }>({});
 
   const highlight = (scene: THREE.Scene, obj: THREE.Mesh) => {
+    const { x, y, z } = obj.clone().position;
     const edges = new THREE.EdgesGeometry(obj.geometry);
-    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000 }); // Outline color
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x0aff000 }); // Outline color
     const outline = new THREE.LineSegments(edges, lineMaterial);
+    outline.position.set(x, y, z);
     scene.add(outline);
   };
 
