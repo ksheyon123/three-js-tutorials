@@ -6,6 +6,7 @@ import { useMove } from "@/hooks/useMove";
 import { useRaycaster } from "@/hooks/useRaycaster";
 import React, {
   RefObject,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -32,9 +33,20 @@ const Plane: React.FC = () => {
     keyUpEventHandler,
     keyDownEventHandler,
   } = useMove(scene);
-  const { createObject, createPlane } = useCreate();
-  const { chkIsArrived, chkIsMoving, handleRayUpEvent, handleRayDownEvent } =
-    useRaycaster(scene, camera);
+  const {
+    createObject,
+    createPlane,
+    drawOutLine,
+    removeOutLine,
+    getMeshObjects,
+  } = useCreate();
+  const {
+    chkIsArrived,
+    handleRayUpEvent,
+    handleRayDownEvent,
+    handleRayHover,
+    hoverObj,
+  } = useRaycaster(scene, camera);
 
   const [isRender, setIsRender] = useState<boolean>(false);
 
@@ -123,6 +135,17 @@ const Plane: React.FC = () => {
         );
         obj.lookAt(p);
 
+        // const uuid = hoverObj();
+        // if (!!uuid) {
+        //   const { obj } = getMeshObjects()[uuid];
+        //   drawOutLine(scene, obj);
+        // } else {
+        //   const { outline } = getMeshObjects()[uuid];
+        //   if (outline) {
+        //     removeOutLine(scene, outline);
+        //   }
+        // }
+
         animationHandleId = requestAnimationFrame(animate);
         renderer.render(scene, camera);
       };
@@ -163,7 +186,10 @@ const Plane: React.FC = () => {
         handleMouseUpEvent(e);
         handleRayUpEvent(e);
       });
-      ref.addEventListener("mousemove", handleMouseMoveEvent);
+      ref.addEventListener("mousemove", (e) => {
+        handleMouseMoveEvent(e);
+        handleRayHover(e);
+      });
       ref.addEventListener("mouseout", handleMouseUpEvent);
       ref.addEventListener("wheel", handleMouseWheelEvent);
       return () => {
@@ -175,7 +201,10 @@ const Plane: React.FC = () => {
           handleMouseUpEvent(e);
           handleRayUpEvent(e);
         });
-        ref.removeEventListener("mousemove", handleMouseMoveEvent);
+        ref.removeEventListener("mousemove", (e) => {
+          handleMouseMoveEvent(e);
+          handleRayHover(e);
+        });
         ref.removeEventListener("mouseout", handleMouseUpEvent);
         ref.removeEventListener("wheel", handleMouseWheelEvent);
       };

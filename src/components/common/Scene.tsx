@@ -23,7 +23,7 @@ export const Scene: React.FC = () => {
     keyUpCameraEvent,
     zoomInOutCameraEvent,
   } = useCamera();
-  const { meshesRef, createObject } = useCreate();
+  const { createObject } = useCreate();
   const canvasRef = useRef<HTMLDivElement>();
 
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
@@ -96,7 +96,7 @@ export const Scene: React.FC = () => {
       window.removeEventListener("keyup", keyUpCameraEvent);
       window.removeEventListener("wheel", zoomInOutCameraEvent);
     };
-  }, [meshesRef.current]);
+  }, []);
 
   return (
     <div

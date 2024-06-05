@@ -1,10 +1,12 @@
 import { useRef } from "react";
 import * as THREE from "three";
+import { useCreate } from "./useCreate";
 
 export const useRaycaster = (
   scene: THREE.Scene,
   camera: THREE.PerspectiveCamera
 ) => {
+  const { getMeshObjects, drawOutLine, removeOutLine } = useCreate();
   const coordRef = useRef<THREE.Vector3 | null>(null);
 
   const chkIsArrived = (position: THREE.Vector3) => {
@@ -61,8 +63,34 @@ export const useRaycaster = (
     }
   };
 
-  const chkIsMoving = () => {
-    return mouseDownRef.current.isMoving;
+  const hoverObjRef = useRef<any>();
+
+  const handleRayHover = (e: MouseEvent) => {
+    const mouse = new THREE.Vector2();
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+    // 카메라와 연관된 광선 생성
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+
+    // Raycaster를 사용하여 광선이 교차하는 모든 객체의 배열을 얻습니다.
+    const obstacle = scene.children.filter((el) => el.name === "obstacle")[0];
+    const intersects = raycaster.intersectObject(obstacle);
+
+    if (intersects.length > 0) {
+      hoverObjRef.current = obstacle.uuid;
+      console.log(obstacle.uuid);
+      const { obj } = getMeshObjects()[obstacle.uuid];
+      console.log(obj);
+      drawOutLine(scene, obj);
+    } else {
+      // hoverObjRef.current = undefined;
+      const o = getMeshObjects()[obstacle.uuid];
+      if (o?.outline) {
+        removeOutLine(scene, o.outline);
+      }
+    }
   };
 
   const handleRayDownEvent = (e: MouseEvent) => {
@@ -72,10 +100,16 @@ export const useRaycaster = (
       screenY: e.screenY,
     };
   };
+
+  const hoverObj = () => {
+    return hoverObjRef.current;
+  };
+
   return {
     chkIsArrived,
-    chkIsMoving,
     handleRayUpEvent,
     handleRayDownEvent,
+    handleRayHover,
+    hoverObj,
   };
 };
