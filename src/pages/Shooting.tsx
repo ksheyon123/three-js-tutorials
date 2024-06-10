@@ -19,6 +19,8 @@ const Shooting: React.FC = () => {
 
   const [isRender, setIsRender] = useState<boolean>(false);
 
+  const rockOn = useRef();
+
   useEffect(() => {
     if (renderer) {
       canvasRef.current && canvasRef.current.appendChild(renderer.domElement);
@@ -56,18 +58,44 @@ const Shooting: React.FC = () => {
       camera.lookAt(base);
 
       const animate = () => {
-        scene.children.map((el) => {
-          if (el) {
-            const position = el.position.clone();
-            const forward = base.clone().sub(position).normalize();
-            const newPosition = move(forward, position);
-            const { x, y, z } = newPosition;
-            if (base.distanceTo(newPosition) < 0.5 && el.name === "enemy") {
-              el.removeFromParent();
+        const enemies = scene.children.filter((el) => el.name === "enemy");
+        const missiles = scene.children.filter((el) => el.name === "missile");
+        enemies.map((el) => {
+          const position = el.position.clone();
+          const forward = base.clone().sub(position).normalize();
+          const newPosition = move(forward, position);
+          const { x, y, z } = newPosition;
+          const distance = base.distanceTo(newPosition);
+          if (distance < 3) {
+            if (!!el.userData?.missile) {
+              const m = el.userData.missile as THREE.Mesh;
+              const mForward = newPosition.clone().sub(m.position).normalize();
+              const newMPosition = move(mForward, m.position);
+              m.position.set(newMPosition.x, newMPosition.y, newMPosition.z);
+              const mToE = newMPosition.distanceTo(newPosition);
+              if (mToE < 0.2) {
+                el.removeFromParent();
+                m.removeFromParent();
+              }
+            } else {
+              const missile = getMissile();
+              el.userData = {
+                missile,
+              };
+              scene.add(missile);
             }
-            el.position.set(x, y, z);
           }
+          if (distance < 0.3 && el.name === "enemy") {
+            el.removeFromParent();
+          }
+          el.position.set(x, y, z);
         });
+
+        missiles.map((el) => {});
+        // scene.children.map((el) => {
+        //   if (el.name === "missile") {
+        //   }
+        // });
 
         animationId = requestAnimationFrame(animate);
         renderer.render(scene, camera);
@@ -82,8 +110,8 @@ const Shooting: React.FC = () => {
       let timerId: any;
       timerId = setInterval(() => {
         const deg = Math.random() * 90;
-        const x = Math.sin(deg) * 10;
-        const z = Math.cos(deg) * 10;
+        const x = Math.sin(deg) * 5;
+        const z = Math.cos(deg) * 5;
 
         const enemy = createObject(
           { w: 0.1, h: 0.1, d: 0.1 },
@@ -103,6 +131,23 @@ const Shooting: React.FC = () => {
       return () => clearInterval(timerId);
     }
   }, [isRender]);
+
+  const getMissile = () => {
+    const missile = createObject(
+      { w: 0.05, h: 0.05, d: 0.05 },
+      { x: 0, y: 0, z: 0 },
+      "missile",
+      [
+        new THREE.MeshBasicMaterial({ color: 0xffffff }), // +x 면
+        new THREE.MeshBasicMaterial({ color: 0xffffff }), // -x 면
+        new THREE.MeshBasicMaterial({ color: 0xffffff }), // +y 면
+        new THREE.MeshBasicMaterial({ color: 0xffffff }), // -y 면
+        new THREE.MeshBasicMaterial({ color: 0xffffff }), // +z 면
+        new THREE.MeshBasicMaterial({ color: 0xffffff }), // -z 면
+      ]
+    );
+    return missile;
+  };
 
   useEffect(() => {
     const ref = canvasRef.current;
