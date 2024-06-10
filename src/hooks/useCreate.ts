@@ -35,7 +35,7 @@ export const useCreate = () => {
   const createPlane = (name = "plane") => {
     const planeGeo = new THREE.PlaneGeometry(60, 60);
     const planeMat = new THREE.MeshPhongMaterial({
-      color: 0x25004d,
+      color: 0x000,
       side: THREE.DoubleSide,
     });
     const obj = new THREE.Mesh(planeGeo, planeMat);
@@ -56,8 +56,21 @@ export const useCreate = () => {
     return sphere;
   };
 
-  const createObject = (size?: any, coord?: any, type = "object") => {
-    const material = [
+  /**
+   * @description 직교 좌표계 상의 전달된 위치에 객체를 생성합니다.
+   * @param size
+   * @param coord
+   * @param type
+   * @param materialSpec
+   * @returns
+   */
+  const createObject = (
+    size?: any,
+    coord?: any,
+    type = "object",
+    materialSpec?: any
+  ) => {
+    const material = materialSpec || [
       new THREE.MeshBasicMaterial({ color: 0xffd400 }), // +x 면
       new THREE.MeshBasicMaterial({ color: 0xffd400 }), // -x 면
       new THREE.MeshBasicMaterial({ color: 0xffd400 }), // +y 면 (파란색으로 다른 면과 차별화)

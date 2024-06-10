@@ -122,7 +122,6 @@ export const useMove = (scene: THREE.Scene) => {
   const move = (forward: THREE.Vector3, curPosition: THREE.Vector3) => {
     accelerate();
     decelerate();
-    console.log("VEL : ", objectStateRef.current.vel);
     const copyOfForward = forward.clone();
     const copyOfCurPosition = curPosition.clone();
     const weightedForward = copyOfForward.multiplyScalar(
