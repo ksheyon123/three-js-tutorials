@@ -1,5 +1,6 @@
 import { InitContext } from "@/contexts/initContext";
 import { useCreate } from "@/hooks/useCreate";
+import { useFire } from "@/hooks/useFire";
 import { useMove } from "@/hooks/useMove";
 import React, {
   RefObject,
@@ -15,11 +16,12 @@ const Shooting: React.FC = () => {
   const canvasRef = useRef<HTMLDivElement>();
 
   const { createObject, createPlane } = useCreate();
-  const { move } = useMove(scene);
+  const { move, chkIsCollided } = useMove(scene);
+  const { fireNormalBullet, bulletMove } = useFire(scene);
 
   const [isRender, setIsRender] = useState<boolean>(false);
 
-  const rockOn = useRef();
+  const rockOn = useRef({});
 
   useEffect(() => {
     if (renderer) {
@@ -67,36 +69,18 @@ const Shooting: React.FC = () => {
           const { x, y, z } = newPosition;
           const distance = base.distanceTo(newPosition);
           if (distance < 3) {
-            if (!!el.userData?.missile) {
-              const m = el.userData.missile as THREE.Mesh;
-              const mForward = newPosition.clone().sub(m.position).normalize();
-              const newMPosition = move(mForward, m.position);
-              m.position.set(newMPosition.x, newMPosition.y, newMPosition.z);
-              const mToE = newMPosition.distanceTo(newPosition);
-              if (mToE < 0.2) {
-                el.removeFromParent();
-                m.removeFromParent();
-              }
-            } else {
-              const missile = getMissile();
-              el.userData = {
-                missile,
-              };
-              scene.add(missile);
-            }
+            fireNormalBullet(newPosition);
           }
-          if (distance < 0.3 && el.name === "enemy") {
+          console.log(chkIsCollided(position, forward));
+          if (chkIsCollided(position, forward)) {
             el.removeFromParent();
           }
           el.position.set(x, y, z);
         });
 
-        missiles.map((el) => {});
-        // scene.children.map((el) => {
-        //   if (el.name === "missile") {
-        //   }
-        // });
-
+        missiles.map((el) => {
+          bulletMove(el.uuid);
+        });
         animationId = requestAnimationFrame(animate);
         renderer.render(scene, camera);
       };
@@ -127,27 +111,18 @@ const Shooting: React.FC = () => {
           ]
         );
         scene.add(enemy);
-      }, 100);
+      }, 1000);
       return () => clearInterval(timerId);
     }
   }, [isRender]);
+  const isReady = useRef<boolean>(false);
 
-  const getMissile = () => {
-    const missile = createObject(
-      { w: 0.05, h: 0.05, d: 0.05 },
-      { x: 0, y: 0, z: 0 },
-      "missile",
-      [
-        new THREE.MeshBasicMaterial({ color: 0xffffff }), // +x 면
-        new THREE.MeshBasicMaterial({ color: 0xffffff }), // -x 면
-        new THREE.MeshBasicMaterial({ color: 0xffffff }), // +y 면
-        new THREE.MeshBasicMaterial({ color: 0xffffff }), // -y 면
-        new THREE.MeshBasicMaterial({ color: 0xffffff }), // +z 면
-        new THREE.MeshBasicMaterial({ color: 0xffffff }), // -z 면
-      ]
-    );
-    return missile;
-  };
+  useEffect(() => {
+    if (isRender) {
+      let timerId: any;
+      timerId = setInterval(() => {}, 1000);
+    }
+  }, [isRender]);
 
   useEffect(() => {
     const ref = canvasRef.current;

@@ -181,7 +181,8 @@ export const useMove = (scene: THREE.Scene) => {
     raycaster.set(position, direction);
 
     const objects = scene.children.filter(
-      (el) => el.name === "plane" || el.name === "obstacle"
+      (el) =>
+        el.name === "plane" || el.name === "obstacle" || el.name === "enemy"
     );
 
     // Perform the raycasting
@@ -209,5 +210,6 @@ export const useMove = (scene: THREE.Scene) => {
     lookAt,
     jump,
     direction,
+    chkIsCollided,
   };
 };
