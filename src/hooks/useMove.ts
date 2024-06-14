@@ -182,7 +182,10 @@ export const useMove = (scene: THREE.Scene) => {
 
     const objects = scene.children.filter(
       (el) =>
-        el.name === "plane" || el.name === "obstacle" || el.name === "enemy"
+        el.name === "plane" ||
+        el.name === "obstacle" ||
+        el.name === "enemy" ||
+        el.name === "bullet"
     );
 
     // Perform the raycasting

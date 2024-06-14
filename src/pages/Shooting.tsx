@@ -1,6 +1,6 @@
 import { InitContext } from "@/contexts/initContext";
 import { useCreate } from "@/hooks/useCreate";
-import { useFire } from "@/hooks/useFire";
+import { useBullet } from "@/hooks/useBullet";
 import { useMove } from "@/hooks/useMove";
 import React, {
   RefObject,
@@ -10,6 +10,7 @@ import React, {
   useState,
 } from "react";
 import * as THREE from "three";
+import { useEnemy } from "@/hooks/useEnemy";
 
 const Shooting: React.FC = () => {
   const { renderer, camera, scene } = useContext(InitContext);
@@ -17,7 +18,9 @@ const Shooting: React.FC = () => {
 
   const { createObject, createPlane } = useCreate();
   const { move, chkIsCollided } = useMove(scene);
-  const { fireNormalBullet, bulletMove } = useFire(scene);
+  const { createBullet, chkBulletCollided, bulletMove, bulletRemove, remove } =
+    useBullet(scene);
+  const { getPosition, chkEnemyCollided, enemyRemove } = useEnemy(scene);
 
   const [isRender, setIsRender] = useState<boolean>(false);
 
@@ -59,28 +62,54 @@ const Shooting: React.FC = () => {
       camera.position.set(0, 10, 0);
       camera.lookAt(base);
 
+      let ref: any[] = [];
+
       const animate = () => {
         const enemies = scene.children.filter((el) => el.name === "enemy");
-        const missiles = scene.children.filter((el) => el.name === "missile");
+        const bullets = scene.children.filter((el) => el.name === "bullet");
+
         enemies.map((el) => {
           const position = el.position.clone();
-          const forward = base.clone().sub(position).normalize();
-          const newPosition = move(forward, position);
-          const { x, y, z } = newPosition;
-          const distance = base.distanceTo(newPosition);
-          if (distance < 3) {
-            fireNormalBullet(newPosition);
+          const distance = base.distanceTo(position);
+          if (distance < 10) {
+            createBullet(position);
           }
-          console.log(chkIsCollided(position, forward));
-          if (chkIsCollided(position, forward)) {
-            el.removeFromParent();
-          }
-          el.position.set(x, y, z);
         });
 
-        missiles.map((el) => {
-          bulletMove(el.uuid);
+        enemies.map((el) => {
+          chkEnemyCollided(el.uuid);
         });
+
+        bullets.map((el) => {
+          chkBulletCollided(el.uuid);
+        });
+
+        enemyRemove();
+        bulletRemove();
+
+        enemies.map((el) => {
+          const d = getPosition(el.uuid);
+          if (d) {
+            if (d.distanceTo(base) < 0.2) {
+              el.removeFromParent();
+            }
+            const { x, y, z } = d;
+            el.position.set(x, y, z);
+          }
+        });
+
+        bullets.map((el) => {
+          const d = bulletMove(el.uuid);
+          if (d) {
+            if (d.distanceTo(base) > 8) {
+              el.removeFromParent();
+              remove(el.uuid);
+            }
+            const { x, y, z } = d;
+            el.position.set(x, y, z);
+          }
+        });
+
         animationId = requestAnimationFrame(animate);
         renderer.render(scene, camera);
       };
@@ -89,40 +118,32 @@ const Shooting: React.FC = () => {
     }
   }, [isRender]);
 
-  useEffect(() => {
-    if (isRender) {
-      let timerId: any;
-      timerId = setInterval(() => {
-        const deg = Math.random() * 90;
-        const x = Math.sin(deg) * 5;
-        const z = Math.cos(deg) * 5;
+  // useEffect(() => {
+  //   if (isRender) {
+  //     let timerId: any;
+  //     timerId = setInterval(() => {
+  //       const deg = Math.random() * 90;
+  //       const x = Math.sin(deg) * 5;
+  //       const z = Math.cos(deg) * 5;
 
-        const enemy = createObject(
-          { w: 0.1, h: 0.1, d: 0.1 },
-          { x: x, y: 0, z: z },
-          "enemy",
-          [
-            new THREE.MeshBasicMaterial({ color: 0xfff }), // +x 면
-            new THREE.MeshBasicMaterial({ color: 0xfff }), // -x 면
-            new THREE.MeshBasicMaterial({ color: 0xfff }), // +y 면
-            new THREE.MeshBasicMaterial({ color: 0xfff }), // -y 면
-            new THREE.MeshBasicMaterial({ color: 0xfff }), // +z 면
-            new THREE.MeshBasicMaterial({ color: 0xfff }), // -z 면
-          ]
-        );
-        scene.add(enemy);
-      }, 1000);
-      return () => clearInterval(timerId);
-    }
-  }, [isRender]);
-  const isReady = useRef<boolean>(false);
-
-  useEffect(() => {
-    if (isRender) {
-      let timerId: any;
-      timerId = setInterval(() => {}, 1000);
-    }
-  }, [isRender]);
+  //       const enemy = createObject(
+  //         { w: 0.1, h: 0.1, d: 0.1 },
+  //         { x: x, y: 0, z: z },
+  //         "enemy",
+  //         [
+  //           new THREE.MeshBasicMaterial({ color: 0xfff }), // +x 면
+  //           new THREE.MeshBasicMaterial({ color: 0xfff }), // -x 면
+  //           new THREE.MeshBasicMaterial({ color: 0xfff }), // +y 면
+  //           new THREE.MeshBasicMaterial({ color: 0xfff }), // -y 면
+  //           new THREE.MeshBasicMaterial({ color: 0xfff }), // +z 면
+  //           new THREE.MeshBasicMaterial({ color: 0xfff }), // -z 면
+  //         ]
+  //       );
+  //       scene.add(enemy);
+  //     }, 3000);
+  //     return () => clearInterval(timerId);
+  //   }
+  // }, [isRender]);
 
   useEffect(() => {
     const ref = canvasRef.current;
