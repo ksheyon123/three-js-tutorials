@@ -18,11 +18,34 @@ export const useBullet = (scene: THREE.Scene) => {
   const bulletStatusRef = useRef<BulletStatus>({});
   const removeRef = useRef<THREE.Object3D[]>([]);
 
+  const getNeareast = (): THREE.Object3D => {
+    const allObjects = scene.children.filter((el) => el.name === "enemy");
+    let closestObject = null;
+    let minDistance = Infinity;
+
+    allObjects.forEach((obj) => {
+      const worldPosition = new THREE.Vector3();
+      obj.getWorldPosition(worldPosition);
+
+      const distance = worldPosition.distanceTo(new THREE.Vector3(0, 0, 0));
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestObject = obj;
+      }
+    });
+
+    return closestObject;
+  };
+
   useEffect(() => {
     let timerId: any;
     timerId = setInterval(() => {
-      isNormalReady.current = true;
-    }, 10);
+      const obj = getNeareast();
+      if (obj) {
+        createBullet(obj.position);
+      }
+    }, 1000);
     return () => clearInterval(timerId);
   }, []);
 
@@ -50,6 +73,7 @@ export const useBullet = (scene: THREE.Scene) => {
     // Check if there is an intersection close to the object
     for (let i = 0; i < intersects.length; i++) {
       if (intersects[i].distance <= 0.5) {
+        console.log("Bullet");
         removeRef.current.push(bulletStatusRef.current[uuid].object);
       }
     }
@@ -69,23 +93,21 @@ export const useBullet = (scene: THREE.Scene) => {
   };
 
   const createBullet = (position: THREE.Vector3) => {
-    if (isNormalReady.current) {
-      isNormalReady.current = false;
-      const targetPosition = position.clone();
-      const forward = targetPosition
-        .sub(new THREE.Vector3(0, 0, 0))
-        .normalize();
-      const bullet = getBullet();
-      bulletStatusRef.current = {
-        ...bulletStatusRef.current,
-        [bullet.uuid]: {
-          forward,
-          object: bullet,
-          damage: 1,
-        },
-      };
-      scene.add(bullet);
-    }
+    // if (isNormalReady.current) {
+    // isNormalReady.current = false;
+    const targetPosition = position.clone();
+    const forward = targetPosition.sub(new THREE.Vector3(0, 0, 0)).normalize();
+    const bullet = getBullet();
+    bulletStatusRef.current = {
+      ...bulletStatusRef.current,
+      [bullet.uuid]: {
+        forward,
+        object: bullet,
+        damage: 1,
+      },
+    };
+    scene.add(bullet);
+    // }
   };
 
   const getBullet = () => {

@@ -71,9 +71,9 @@ const Shooting: React.FC = () => {
         enemies.map((el) => {
           const position = el.position.clone();
           const distance = base.distanceTo(position);
-          if (distance < 10) {
-            createBullet(position);
-          }
+          // if (distance < 10) {
+          //   createBullet(position);
+          // }
         });
 
         enemies.map((el) => {
@@ -87,21 +87,21 @@ const Shooting: React.FC = () => {
         enemyRemove();
         bulletRemove();
 
-        enemies.map((el) => {
-          const d = getPosition(el.uuid);
-          if (d) {
-            if (d.distanceTo(base) < 0.2) {
-              el.removeFromParent();
-            }
-            const { x, y, z } = d;
-            el.position.set(x, y, z);
-          }
-        });
+        // enemies.map((el) => {
+        //   const d = getPosition(el.uuid);
+        //   if (d) {
+        //     if (d.distanceTo(base) < 0.2) {
+        //       el.removeFromParent();
+        //     }
+        //     const { x, y, z } = d;
+        //     el.position.set(x, y, z);
+        //   }
+        // });
 
         bullets.map((el) => {
           const d = bulletMove(el.uuid);
           if (d) {
-            if (d.distanceTo(base) > 8) {
+            if (d.distanceTo(base) > 15) {
               el.removeFromParent();
               remove(el.uuid);
             }

@@ -7,6 +7,7 @@ type EnemyStatus = {
   [key: string]: {
     object: THREE.Object3D;
     speed: number;
+    hp: number;
     forward?: THREE.Vector3;
   };
 };
@@ -20,33 +21,34 @@ export const useEnemy = (scene: THREE.Scene) => {
 
   useEffect(() => {
     let timerId: any;
-    timerId = setInterval(() => {
-      const deg = Math.random() * 90;
-      const x = Math.sin(deg) * 5;
-      const z = Math.cos(deg) * 5;
+    // timerId = setInterval(() => {
+    const deg = Math.random() * 90;
+    const x = Math.sin(deg) * 5;
+    const z = Math.cos(deg) * 5;
 
-      const enemy = createObject(
-        { w: 0.1, h: 0.1, d: 0.1 },
-        { x: x, y: 0, z: z },
-        "enemy",
-        [
-          new THREE.MeshBasicMaterial({ color: 0xfff }), // +x 면
-          new THREE.MeshBasicMaterial({ color: 0xfff }), // -x 면
-          new THREE.MeshBasicMaterial({ color: 0xfff }), // +y 면
-          new THREE.MeshBasicMaterial({ color: 0xfff }), // -y 면
-          new THREE.MeshBasicMaterial({ color: 0xfff }), // +z 면
-          new THREE.MeshBasicMaterial({ color: 0xfff }), // -z 면
-        ]
-      );
-      enemyStatusRef.current = {
-        ...enemyStatusRef.current,
-        [enemy.uuid]: {
-          object: enemy,
-          speed: 3,
-        },
-      };
-      scene.add(enemy);
-    }, 1000);
+    const enemy = createObject(
+      { w: 0.1, h: 0.1, d: 0.1 },
+      { x: x, y: 0, z: z },
+      "enemy",
+      [
+        new THREE.MeshBasicMaterial({ color: 0xfff }), // +x 면
+        new THREE.MeshBasicMaterial({ color: 0xfff }), // -x 면
+        new THREE.MeshBasicMaterial({ color: 0xfff }), // +y 면
+        new THREE.MeshBasicMaterial({ color: 0xfff }), // -y 면
+        new THREE.MeshBasicMaterial({ color: 0xfff }), // +z 면
+        new THREE.MeshBasicMaterial({ color: 0xfff }), // -z 면
+      ]
+    );
+    enemyStatusRef.current = {
+      ...enemyStatusRef.current,
+      [enemy.uuid]: {
+        object: enemy,
+        speed: 3,
+        hp: 3,
+      },
+    };
+    scene.add(enemy);
+    // }, 1000);
     return () => clearInterval(timerId);
   }, []);
 
@@ -74,10 +76,15 @@ export const useEnemy = (scene: THREE.Scene) => {
     // Perform the raycasting
     const intersects = raycaster.intersectObjects(objects);
 
+    console.log(intersects.filter((el) => el.distance <= 0.7).length);
     // Check if there is an intersection close to the object
     for (let i = 0; i < intersects.length; i++) {
-      if (intersects[i].distance <= 0.5) {
-        removeRef.current.push(enemyStatusRef.current[uuid].object);
+      if (intersects[i].distance <= 0.7) {
+        console.log("ENEMY");
+        --enemyStatusRef.current[uuid].hp;
+        if (enemyStatusRef.current[uuid].hp === 0) {
+          removeRef.current.push(enemyStatusRef.current[uuid].object);
+        }
       }
     }
   };
