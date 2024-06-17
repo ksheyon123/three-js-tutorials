@@ -13,7 +13,6 @@ export const useBullet = (scene: THREE.Scene) => {
   const { move } = useMove(scene);
   const bulletStatusRef = useRef<BulletStatus>({});
   const removeRef = useRef<THREE.Object3D[]>([]);
-  const rockOnRef = useRef<string[]>([]);
 
   useEffect(() => {}, []);
 
@@ -40,8 +39,8 @@ export const useBullet = (scene: THREE.Scene) => {
   useEffect(() => {
     let timerId: any;
     timerId = setInterval(() => {
-      createBullet(1, 1);
-      createBullet(2, 3);
+      // createBullet(1, 1);
+      createBullet(2, 3, true);
     }, 500);
     return () => clearInterval(timerId);
   }, []);
@@ -70,7 +69,9 @@ export const useBullet = (scene: THREE.Scene) => {
         // Don't check against itself
         const objectBox = createBoundingBox(object);
         if (movingBox.intersectsBox(objectBox)) {
-          removeRef.current.push(missile);
+          if (!missile.userData?.unremovable) {
+            removeRef.current.push(missile);
+          }
         }
       }
     }
@@ -94,7 +95,11 @@ export const useBullet = (scene: THREE.Scene) => {
 
   const rockOn = () => {};
 
-  const createBullet = (damage: number, speed: number) => {
+  const createBullet = (
+    damage: number,
+    speed: number,
+    unremovable?: boolean
+  ) => {
     const material = new THREE.MeshBasicMaterial({ color: 0x000000 });
     // Create a 2D geometry (a plane in this case)
     const geometry = new THREE.PlaneGeometry(0.1, 0.1);
@@ -111,6 +116,7 @@ export const useBullet = (scene: THREE.Scene) => {
       bullet.userData = {
         damage,
         speed,
+        unremovable,
         forward: nearestEnemy.position.clone().normalize(),
       };
       bulletStatusRef.current = {
