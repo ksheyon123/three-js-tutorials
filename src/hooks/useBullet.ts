@@ -7,7 +7,11 @@ type BulletStatus = {
   [key: string]: {
     object: THREE.Object3D;
     forward: THREE.Vector3;
+    target: THREE.Object3D;
     damage: number;
+    move: Function;
+    remove: Function;
+    collide: Function;
   };
 };
 
@@ -93,21 +97,22 @@ export const useBullet = (scene: THREE.Scene) => {
   };
 
   const createBullet = (position: THREE.Vector3) => {
-    // if (isNormalReady.current) {
-    // isNormalReady.current = false;
     const targetPosition = position.clone();
     const forward = targetPosition.sub(new THREE.Vector3(0, 0, 0)).normalize();
-    const bullet = getBullet();
+    const object = getBullet();
     bulletStatusRef.current = {
       ...bulletStatusRef.current,
-      [bullet.uuid]: {
+      [object.uuid]: {
         forward,
-        object: bullet,
+        object,
         damage: 1,
+        target: getNeareast(),
+        move: () => {},
+        remove: () => {},
+        collide: () => {},
       },
     };
-    scene.add(bullet);
-    // }
+    scene.add(object);
   };
 
   const getBullet = () => {
