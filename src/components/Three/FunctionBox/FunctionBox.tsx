@@ -18,15 +18,24 @@ const FunctionBox: React.FC = () => {
   return (
     <div className={styles.functionbox} onClick={() => toggler()}>
       {isOpen && (
-        <div className="box-items">
-          <div className="box-item">aa</div>
-          <div className="box-item">a</div>
-          <div className="box-item">a</div>
+        <div className={styles["box-items"]}>
+          <div className={styles["toggle-btn-r"]}>
+            <FontAwesomeIcon
+              style={{ width: 20, height: 40 }}
+              icon={faChevronRight}
+            />
+          </div>
+          <div className={styles["box-item"]}>aa</div>
+          <div className={styles["box-item"]}>a</div>
+          <div className={styles["box-item"]}>a</div>
         </div>
       )}
       {!isOpen && (
-        <div className="drawer">
-          <FontAwesomeIcon icon={faChevronRight} />
+        <div className={styles["toggle-btn-l"]}>
+          <FontAwesomeIcon
+            style={{ width: 20, height: 40 }}
+            icon={faChevronLeft}
+          />
         </div>
       )}
     </div>

@@ -3,20 +3,29 @@
   top: 0;
   right: 0;
 }
-.box-items {
+
+.functionbox > .box-items {
+  position: relative;
   display: grid;
-  width: 100px;
+  width: 105px;
   height: auto;
   grid-template-rows: repeat(2, 50px);
 }
 
-.box-item {
+.functionbox > .box-items > .box-item {
   width: 50px;
   height: 50px;
   border: 1px solid #aaa;
 }
 
-.drawer {
+.toggle-btn-l {
+  width: 20px;
+  height: 40px;
+}
+
+.toggle-btn-r {
+  position: absolute;
+  left: -20px;
   width: 20px;
   height: 40px;
 }
