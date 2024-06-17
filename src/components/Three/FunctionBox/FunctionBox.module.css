@@ -1,0 +1,22 @@
+.functionbox {
+  position: fixed;
+  top: 0;
+  right: 0;
+}
+.box-items {
+  display: grid;
+  width: 100px;
+  height: auto;
+  grid-template-rows: repeat(2, 50px);
+}
+
+.box-item {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #aaa;
+}
+
+.drawer {
+  width: 20px;
+  height: 40px;
+}
