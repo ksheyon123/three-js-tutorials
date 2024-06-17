@@ -18,7 +18,7 @@ const Shooting: React.FC = () => {
 
   const { createObject, createPlane } = useCreate();
   const { move, chkIsCollided } = useMove(scene);
-  const { createBullet, chkBulletCollided, bulletMove, bulletRemove, remove } =
+  const { chkBulletCollided, bulletMove, bulletRemove, remove } =
     useBullet(scene);
   const { getPosition, chkEnemyCollided, enemyRemove } = useEnemy(scene);
 
@@ -34,7 +34,7 @@ const Shooting: React.FC = () => {
   }, [renderer]);
 
   const getShooter = () => {
-    const obj = createObject({}, {}, "object", [
+    const obj = createObject({}, {}, "i", [
       new THREE.MeshBasicMaterial({ color: 0xffd400 }), // +x 면
       new THREE.MeshBasicMaterial({ color: 0xffd400 }), // -x 면
       new THREE.MeshBasicMaterial({ color: 0xffd400 }), // +y 면
@@ -51,30 +51,18 @@ const Shooting: React.FC = () => {
 
       const base = new THREE.Vector3(0, 0, 0);
       // Assign plane object to the scene;
-      const plane = createPlane();
-      scene.add(plane);
 
-      // Assign Shooter object to the scene;
-      //   const shooter = getShooter();
-      //   scene.add(shooter);
-
+      const shooter = getShooter();
+      scene.add(shooter);
       // Set camera
-      camera.position.set(0, 10, 0);
+      camera.position.set(0, 0, 30);
       camera.lookAt(base);
 
-      let ref: any[] = [];
-
       const animate = () => {
+        animationId = requestAnimationFrame(animate);
+
         const enemies = scene.children.filter((el) => el.name === "enemy");
         const bullets = scene.children.filter((el) => el.name === "bullet");
-
-        enemies.map((el) => {
-          const position = el.position.clone();
-          const distance = base.distanceTo(position);
-          // if (distance < 10) {
-          //   createBullet(position);
-          // }
-        });
 
         enemies.map((el) => {
           chkEnemyCollided(el.uuid);
@@ -87,16 +75,16 @@ const Shooting: React.FC = () => {
         enemyRemove();
         bulletRemove();
 
-        // enemies.map((el) => {
-        //   const d = getPosition(el.uuid);
-        //   if (d) {
-        //     if (d.distanceTo(base) < 0.2) {
-        //       el.removeFromParent();
-        //     }
-        //     const { x, y, z } = d;
-        //     el.position.set(x, y, z);
-        //   }
-        // });
+        enemies.map((el) => {
+          const d = getPosition(el.uuid);
+          if (d) {
+            if (d.distanceTo(base) < 0.2) {
+              el.removeFromParent();
+            }
+            const { x, y, z } = d;
+            el.position.set(x, y, z);
+          }
+        });
 
         bullets.map((el) => {
           const d = bulletMove(el.uuid);
@@ -110,7 +98,6 @@ const Shooting: React.FC = () => {
           }
         });
 
-        animationId = requestAnimationFrame(animate);
         renderer.render(scene, camera);
       };
       animate();

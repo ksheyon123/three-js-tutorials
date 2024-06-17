@@ -1,63 +1,68 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { useCreate } from "./useCreate";
-import { useMove } from "./useMove";
+
+import WorkerBuilder from "@/workers/worker-builder";
+import Worker from "@/workers/rockOn";
 
 type EnemyStatus = {
-  [key: string]: {
-    object: THREE.Object3D;
-    speed: number;
-    hp: number;
-    forward?: THREE.Vector3;
-  };
+  [key: string]: THREE.Mesh;
 };
 
 export const useEnemy = (scene: THREE.Scene) => {
-  const { createObject } = useCreate();
-
   const hz = 1 / 60;
   const enemyStatusRef = useRef<EnemyStatus>({});
   const removeRef = useRef<THREE.Object3D[]>([]);
 
+  const worker = new WorkerBuilder(Worker);
+
   useEffect(() => {
     let timerId: any;
-    // timerId = setInterval(() => {
-    const deg = Math.random() * 90;
-    const x = Math.sin(deg) * 5;
-    const z = Math.cos(deg) * 5;
-
-    const enemy = createObject(
-      { w: 0.1, h: 0.1, d: 0.1 },
-      { x: x, y: 0, z: z },
-      "enemy",
-      [
-        new THREE.MeshBasicMaterial({ color: 0xfff }), // +x 면
-        new THREE.MeshBasicMaterial({ color: 0xfff }), // -x 면
-        new THREE.MeshBasicMaterial({ color: 0xfff }), // +y 면
-        new THREE.MeshBasicMaterial({ color: 0xfff }), // -y 면
-        new THREE.MeshBasicMaterial({ color: 0xfff }), // +z 면
-        new THREE.MeshBasicMaterial({ color: 0xfff }), // -z 면
-      ]
-    );
-    enemyStatusRef.current = {
-      ...enemyStatusRef.current,
-      [enemy.uuid]: {
-        object: enemy,
-        speed: 3,
-        hp: 3,
-      },
-    };
-    scene.add(enemy);
-    // }, 1000);
+    timerId = setInterval(() => {
+      createEnemy(3, 1);
+    }, 1000);
     return () => clearInterval(timerId);
   }, []);
 
+  useEffect(() => {
+    let timerId: any;
+    timerId = setInterval(() => {
+      createEnemy(10, 2);
+    }, 3000);
+    return () => clearInterval(timerId);
+  }, []);
+
+  const createEnemy = (speed: number, life: number) => {
+    const deg = Math.random() * 90;
+    const x = Math.sin(deg) * 5;
+    const y = Math.cos(deg) * 5;
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    // Create a 2D geometry (a plane in this case)
+    const geometry = new THREE.PlaneGeometry(0.5, 0.5);
+    // Create a mesh
+    const enemy = new THREE.Mesh(geometry, material);
+    enemy.position.set(x * 5, y * 5, 0);
+    enemy.name = "enemy";
+    enemy.userData = {
+      speed,
+      life,
+    };
+    enemyStatusRef.current = {
+      ...enemyStatusRef.current,
+      [enemy.uuid]: enemy,
+    };
+    worker.postMessage({
+      key: "update",
+      id: enemy.uuid,
+    });
+    scene.add(enemy);
+  };
+
   const getPosition = (uuid: string) => {
     if (enemyStatusRef.current[uuid]) {
-      const curPosition = enemyStatusRef.current[uuid].object.position.clone();
+      const curPosition = enemyStatusRef.current[uuid].position.clone();
       const forward = new THREE.Vector3(0, 0, 0).sub(curPosition).normalize();
       const weightedForward = forward.multiplyScalar(
-        enemyStatusRef.current[uuid].speed * hz
+        enemyStatusRef.current[uuid].userData.speed * hz
       );
 
       const newPosition = curPosition.add(weightedForward);
@@ -66,27 +71,25 @@ export const useEnemy = (scene: THREE.Scene) => {
   };
 
   const chkEnemyCollided = (uuid: string) => {
-    const curPosition = enemyStatusRef.current[uuid].object.position.clone();
-    const forward = new THREE.Vector3(0, 0, 0).sub(curPosition).normalize();
-    const raycaster = new THREE.Raycaster();
-    raycaster.set(curPosition, forward);
+    const enemy = enemyStatusRef.current[uuid];
 
-    const objects = scene.children.filter((el) => el.name === "bullet");
+    const objects = scene.children.filter(
+      (el) => el.name === "bullet" || el.name === "i"
+    );
 
-    // Perform the raycasting
-    const intersects = raycaster.intersectObjects(objects);
-
-    console.log(intersects.filter((el) => el.distance <= 0.7).length);
-    // Check if there is an intersection close to the object
-    for (let i = 0; i < intersects.length; i++) {
-      if (intersects[i].distance <= 0.7) {
-        console.log("ENEMY");
-        --enemyStatusRef.current[uuid].hp;
-        if (enemyStatusRef.current[uuid].hp === 0) {
-          removeRef.current.push(enemyStatusRef.current[uuid].object);
+    const movingBox = createBoundingBox(enemy);
+    for (const object of objects) {
+      if (object !== enemy) {
+        // Don't check against itself
+        const objectBox = createBoundingBox(object);
+        if (movingBox.intersectsBox(objectBox)) {
+          removeRef.current.push(enemy);
         }
       }
     }
+  };
+  const createBoundingBox = (object: THREE.Object3D) => {
+    return new THREE.Box3().setFromObject(object);
   };
   const enemyRemove = () => {
     removeRef.current.map((el) => {

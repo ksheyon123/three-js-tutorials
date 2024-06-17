@@ -5,7 +5,7 @@ import Plane from "@/pages/Plane";
 import Space from "@/pages/Space";
 import App from "./pages/App";
 import ThreeLayout from "@/components/Three/ThreeLayout/ThreeLayout";
-import Shooting from "@/pages/Shooting";
+import DefenseGame from "@/pages/DefenseGame";
 
 const router = createBrowserRouter(
   [
@@ -33,8 +33,8 @@ const router = createBrowserRouter(
           element: <ThreeLayout />,
           children: [
             {
-              path: "shooting",
-              element: <Shooting />,
+              path: "defense",
+              element: <DefenseGame />,
             },
           ],
         },
