@@ -20,18 +20,27 @@ const FunctionBox: React.FC = () => {
     setIsOpen((prev) => !prev);
   };
 
+  const install = (
+    type = "basic",
+    damage: number,
+    speed: number,
+    delay: number
+  ) => {
+    worker.postMessage({
+      key: "install",
+      spec: {
+        type,
+        damage,
+        speed,
+        delay,
+      },
+    });
+  };
+
   const turrets = [
     {
-      onClick: () => {
-        worker.postMessage({
-          key: "turretInstall",
-          spec: {
-            type: "basic",
-            damage: 1,
-            speed: 3,
-            delay: 500,
-          },
-        });
+      install: (type: string, damage: number, speed: number, delay: number) => {
+        install(type, damage, speed, delay);
         toggleModal();
       },
       name: "기본",
@@ -39,7 +48,7 @@ const FunctionBox: React.FC = () => {
     {
       onClick: () => {
         worker.postMessage({
-          key: "turretInstall",
+          key: "install",
           spec: {
             type: "basic",
             damage: 1,
@@ -67,21 +76,6 @@ const FunctionBox: React.FC = () => {
               style={{ width: 20, height: 40 }}
               icon={faChevronRight}
             />
-          </div>
-
-          <div
-            className={styles["box-item"]}
-            onClick={() =>
-              toggleModal({
-                title: "업그레이드 하시겠습니까?",
-                buttons: [
-                  { onClick: () => toggleModal(), name: "취소" },
-                  { onClick: () => toggleModal(), name: "확인" },
-                ],
-              })
-            }
-          >
-            기본
           </div>
           {turrets.map(({ onClick, name }) => {
             return (
