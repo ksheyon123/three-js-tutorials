@@ -7,8 +7,10 @@ import {
   faChevronRight,
   faChevronLeft,
 } from "@fortawesome/free-solid-svg-icons";
+import { ModalContext } from "@/contexts/ModalContext";
 const FunctionBox: React.FC = () => {
   const { scene } = useContext(InitContext);
+  const { toggleModal } = useContext(ModalContext);
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggler = () => {
@@ -25,7 +27,20 @@ const FunctionBox: React.FC = () => {
               icon={faChevronRight}
             />
           </div>
-          <div className={styles["box-item"]}>aa</div>
+          <div
+            className={styles["box-item"]}
+            onClick={() =>
+              toggleModal({
+                title: "설치하시겠습니까?",
+                buttons: [
+                  { onClick: () => toggleModal(), name: "취소" },
+                  { onClick: () => toggleModal(), name: "확인" },
+                ],
+              })
+            }
+          >
+            aa
+          </div>
           <div className={styles["box-item"]}>a</div>
           <div className={styles["box-item"]}>a</div>
         </div>

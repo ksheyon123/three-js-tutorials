@@ -1,3 +1,11 @@
+@media screen and (max-width: 980px) {
+  .functionbox {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+  }
+}
+
 .functionbox {
   position: fixed;
   top: 0;
@@ -9,7 +17,7 @@
   display: grid;
   width: 105px;
   height: auto;
-  grid-template-rows: repeat(2, 50px);
+  grid-template-columns: repeat(2, 50px);
 }
 
 .functionbox > .box-items > .box-item {

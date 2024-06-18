@@ -4,10 +4,14 @@ import { RouterProvider } from "react-router-dom";
 import { ThemeProvider, createGlobalStyle } from "styled-components";
 import router from "@/router";
 import { InitProvider } from "./contexts/initContext";
+import { ModalProvider } from "./contexts/ModalContext";
+import { theme } from "./constants/theme";
 
 const GlobalStyling = createGlobalStyle`
   * {
     box-sizing  : border-box;
+    color : #222;
+
   }
   body {
     margin : 0px;
@@ -18,11 +22,13 @@ const GlobalStyling = createGlobalStyle`
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <InitProvider>
-      <ThemeProvider theme={{}}>
-        <GlobalStyling />
-        <RouterProvider router={router} />
-      </ThemeProvider>
-    </InitProvider>
+    <ThemeProvider theme={{}}>
+      <InitProvider>
+        <ModalProvider>
+          <GlobalStyling />
+          <RouterProvider router={router} />
+        </ModalProvider>
+      </InitProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );
