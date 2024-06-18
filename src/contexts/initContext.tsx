@@ -3,6 +3,9 @@ import * as THREE from "three";
 import React, { ReactNode, createContext, useEffect, useState } from "react";
 import { useCamera } from "@/hooks/useCamera";
 
+import WorkerBuilder from "@/workers/worker-builder";
+import Worker from "@/workers/rockOn";
+
 interface IProps {
   children: ReactNode;
 }
@@ -11,10 +14,12 @@ const InitContext = createContext<{
   scene: THREE.Scene | null;
   renderer: THREE.WebGLRenderer | null;
   camera: THREE.PerspectiveCamera | null;
+  worker: WorkerBuilder;
 }>({
   scene: null,
   renderer: null,
   camera: null,
+  worker: null,
 });
 
 const InitProvider: React.FC<IProps> = ({ children }) => {
@@ -22,6 +27,7 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
   const [scene, setScene] = useState<THREE.Scene>();
   const [renderer, setRenderer] = useState<THREE.WebGLRenderer>();
   const [camera, setCamera] = useState<THREE.PerspectiveCamera>();
+  const worker = new WorkerBuilder(Worker);
 
   /**
    * @param scene THREE.Scene which receives projected object.
@@ -77,6 +83,7 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
         scene,
         renderer,
         camera,
+        worker,
       }}
     >
       {!!scene && children}

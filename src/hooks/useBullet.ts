@@ -1,20 +1,27 @@
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useMove } from "./useMove";
 
 import WorkerBuilder from "@/workers/worker-builder";
 import Worker from "@/workers/rockOn";
+import { InitContext } from "@/contexts/initContext";
 
 type BulletStatus = {
   [key: string]: THREE.Object3D;
 };
 
 export const useBullet = (scene: THREE.Scene) => {
+  const { worker } = useContext(InitContext);
   const { move } = useMove(scene);
   const bulletStatusRef = useRef<BulletStatus>({});
   const removeRef = useRef<THREE.Object3D[]>([]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    worker.onmessage = (e: any) => {
+      const { damage, speed, color } = e.data;
+      createBullet(damage, speed, color);
+    };
+  }, [worker]);
 
   const getNeareast = (): THREE.Object3D => {
     const allEnemies = scene.children.filter((el) => el.name === "enemy");
@@ -36,15 +43,6 @@ export const useBullet = (scene: THREE.Scene) => {
     return closestObject;
   };
 
-  useEffect(() => {
-    let timerId: any;
-    timerId = setInterval(() => {
-      // createBullet(1, 1);
-      createBullet(2, 3, true);
-    }, 500);
-    return () => clearInterval(timerId);
-  }, []);
-
   const bulletMove = (uuid: string) => {
     const missile = bulletStatusRef.current[uuid];
     if (missile) {
@@ -61,16 +59,18 @@ export const useBullet = (scene: THREE.Scene) => {
 
   const chkBulletCollided = (uuid: string) => {
     const missile = bulletStatusRef.current[uuid];
-    const objects = scene.children.filter((el) => el.name === "enemy");
+    if (missile) {
+      const objects = scene.children.filter((el) => el.name === "enemy");
 
-    const movingBox = createBoundingBox(missile);
-    for (const object of objects) {
-      if (object !== missile) {
-        // Don't check against itself
-        const objectBox = createBoundingBox(object);
-        if (movingBox.intersectsBox(objectBox)) {
-          if (!missile.userData?.unremovable) {
-            removeRef.current.push(missile);
+      const movingBox = createBoundingBox(missile);
+      for (const object of objects) {
+        if (object !== missile) {
+          // Don't check against itself
+          const objectBox = createBoundingBox(object);
+          if (movingBox.intersectsBox(objectBox)) {
+            if (!missile.userData?.unremovable) {
+              removeRef.current.push(missile);
+            }
           }
         }
       }
@@ -98,9 +98,10 @@ export const useBullet = (scene: THREE.Scene) => {
   const createBullet = (
     damage: number,
     speed: number,
+    color = 0x000000,
     unremovable?: boolean
   ) => {
-    const material = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const material = new THREE.MeshBasicMaterial({ color });
     // Create a 2D geometry (a plane in this case)
     const geometry = new THREE.PlaneGeometry(0.1, 0.1);
     // Create a mesh
@@ -128,6 +129,7 @@ export const useBullet = (scene: THREE.Scene) => {
   };
 
   return {
+    createBullet,
     chkBulletCollided,
     bulletMove,
     bulletRemove,

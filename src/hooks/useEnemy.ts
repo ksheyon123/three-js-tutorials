@@ -1,9 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-import WorkerBuilder from "@/workers/worker-builder";
-import Worker from "@/workers/rockOn";
-
 type EnemyStatus = {
   [key: string]: THREE.Mesh;
 };
@@ -12,8 +9,6 @@ export const useEnemy = (scene: THREE.Scene) => {
   const hz = 1 / 60;
   const enemyStatusRef = useRef<EnemyStatus>({});
   const removeRef = useRef<THREE.Object3D[]>([]);
-
-  const worker = new WorkerBuilder(Worker);
 
   useEffect(() => {
     let timerId: any;
@@ -50,10 +45,10 @@ export const useEnemy = (scene: THREE.Scene) => {
       ...enemyStatusRef.current,
       [enemy.uuid]: enemy,
     };
-    worker.postMessage({
-      key: "update",
-      id: enemy.uuid,
-    });
+    // worker.postMessage({
+    //   key: "update",
+    //   id: enemy.uuid,
+    // });
     scene.add(enemy);
   };
 
