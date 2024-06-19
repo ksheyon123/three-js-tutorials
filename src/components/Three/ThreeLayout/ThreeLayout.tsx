@@ -6,6 +6,7 @@ import FunctionBox from "@/components/Three/FunctionBox/FunctionBox";
 import * as styles from "./ThreeLayout.module.css";
 import { InitContext } from "@/contexts/initContext";
 import { ModalContext } from "@/contexts/ModalContext";
+import InformationBar from "../InformationDock/InformationBar";
 
 const ThreeLayout: React.FC = () => {
   const { enemyWorker } = useContext(InitContext);
@@ -18,7 +19,7 @@ const ThreeLayout: React.FC = () => {
           name: "시작",
           onClick: () => {
             enemyWorker.postMessage({
-              command: "start",
+              command: "get_round_info",
             });
             toggleModal();
           },
@@ -29,6 +30,7 @@ const ThreeLayout: React.FC = () => {
 
   return (
     <div className={styles.layout}>
+      <InformationBar />
       <FunctionBox />
       <Outlet />
     </div>

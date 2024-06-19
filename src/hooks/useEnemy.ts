@@ -12,12 +12,18 @@ export const useEnemy = (scene: THREE.Scene) => {
   const enemyStatusRef = useRef<EnemyStatus>({});
   const removeRef = useRef<THREE.Object3D[]>([]);
 
-  useEffect(() => {
-    enemyWorker.onmessage = (e) => {
-      const { data } = e;
+  const getCreateEvent = (e: any) => {
+    const { data } = e;
+    const { type } = data;
+    if (type === "start") {
       const { life, speed } = data;
       createEnemy(speed, life);
-    };
+    }
+  };
+
+  useEffect(() => {
+    enemyWorker.addEventListener("message", getCreateEvent);
+    return () => enemyWorker.removeEventListener("message", getCreateEvent);
   }, []);
 
   const createEnemy = (speed: number, life: number) => {

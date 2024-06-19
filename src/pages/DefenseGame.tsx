@@ -11,6 +11,7 @@ import React, {
 } from "react";
 import * as THREE from "three";
 import { useEnemy } from "@/hooks/useEnemy";
+import InformationBar from "@/components/Three/InformationDock/InformationBar";
 
 const Shooting: React.FC = () => {
   const { renderer, camera, scene } = useContext(InitContext);
@@ -72,17 +73,6 @@ const Shooting: React.FC = () => {
         enemyRemove();
         bulletRemove();
 
-        enemies.map((el) => {
-          const d = getPosition(el.uuid);
-          if (d) {
-            if (d.distanceTo(base) < 0.2) {
-              el.removeFromParent();
-            }
-            const { x, y, z } = d;
-            el.position.set(x, y, z);
-          }
-        });
-
         bullets.map((el) => {
           const d = bulletMove(el.uuid);
           if (d) {
@@ -101,33 +91,6 @@ const Shooting: React.FC = () => {
       return () => cancelAnimationFrame(animationId);
     }
   }, [isRender]);
-
-  // useEffect(() => {
-  //   if (isRender) {
-  //     let timerId: any;
-  //     timerId = setInterval(() => {
-  //       const deg = Math.random() * 90;
-  //       const x = Math.sin(deg) * 5;
-  //       const z = Math.cos(deg) * 5;
-
-  //       const enemy = createObject(
-  //         { w: 0.1, h: 0.1, d: 0.1 },
-  //         { x: x, y: 0, z: z },
-  //         "enemy",
-  //         [
-  //           new THREE.MeshBasicMaterial({ color: 0xfff }), // +x 면
-  //           new THREE.MeshBasicMaterial({ color: 0xfff }), // -x 면
-  //           new THREE.MeshBasicMaterial({ color: 0xfff }), // +y 면
-  //           new THREE.MeshBasicMaterial({ color: 0xfff }), // -y 면
-  //           new THREE.MeshBasicMaterial({ color: 0xfff }), // +z 면
-  //           new THREE.MeshBasicMaterial({ color: 0xfff }), // -z 면
-  //         ]
-  //       );
-  //       scene.add(enemy);
-  //     }, 3000);
-  //     return () => clearInterval(timerId);
-  //   }
-  // }, [isRender]);
 
   useEffect(() => {
     const ref = canvasRef.current;
