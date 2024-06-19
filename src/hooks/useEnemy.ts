@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { InitContext } from "@/contexts/initContext";
+import { useContext, useEffect, useRef } from "react";
 import * as THREE from "three";
 
 type EnemyStatus = {
@@ -6,24 +7,17 @@ type EnemyStatus = {
 };
 
 export const useEnemy = (scene: THREE.Scene) => {
+  const { enemyWorker } = useContext(InitContext);
   const hz = 1 / 60;
   const enemyStatusRef = useRef<EnemyStatus>({});
   const removeRef = useRef<THREE.Object3D[]>([]);
 
   useEffect(() => {
-    let timerId: any;
-    timerId = setInterval(() => {
-      createEnemy(3, 1);
-    }, 1000);
-    return () => clearInterval(timerId);
-  }, []);
-
-  useEffect(() => {
-    let timerId: any;
-    timerId = setInterval(() => {
-      createEnemy(10, 2);
-    }, 3000);
-    return () => clearInterval(timerId);
+    enemyWorker.onmessage = (e) => {
+      const { data } = e;
+      const { life, speed } = data;
+      createEnemy(speed, life);
+    };
   }, []);
 
   const createEnemy = (speed: number, life: number) => {

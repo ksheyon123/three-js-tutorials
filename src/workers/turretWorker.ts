@@ -25,7 +25,7 @@ export default () => {
     basic: {
       damage: 1,
       speed: 3,
-      delay: 100,
+      delay: 1000,
     },
     penetration: {
       damage: 1,
@@ -70,7 +70,7 @@ export default () => {
       const newObj = {
         [turret]: timerId,
       };
-      timerIds = Object.assign({}, newObj, timerIds);
+      timerIds = Object.assign(timerIds, newObj, timerIds);
     }
 
     if (command === "upgrade") {
@@ -81,7 +81,6 @@ export default () => {
         (100 + TURRET_GRADE[turret][upgradeType].percent) / 100,
         TURRET_GRADE[turret][upgradeType].grade
       );
-      console.log(weighted);
       if (upgradeType === "dmglv") {
         TURRET_SPEC[turret].damage = TURRET_SPEC[turret].damage * weighted;
       }

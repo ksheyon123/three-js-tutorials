@@ -3,3 +3,8 @@
   /* height: calc(100vh - 80px); */
   /* margin-top: 80px; */
 }
+
+.modal-title {
+  display: flex;
+  text-align: center;
+}
