@@ -4,7 +4,8 @@ import React, { ReactNode, createContext, useEffect, useState } from "react";
 import { useCamera } from "@/hooks/useCamera";
 
 import WorkerBuilder from "@/workers/worker-builder";
-import Worker from "@/workers/rockOn";
+import turretWorker from "@/workers/turretWorker";
+import enemyWorker from "@/workers/enemyWorker";
 
 interface IProps {
   children: ReactNode;
@@ -14,12 +15,14 @@ const InitContext = createContext<{
   scene: THREE.Scene | null;
   renderer: THREE.WebGLRenderer | null;
   camera: THREE.PerspectiveCamera | null;
-  worker: WorkerBuilder;
+  turretWorker: WorkerBuilder;
+  enemyWorker: WorkerBuilder;
 }>({
   scene: null,
   renderer: null,
   camera: null,
-  worker: null,
+  turretWorker: null,
+  enemyWorker: null,
 });
 
 const InitProvider: React.FC<IProps> = ({ children }) => {
@@ -27,7 +30,8 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
   const [scene, setScene] = useState<THREE.Scene>();
   const [renderer, setRenderer] = useState<THREE.WebGLRenderer>();
   const [camera, setCamera] = useState<THREE.PerspectiveCamera>();
-  const worker = new WorkerBuilder(Worker);
+  const tWorker = new WorkerBuilder(turretWorker);
+  const eWorker = new WorkerBuilder(enemyWorker);
 
   /**
    * @param scene THREE.Scene which receives projected object.
@@ -83,7 +87,8 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
         scene,
         renderer,
         camera,
-        worker,
+        turretWorker: tWorker,
+        enemyWorker: eWorker,
       }}
     >
       {!!scene && children}

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { InitContext } from "@/contexts/initContext";
 
 import * as styles from "./FunctionBox.module.css";
@@ -8,11 +8,9 @@ import {
   faChevronLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { ModalContext } from "@/contexts/ModalContext";
-import { useBullet } from "@/hooks/useBullet";
 
 const FunctionBox: React.FC = () => {
-  const { scene, worker } = useContext(InitContext);
-  const { createBullet } = useBullet(scene);
+  const { turretWorker } = useContext(InitContext);
   const { toggleModal } = useContext(ModalContext);
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -20,49 +18,37 @@ const FunctionBox: React.FC = () => {
     setIsOpen((prev) => !prev);
   };
 
-  const install = (
-    type = "basic",
-    damage: number,
-    speed: number,
-    delay: number
-  ) => {
-    worker.postMessage({
-      key: "install",
-      spec: {
-        type,
-        damage,
-        speed,
-        delay,
-      },
+  const [] = useState<any>();
+
+  useEffect(() => {
+    turretWorker.postMessage({
+      command: "status",
+    });
+    turretWorker.onmessage = (e: any) => {};
+  }, [turretWorker]);
+
+  const install = (turret: string) => {
+    turretWorker.postMessage({
+      command: "install",
+      props: { turret },
+    });
+  };
+
+  const upgrade = (turret: string) => {
+    turretWorker.postMessage({
+      command: "upgrade",
+      props: { turret, upgradeType: "delaylv" },
     });
   };
 
   const turrets = [
     {
-      install: (type: string, damage: number, speed: number, delay: number) => {
-        install(type, damage, speed, delay);
-        toggleModal();
-      },
       name: "기본",
     },
     {
-      onClick: () => {
-        worker.postMessage({
-          key: "install",
-          spec: {
-            type: "basic",
-            damage: 1,
-            speed: 3,
-            delay: 1000,
-            color: 0xff0000,
-          },
-        });
-        toggleModal();
-      },
       name: "관통",
     },
     {
-      onClick: () => {},
       name: "스플래쉬",
     },
   ];
@@ -77,7 +63,7 @@ const FunctionBox: React.FC = () => {
               icon={faChevronRight}
             />
           </div>
-          {turrets.map(({ onClick, name }) => {
+          {turrets.map(({ name }) => {
             return (
               <div
                 className={styles["box-item"]}
@@ -85,8 +71,20 @@ const FunctionBox: React.FC = () => {
                   toggleModal({
                     title: "설치하시겠습니까?",
                     buttons: [
-                      { onClick: () => toggleModal(), name: "취소" },
-                      { onClick: () => onClick(), name: "확인" },
+                      {
+                        onClick: () => {
+                          install("basic");
+                          toggleModal();
+                        },
+                        name: "취소",
+                      },
+                      {
+                        onClick: () => {
+                          upgrade("basic");
+                          toggleModal();
+                        },
+                        name: "확인",
+                      },
                     ],
                   })
                 }

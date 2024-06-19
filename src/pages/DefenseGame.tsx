@@ -1,6 +1,6 @@
 import { InitContext } from "@/contexts/initContext";
 import { useCreate } from "@/hooks/useCreate";
-import { useBullet } from "@/hooks/useBullet";
+import { useTurret } from "@/hooks/useTurret";
 import { useMove } from "@/hooks/useMove";
 import React, {
   RefObject,
@@ -17,14 +17,11 @@ const Shooting: React.FC = () => {
   const canvasRef = useRef<HTMLDivElement>();
 
   const { createObject, createPlane } = useCreate();
-  const { move, chkIsCollided } = useMove(scene);
   const { chkBulletCollided, bulletMove, bulletRemove, remove } =
-    useBullet(scene);
+    useTurret(scene);
   const { getPosition, chkEnemyCollided, enemyRemove } = useEnemy(scene);
 
   const [isRender, setIsRender] = useState<boolean>(false);
-
-  const rockOn = useRef({});
 
   useEffect(() => {
     if (renderer) {

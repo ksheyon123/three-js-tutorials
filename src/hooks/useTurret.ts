@@ -1,27 +1,23 @@
 import { useContext, useEffect, useRef } from "react";
 import * as THREE from "three";
-import { useMove } from "./useMove";
 
-import WorkerBuilder from "@/workers/worker-builder";
-import Worker from "@/workers/rockOn";
 import { InitContext } from "@/contexts/initContext";
 
 type BulletStatus = {
   [key: string]: THREE.Object3D;
 };
 
-export const useBullet = (scene: THREE.Scene) => {
-  const { worker } = useContext(InitContext);
-  const { move } = useMove(scene);
+export const useTurret = (scene: THREE.Scene) => {
+  const { turretWorker } = useContext(InitContext);
   const bulletStatusRef = useRef<BulletStatus>({});
   const removeRef = useRef<THREE.Object3D[]>([]);
 
   useEffect(() => {
-    worker.onmessage = (e: any) => {
+    turretWorker.onmessage = (e: any) => {
       const { damage, speed, color } = e.data;
-      createBullet(damage, speed, color);
+      createTurret(damage, speed, color);
     };
-  }, [worker]);
+  }, [turretWorker]);
 
   const getNeareast = (): THREE.Object3D => {
     const allEnemies = scene.children.filter((el) => el.name === "enemy");
@@ -95,7 +91,7 @@ export const useBullet = (scene: THREE.Scene) => {
 
   const rockOn = () => {};
 
-  const createBullet = (
+  const createTurret = (
     damage: number,
     speed: number,
     color = 0x000000,
@@ -129,7 +125,7 @@ export const useBullet = (scene: THREE.Scene) => {
   };
 
   return {
-    createBullet,
+    createTurret,
     chkBulletCollided,
     bulletMove,
     bulletRemove,
