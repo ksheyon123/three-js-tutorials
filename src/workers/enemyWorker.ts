@@ -33,6 +33,7 @@ export default () => {
   };
 
   let ROUND = 1;
+
   self.onmessage = (e) => {
     const { data } = e;
     const { command, props } = data;

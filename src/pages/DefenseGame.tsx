@@ -76,6 +76,7 @@ const Shooting: React.FC = () => {
           const d = getPosition(el.uuid);
           if (d) {
             if (d.distanceTo(base) < 0.2) {
+              console.log("Lose life");
               el.removeFromParent();
               shooterWorker.postMessage({
                 command: "lose_life",

@@ -17,7 +17,6 @@ const InformationBar: React.FC = () => {
   const getEnemyEvent = (e: any) => {
     const { data } = e;
     const { type } = data;
-    console.log(type);
     if (type === "get_round_info") {
       const { round, info } = data;
       setIsPlaying(false);
@@ -29,7 +28,6 @@ const InformationBar: React.FC = () => {
   const getShooterEvent = (e: any) => {
     const { data } = e;
     const { type } = data;
-    console.log(type);
     if (type === "get_life_info") {
       const { life } = data;
       setLife(life);
@@ -74,7 +72,8 @@ const InformationBar: React.FC = () => {
             {enemyInfo.map((el: any) => {
               return (
                 <div key={el.name} className={styles["enemy-info"]}>
-                  <div>{el.name}</div>
+                  <div>Enemy Name : {el.name}</div>
+                  <div>Left : {el.count}</div>
                 </div>
               );
             })}

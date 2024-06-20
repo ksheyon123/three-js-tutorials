@@ -72,14 +72,20 @@ export const useEnemy = (scene: THREE.Scene) => {
         // Don't check against itself
         const objectBox = createBoundingBox(object);
         if (movingBox.intersectsBox(objectBox)) {
-          removeRef.current.push(enemy);
+          console.log("Enemy Collided");
+          --enemyStatusRef.current[uuid].userData.life;
+          if (enemyStatusRef.current[uuid].userData.life === 0) {
+            removeRef.current.push(enemy);
+          }
         }
       }
     }
   };
+
   const createBoundingBox = (object: THREE.Object3D) => {
     return new THREE.Box3().setFromObject(object);
   };
+
   const enemyRemove = () => {
     removeRef.current.map((el) => {
       el.removeFromParent();

@@ -6,7 +6,7 @@ import FunctionBox from "@/components/Three/FunctionBox/FunctionBox";
 import * as styles from "./ThreeLayout.module.css";
 import { InitContext } from "@/contexts/initContext";
 import { ModalContext } from "@/contexts/ModalContext";
-import InformationBar from "../InformationDock/InformationBar";
+import InformationBar from "../InformationBar/InformationBar";
 
 const ThreeLayout: React.FC = () => {
   const { enemyWorker, shooterWorker } = useContext(InitContext);

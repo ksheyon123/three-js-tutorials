@@ -76,13 +76,6 @@ const FunctionBox: React.FC = () => {
                           install("basic");
                           toggleModal();
                         },
-                        name: "취소",
-                      },
-                      {
-                        onClick: () => {
-                          upgrade("basic");
-                          toggleModal();
-                        },
                         name: "확인",
                       },
                     ],
