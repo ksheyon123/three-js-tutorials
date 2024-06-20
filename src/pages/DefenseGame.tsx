@@ -11,10 +11,9 @@ import React, {
 } from "react";
 import * as THREE from "three";
 import { useEnemy } from "@/hooks/useEnemy";
-import InformationBar from "@/components/Three/InformationDock/InformationBar";
 
 const Shooting: React.FC = () => {
-  const { renderer, camera, scene } = useContext(InitContext);
+  const { renderer, camera, scene, shooterWorker } = useContext(InitContext);
   const canvasRef = useRef<HTMLDivElement>();
 
   const { createObject, createPlane } = useCreate();
@@ -72,6 +71,20 @@ const Shooting: React.FC = () => {
 
         enemyRemove();
         bulletRemove();
+
+        enemies.map((el) => {
+          const d = getPosition(el.uuid);
+          if (d) {
+            if (d.distanceTo(base) < 0.2) {
+              el.removeFromParent();
+              shooterWorker.postMessage({
+                command: "lose_life",
+              });
+            }
+            const { x, y, z } = d;
+            el.position.set(x, y, z);
+          }
+        });
 
         bullets.map((el) => {
           const d = bulletMove(el.uuid);

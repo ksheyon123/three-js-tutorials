@@ -6,16 +6,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { faPause } from "@fortawesome/free-solid-svg-icons";
 const InformationBar: React.FC = () => {
-  const { enemyWorker } = useContext(InitContext);
+  const { enemyWorker, shooterWorker } = useContext(InitContext);
   // Life, Score, Round, START, PAUSE
 
   const [roundInfo, setRoundInfo] = useState<number>(1);
   const [enemyInfo, setEnemyInfo] = useState<any>([]);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [life, setLife] = useState<number>(0);
 
-  const getEvent = (e: any) => {
+  const getEnemyEvent = (e: any) => {
     const { data } = e;
     const { type } = data;
+    console.log(type);
     if (type === "get_round_info") {
       const { round, info } = data;
       setIsPlaying(false);
@@ -24,17 +26,29 @@ const InformationBar: React.FC = () => {
     }
   };
 
+  const getShooterEvent = (e: any) => {
+    const { data } = e;
+    const { type } = data;
+    console.log(type);
+    if (type === "get_life_info") {
+      const { life } = data;
+      setLife(life);
+    }
+  };
+
   useEffect(() => {
-    enemyWorker.addEventListener("message", getEvent);
+    enemyWorker.addEventListener("message", getEnemyEvent);
+    shooterWorker.addEventListener("message", getShooterEvent);
     return () => {
-      enemyWorker.removeEventListener("message", getEvent);
+      enemyWorker.removeEventListener("message", getEnemyEvent);
+      shooterWorker.removeEventListener("message", getShooterEvent);
     };
   }, []);
 
   return (
     <div className={styles["information-bar"]}>
       <div className={styles["bar-wrapper"]}>
-        <div className={styles["life"]}>0</div>
+        <div className={styles["life"]}>{life}</div>
         <div className={styles["round-info"]}>
           <div>
             <div>{roundInfo}</div>

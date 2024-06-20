@@ -45,10 +45,6 @@ export const useEnemy = (scene: THREE.Scene) => {
       ...enemyStatusRef.current,
       [enemy.uuid]: enemy,
     };
-    // worker.postMessage({
-    //   key: "update",
-    //   id: enemy.uuid,
-    // });
     scene.add(enemy);
   };
 
@@ -68,9 +64,7 @@ export const useEnemy = (scene: THREE.Scene) => {
   const chkEnemyCollided = (uuid: string) => {
     const enemy = enemyStatusRef.current[uuid];
 
-    const objects = scene.children.filter(
-      (el) => el.name === "bullet" || el.name === "i"
-    );
+    const objects = scene.children.filter((el) => el.name === "bullet");
 
     const movingBox = createBoundingBox(enemy);
     for (const object of objects) {

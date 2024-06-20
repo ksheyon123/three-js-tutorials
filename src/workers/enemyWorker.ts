@@ -1,7 +1,7 @@
 export default () => {
   const roundInfo: any = {
     1: {
-      enemy0: 2,
+      enemy0: 10,
     },
     2: {
       enemy0: 10,
