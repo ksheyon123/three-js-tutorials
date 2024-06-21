@@ -1,3 +1,5 @@
+import { COMMAND } from "@/constants/index";
+
 export default () => {
   const roundInfo: any = {
     1: {
@@ -38,7 +40,7 @@ export default () => {
     const { data } = e;
     const { command, props } = data;
 
-    if (command === "get_round_info") {
+    if (command === COMMAND.getRoundInfo) {
       const d = Object.keys(roundInfo[ROUND]).map((el) => {
         return {
           name: el,
@@ -47,15 +49,14 @@ export default () => {
         };
       });
       self.postMessage({
-        type: "get_round_info",
+        type: COMMAND.getRoundInfo,
         round: ROUND,
         info: d,
       });
     }
 
-    if (command === "start") {
-      Object.keys(roundInfo[ROUND]).map((el) => {
-        const enemy = el; // enemy0, enemy1
+    if (command === COMMAND.gameStart) {
+      Object.keys(roundInfo[ROUND]).map((enemy) => {
         const timerId = setInterval(() => {
           --roundInfo[ROUND][enemy];
 
@@ -63,24 +64,10 @@ export default () => {
             clearInterval(timerId);
             if (Object.values(roundInfo[ROUND]).every((el) => el === 0)) {
               ROUND++;
-              if (!!roundInfo[ROUND]) {
-                const d = Object.keys(roundInfo[ROUND]).map((el) => {
-                  return {
-                    name: el,
-                    count: roundInfo[ROUND][el],
-                    life: enemyInfo[el].life,
-                  };
-                });
-                self.postMessage({
-                  type: "get_round_info",
-                  round: ROUND,
-                  info: d,
-                });
-              }
             }
           }
           self.postMessage({
-            type: "start",
+            type: COMMAND.gameStart,
             life: enemyInfo[enemy].life,
             speed: enemyInfo[enemy].speed,
           });
@@ -88,7 +75,21 @@ export default () => {
       });
     }
 
-    if (command === "pause") {
+    if (command === COMMAND.gameEnd) {
+      if (!!roundInfo[ROUND]) {
+        const d = Object.keys(roundInfo[ROUND]).map((el) => {
+          return {
+            name: el,
+            count: roundInfo[ROUND][el],
+            life: enemyInfo[el].life,
+          };
+        });
+        self.postMessage({
+          type: COMMAND.getRoundInfo,
+          round: ROUND,
+          info: d,
+        });
+      }
     }
   };
 };

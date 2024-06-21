@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef } from "react";
 import * as THREE from "three";
 
 import { InitContext } from "@/contexts/initContext";
+import { COMMAND } from "@/constants";
 
 type BulletStatus = {
   [key: string]: THREE.Object3D;

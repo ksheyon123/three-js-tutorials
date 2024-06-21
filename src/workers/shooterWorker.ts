@@ -3,7 +3,6 @@ export default () => {
   self.onmessage = (e) => {
     const { data } = e;
     const { command } = data;
-    console.log("Shooter Worker", command);
     if (command === "get_life_info") {
       self.postMessage({
         type: "get_life_info",

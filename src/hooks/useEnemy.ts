@@ -1,3 +1,4 @@
+import { COMMAND } from "@/constants";
 import { InitContext } from "@/contexts/initContext";
 import { useContext, useEffect, useRef } from "react";
 import * as THREE from "three";
@@ -15,7 +16,7 @@ export const useEnemy = (scene: THREE.Scene) => {
   const getCreateEvent = (e: any) => {
     const { data } = e;
     const { type } = data;
-    if (type === "start") {
+    if (type === COMMAND.gameStart) {
       const { life, speed } = data;
       createEnemy(speed, life);
     }
@@ -72,9 +73,8 @@ export const useEnemy = (scene: THREE.Scene) => {
         // Don't check against itself
         const objectBox = createBoundingBox(object);
         if (movingBox.intersectsBox(objectBox)) {
-          console.log("Enemy Collided");
-          --enemyStatusRef.current[uuid].userData.life;
-          if (enemyStatusRef.current[uuid].userData.life === 0) {
+          enemy.userData.life = enemy.userData.life - object.userData.damage;
+          if (enemy.userData.life <= 0) {
             removeRef.current.push(enemy);
           }
         }
@@ -91,6 +91,11 @@ export const useEnemy = (scene: THREE.Scene) => {
       el.removeFromParent();
       delete enemyStatusRef.current[el.uuid];
       removeRef.current = [];
+      if (Object.keys(enemyStatusRef.current).length === 0) {
+        enemyWorker.postMessage({
+          command: COMMAND.gameEnd,
+        });
+      }
     });
   };
 
