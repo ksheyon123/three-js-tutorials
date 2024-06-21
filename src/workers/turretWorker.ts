@@ -1,5 +1,3 @@
-import { COMMAND } from "@/constants";
-
 type TurretInfo = {
   [key in SortOfTurret]?: {
     [key in SortOfSpecification]: number;
@@ -65,7 +63,8 @@ export default () => {
   self.onmessage = (e) => {
     const { data } = e;
     const { command, props } = data;
-    if (command === COMMAND.installTurret) {
+    console.log(command);
+    if (command === "turret_install") {
       const { turret } = props as InstallCommand;
       const timerId = fire(turret);
 
@@ -75,7 +74,7 @@ export default () => {
       timerIds = Object.assign(timerIds, newObj, timerIds);
     }
 
-    if (command === COMMAND.upgradeTurret) {
+    if (command === "turret_upgrade") {
       const { turret, upgradeType } = props as UpgradeCommand;
       ++TURRET_GRADE[turret][upgradeType].grade;
 

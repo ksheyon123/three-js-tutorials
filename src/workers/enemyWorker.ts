@@ -1,5 +1,3 @@
-import { COMMAND } from "@/constants/index";
-
 export default () => {
   const roundInfo: any = {
     1: {
@@ -40,7 +38,7 @@ export default () => {
     const { data } = e;
     const { command, props } = data;
 
-    if (command === COMMAND.getRoundInfo) {
+    if (command === "get_round_info") {
       const d = Object.keys(roundInfo[ROUND]).map((el) => {
         return {
           name: el,
@@ -49,13 +47,13 @@ export default () => {
         };
       });
       self.postMessage({
-        type: COMMAND.getRoundInfo,
+        type: "get_round_info",
         round: ROUND,
         info: d,
       });
     }
 
-    if (command === COMMAND.gameStart) {
+    if (command === "game_start") {
       Object.keys(roundInfo[ROUND]).map((enemy) => {
         const timerId = setInterval(() => {
           --roundInfo[ROUND][enemy];
@@ -67,7 +65,7 @@ export default () => {
             }
           }
           self.postMessage({
-            type: COMMAND.gameStart,
+            type: "game_start",
             life: enemyInfo[enemy].life,
             speed: enemyInfo[enemy].speed,
           });
@@ -75,7 +73,7 @@ export default () => {
       });
     }
 
-    if (command === COMMAND.gameEnd) {
+    if (command === "game_end") {
       if (!!roundInfo[ROUND]) {
         const d = Object.keys(roundInfo[ROUND]).map((el) => {
           return {
@@ -85,7 +83,7 @@ export default () => {
           };
         });
         self.postMessage({
-          type: COMMAND.getRoundInfo,
+          type: "get_round_info",
           round: ROUND,
           info: d,
         });

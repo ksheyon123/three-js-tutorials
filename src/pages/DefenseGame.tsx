@@ -42,6 +42,26 @@ const Shooting: React.FC = () => {
     return obj;
   };
 
+  const getOutline = () => {
+    // Create the ring geometry
+    const innerRadius = 15; // Inner radius of the hollow circle
+    const outerRadius = 15.1; // Outer radius of the hollow circle
+    const segments = 64; // Number of segments for the circle
+
+    const geometry = new THREE.RingGeometry(innerRadius, outerRadius, segments);
+
+    // Create a material for the ring
+    const material = new THREE.MeshBasicMaterial({
+      color: 0xffff00,
+      side: THREE.DoubleSide,
+    });
+
+    // Create a mesh combining the geometry and material
+    const ring = new THREE.Mesh(geometry, material);
+    ring.name = "outline";
+    return ring;
+  };
+
   useEffect(() => {
     if (isRender) {
       let animationId: any;
@@ -51,6 +71,9 @@ const Shooting: React.FC = () => {
 
       const shooter = getShooter();
       scene.add(shooter);
+
+      const outline = getOutline();
+      scene.add(outline);
       // Set camera
       camera.position.set(0, 0, 30);
       camera.lookAt(base);

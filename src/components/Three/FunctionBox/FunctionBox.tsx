@@ -8,7 +8,6 @@ import {
   faChevronLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { ModalContext } from "@/contexts/ModalContext";
-import { COMMAND } from "@/constants";
 
 const FunctionBox: React.FC = () => {
   const { turretWorker } = useContext(InitContext);
@@ -21,14 +20,14 @@ const FunctionBox: React.FC = () => {
 
   const install = (turret: string) => {
     turretWorker.postMessage({
-      command: COMMAND.installTurret,
+      command: "turret_install",
       props: { turret },
     });
   };
 
   const upgrade = (turret: string) => {
     turretWorker.postMessage({
-      command: COMMAND.upgradeTurret,
+      command: "turret_upgrade",
       props: { turret, upgradeType: "delaylv" },
     });
   };

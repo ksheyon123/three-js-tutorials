@@ -1,4 +1,3 @@
-import { COMMAND } from "@/constants";
 import { InitContext } from "@/contexts/initContext";
 import { useContext, useEffect, useRef } from "react";
 import * as THREE from "three";
@@ -16,7 +15,7 @@ export const useEnemy = (scene: THREE.Scene) => {
   const getCreateEvent = (e: any) => {
     const { data } = e;
     const { type } = data;
-    if (type === COMMAND.gameStart) {
+    if (type === "game_start") {
       const { life, speed } = data;
       createEnemy(speed, life);
     }
@@ -93,7 +92,7 @@ export const useEnemy = (scene: THREE.Scene) => {
       removeRef.current = [];
       if (Object.keys(enemyStatusRef.current).length === 0) {
         enemyWorker.postMessage({
-          command: COMMAND.gameEnd,
+          command: "game_end",
         });
       }
     });

@@ -2,7 +2,6 @@ import { useContext, useEffect, useRef } from "react";
 import * as THREE from "three";
 
 import { InitContext } from "@/contexts/initContext";
-import { COMMAND } from "@/constants";
 
 type BulletStatus = {
   [key: string]: THREE.Object3D;
@@ -57,7 +56,9 @@ export const useTurret = (scene: THREE.Scene) => {
   const chkBulletCollided = (uuid: string) => {
     const missile = bulletStatusRef.current[uuid];
     if (missile) {
-      const objects = scene.children.filter((el) => el.name === "enemy");
+      const objects = scene.children.filter(
+        (el) => el.name === "enemy" || el.name === "outline"
+      );
 
       const movingBox = createBoundingBox(missile);
       for (const object of objects) {
@@ -65,7 +66,10 @@ export const useTurret = (scene: THREE.Scene) => {
           // Don't check against itself
           const objectBox = createBoundingBox(object);
           if (movingBox.intersectsBox(objectBox)) {
-            if (!missile.userData?.unremovable) {
+            if (
+              object.name === "outline" ||
+              (object.name === "enemy" && !missile.userData?.unremovable)
+            ) {
               removeRef.current.push(missile);
             }
           }

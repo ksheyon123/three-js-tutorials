@@ -55,7 +55,7 @@ const InformationBar: React.FC = () => {
                 className={styles["start"]}
                 onClick={() => {
                   enemyWorker.postMessage({
-                    command: "start",
+                    command: "game_start",
                   });
                   setIsPlaying(true);
                 }}
@@ -63,10 +63,6 @@ const InformationBar: React.FC = () => {
                 <FontAwesomeIcon icon={faPlay} />
               </div>
             )}
-
-            {/* <div className={styles["pause"]}>
-              <FontAwesomeIcon icon={faPause} />
-            </div> */}
           </div>
           <div className={styles["enemies"]}>
             {enemyInfo.map((el: any) => {
