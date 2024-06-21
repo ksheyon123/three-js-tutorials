@@ -17,7 +17,7 @@ export const useTurret = (scene: THREE.Scene) => {
       const { damage, speed, color } = e.data;
       createTurret(damage, speed, color);
     };
-  }, [turretWorker]);
+  }, []);
 
   const getNeareast = (): THREE.Object3D => {
     const allEnemies = scene.children.filter((el) => el.name === "enemy");
@@ -63,14 +63,17 @@ export const useTurret = (scene: THREE.Scene) => {
       const movingBox = createBoundingBox(missile);
       for (const object of objects) {
         if (object !== missile) {
-          // Don't check against itself
-          const objectBox = createBoundingBox(object);
-          if (movingBox.intersectsBox(objectBox)) {
-            if (
-              object.name === "outline" ||
-              (object.name === "enemy" && !missile.userData?.unremovable)
-            ) {
+          if (object.name === "outline") {
+            if (missile.position.length() >= 15) {
               removeRef.current.push(missile);
+            }
+          } else {
+            // Don't check against itself
+            const objectBox = createBoundingBox(object);
+            if (movingBox.intersectsBox(objectBox)) {
+              if (!missile.userData?.unremovable) {
+                removeRef.current.push(missile);
+              }
             }
           }
         }
