@@ -1,17 +1,6 @@
-type RoundInfo = {
-  [key: number]: {
-    [key in SortOfEnemy]?: number;
-  };
-};
+import { EnemyInfo, RoundInfo, SortOfEnemy } from "@/types/enemy.type";
+// import { COMMAND } from "../constants/command";
 
-type EnemyInfo = {
-  [key in SortOfEnemy]: {
-    [key in SortOfSpecification]: number;
-  };
-};
-
-type SortOfEnemy = "enemy0" | "enemy1" | "enemy2";
-type SortOfSpecification = "life" | "speed" | "delay" | "point";
 export default () => {
   const roundInfo: RoundInfo = {
     1: {
@@ -55,6 +44,7 @@ export default () => {
     const { data } = e;
     const { command, props } = data;
 
+    console.log();
     if (command === "get_round_info") {
       const d = Object.keys(roundInfo[ROUND]).map((key: SortOfEnemy) => {
         return {
