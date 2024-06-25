@@ -57,8 +57,7 @@ export const useTurret = (scene: THREE.Scene) => {
     const missile = bulletStatusRef.current[uuid];
     if (missile) {
       const objects = scene.children.filter(
-        (el) => el.name === "enemy"
-        //  || el.name === "outline"
+        (el) => el.name === "enemy" || el.name === "outline"
       );
 
       const movingBox = createBoundingBox(missile);
@@ -114,7 +113,6 @@ export const useTurret = (scene: THREE.Scene) => {
     bullet.name = "bullet";
     const nearestEnemy = getNeareast();
 
-    console.log("Create");
     if (nearestEnemy) {
       bullet.userData = {
         damage,

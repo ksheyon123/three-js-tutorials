@@ -41,6 +41,7 @@ export default () => {
     const { data } = e;
     const { command, props } = data;
 
+    console.log(command);
     if (command === "get_round_info") {
       const d = Object.keys(roundInfo[ROUND]).map((el) => {
         return {

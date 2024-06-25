@@ -9,7 +9,7 @@ type EnemyStatus = {
 
 export const useEnemy = (scene: THREE.Scene) => {
   const { enemyWorker } = useContext(InitContext);
-  const { increasePoint } = useContext(PlayerContext);
+  const { increasePoint, reduceLife } = useContext(PlayerContext);
   const hz = 1 / 60;
   const enemyStatusRef = useRef<EnemyStatus>({});
   const removeRef = useRef<THREE.Object3D[]>([]);
@@ -69,7 +69,18 @@ export const useEnemy = (scene: THREE.Scene) => {
 
     const objects = scene.children.filter((el) => el.name === "bullet");
 
+    const object = scene.children.find((el) => el.name === "i");
+
     const movingBox = createBoundingBox(enemy);
+
+    // REDUCE LIFE WHEN THE ENEMY TOUCH THE SHOOTER
+    if (object.position.clone().distanceTo(enemy.position) <= 0.2) {
+      console.log("BOOOOM!");
+      removeRef.current.push(enemy);
+      reduceLife();
+    }
+
+    // ELIMINATE THE ENEMY WHEN THE BULLET HIT IT
     for (const object of objects) {
       if (object !== enemy) {
         // Don't check against itself

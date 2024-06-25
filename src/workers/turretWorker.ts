@@ -67,16 +67,15 @@ export default () => {
     const { data } = e;
     const { command, props } = data;
     console.log(command);
-    if (command === "turret")
-      if (command === "turret_install") {
-        const { turret } = props as InstallCommand;
-        const timerId = fire(turret);
+    if (command === "turret_install") {
+      const { turret } = props as InstallCommand;
+      const timerId = fire(turret);
 
-        const newObj = {
-          [turret]: timerId,
-        };
-        timerIds = Object.assign(timerIds, newObj, timerIds);
-      }
+      const newObj = {
+        [turret]: timerId,
+      };
+      timerIds = Object.assign(timerIds, newObj, timerIds);
+    }
 
     if (command === "turret_upgrade") {
       const { turret, upgradeType } = props as UpgradeCommand;

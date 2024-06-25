@@ -100,10 +100,10 @@ const Shooting: React.FC = () => {
         enemies.map((el) => {
           const d = getPosition(el.uuid);
           if (d) {
-            if (d.distanceTo(base) < 0.2) {
-              el.removeFromParent();
-              reduceLife();
-            }
+            // if (d.distanceTo(base) < 0.2) {
+            //   el.removeFromParent();
+            //   reduceLife();
+            // }
             const { x, y, z } = d;
             el.position.set(x, y, z);
           }
