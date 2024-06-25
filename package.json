@@ -6,7 +6,8 @@
   "scripts": {
     "webpack": "webpack --config config/webpack.config.js",
     "start": "webpack-dev-server --config config/webpack.config.dev.js",
-    "build": "webpack --config config/webpack.config.js"
+    "build": "webpack --config config/webpack.config.js",
+    "test:prod": "serve -s dist/"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/ksheyon123/resume/issues"
   },
-  "homepage": "https://github.com/ksheyon123/resume#readme",
+  "homepage": "./",
   "dependencies": {
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-react": "^7.18.6",

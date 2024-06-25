@@ -11,6 +11,7 @@ module.exports = {
   },
   entry: "./src/index.tsx",
   output: {
+    publicPath: "/",
     filename: "main.js",
     path: path.join(__dirname, "..", "dist"),
   },
