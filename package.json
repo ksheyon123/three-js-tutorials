@@ -1,7 +1,7 @@
 {
-  "name": "pixel-drawer",
+  "name": "threejs-game",
   "version": "0.0.0",
-  "description": "PC application for drawing pixel art",
+  "description": "Game",
   "main": "index.js",
   "scripts": {
     "webpack": "webpack --config config/webpack.config.js",

@@ -65,7 +65,7 @@ const InformationBar: React.FC = () => {
             })}
           </div>
         </div>
-        <div className={styles["score"]}></div>
+        <div className={styles["score"]}>{point}</div>
       </div>
     </div>
   );

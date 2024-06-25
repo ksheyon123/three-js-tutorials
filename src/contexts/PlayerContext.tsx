@@ -1,4 +1,12 @@
-import React, { ReactNode, createContext, useEffect, useState } from "react";
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { InitContext } from "./initContext";
+import { SortOfTurret } from "@/types/turret.type";
 
 interface IProps {
   children: ReactNode;
@@ -19,10 +27,24 @@ export const PlayerContext = createContext<ContextType>({
 });
 
 export const PlayerProvider: React.FC<IProps> = ({ children }) => {
+  const { turretWorker } = useContext(InitContext);
   const [point, setPoint] = useState<number>(0);
   const [life, setLife] = useState<number>(10);
+  const [turretInfo, setTurretInfo] = useState<any>();
 
-  useEffect(() => {}, []);
+  const getEnemyInfo = (e: any) => {
+    const { data } = e;
+    const { command } = data;
+    if (command === "turret_info") {
+      const { list } = data;
+      console.log(list);
+    }
+  };
+
+  useEffect(() => {
+    turretWorker.addEventListener("message", getEnemyInfo);
+    return () => turretWorker.removeEventListener("message", getEnemyInfo);
+  }, []);
 
   const reduceLife = () => {
     console.log("REDUCE LIFE!");
@@ -34,7 +56,7 @@ export const PlayerProvider: React.FC<IProps> = ({ children }) => {
     setPoint((prev) => point + prev);
   };
 
-  const purchase = () => {};
+  const purchase = (type: SortOfTurret) => {};
 
   return (
     <PlayerContext.Provider

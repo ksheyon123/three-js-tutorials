@@ -1,24 +1,11 @@
-type TurretInfo = {
-  [key in SortOfTurret]?: {
-    [key in SortOfSpecification]: number;
-  };
-};
-type TurretUpgrade = {
-  [key in SortOfTurret]?: any;
-};
-
-type UpgradeCommand = {
-  turret: SortOfTurret;
-  upgradeType: SortOfUpgrade;
-};
-
-type InstallCommand = {
-  turret: SortOfTurret;
-};
-
-type SortOfTurret = "basic" | "penetration" | "splash";
-type SortOfUpgrade = "dmglv" | "spdlv" | "delaylv";
-type SortOfSpecification = "damage" | "speed" | "delay" | "price";
+import {
+  TurretInfo,
+  TurretUpgrade,
+  SortOfTurret,
+  InstallCommand,
+  UpgradeCommand,
+  TurretPurchase,
+} from "@/types/turret.type";
 
 export default () => {
   let TURRET_SPEC: TurretInfo = {
@@ -67,6 +54,20 @@ export default () => {
     const { data } = e;
     const { command, props } = data;
     console.log(command);
+    if (command === "turret_info") {
+      const products: TurretPurchase[] = Object.keys(TURRET_SPEC).map(
+        (key: SortOfTurret) => ({
+          type: key,
+          price: TURRET_SPEC[key].price,
+        })
+      );
+      console.log(products);
+      self.postMessage({
+        key: "turret_info",
+        list: products,
+      });
+    }
+
     if (command === "turret_install") {
       const { turret } = props as InstallCommand;
       const timerId = fire(turret);
