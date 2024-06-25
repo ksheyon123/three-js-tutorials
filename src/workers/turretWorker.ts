@@ -18,7 +18,7 @@ type InstallCommand = {
 
 type SortOfTurret = "basic" | "penetration" | "splash";
 type SortOfUpgrade = "dmglv" | "spdlv" | "delaylv";
-type SortOfSpecification = "damage" | "speed" | "delay";
+type SortOfSpecification = "damage" | "speed" | "delay" | "price";
 
 export default () => {
   let TURRET_SPEC: TurretInfo = {
@@ -26,16 +26,19 @@ export default () => {
       damage: 1,
       speed: 3,
       delay: 1000,
+      price: 10,
     },
     penetration: {
       damage: 1,
       speed: 5,
       delay: 500,
+      price: 15,
     },
     splash: {
       damage: 1,
       speed: 5,
       delay: 500,
+      price: 25,
     },
   };
 
@@ -64,15 +67,16 @@ export default () => {
     const { data } = e;
     const { command, props } = data;
     console.log(command);
-    if (command === "turret_install") {
-      const { turret } = props as InstallCommand;
-      const timerId = fire(turret);
+    if (command === "turret")
+      if (command === "turret_install") {
+        const { turret } = props as InstallCommand;
+        const timerId = fire(turret);
 
-      const newObj = {
-        [turret]: timerId,
-      };
-      timerIds = Object.assign(timerIds, newObj, timerIds);
-    }
+        const newObj = {
+          [turret]: timerId,
+        };
+        timerIds = Object.assign(timerIds, newObj, timerIds);
+      }
 
     if (command === "turret_upgrade") {
       const { turret, upgradeType } = props as UpgradeCommand;

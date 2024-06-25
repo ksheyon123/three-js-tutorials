@@ -9,7 +9,7 @@ import { ModalContext } from "@/contexts/ModalContext";
 import InformationBar from "../InformationBar/InformationBar";
 
 const ThreeLayout: React.FC = () => {
-  const { enemyWorker, shooterWorker } = useContext(InitContext);
+  const { enemyWorker } = useContext(InitContext);
   const { toggleModal } = useContext(ModalContext);
 
   useEffect(() => {
@@ -20,9 +20,6 @@ const ThreeLayout: React.FC = () => {
           onClick: () => {
             enemyWorker.postMessage({
               command: "get_round_info",
-            });
-            shooterWorker.postMessage({
-              command: "get_life_info",
             });
             toggleModal();
           },

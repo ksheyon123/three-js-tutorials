@@ -5,14 +5,15 @@ import * as styles from "./InformationBar.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { faPause } from "@fortawesome/free-solid-svg-icons";
+import { PlayerContext } from "@/contexts/PlayerContext";
 const InformationBar: React.FC = () => {
-  const { enemyWorker, shooterWorker } = useContext(InitContext);
+  const { enemyWorker } = useContext(InitContext);
+  const { life, point } = useContext(PlayerContext);
   // Life, Score, Round, START, PAUSE
 
   const [roundInfo, setRoundInfo] = useState<number>(1);
   const [enemyInfo, setEnemyInfo] = useState<any>([]);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [life, setLife] = useState<number>(0);
 
   const getEnemyEvent = (e: any) => {
     const { data } = e;
@@ -25,21 +26,10 @@ const InformationBar: React.FC = () => {
     }
   };
 
-  const getShooterEvent = (e: any) => {
-    const { data } = e;
-    const { type } = data;
-    if (type === "get_life_info") {
-      const { life } = data;
-      setLife(life);
-    }
-  };
-
   useEffect(() => {
     enemyWorker.addEventListener("message", getEnemyEvent);
-    shooterWorker.addEventListener("message", getShooterEvent);
     return () => {
       enemyWorker.removeEventListener("message", getEnemyEvent);
-      shooterWorker.removeEventListener("message", getShooterEvent);
     };
   }, []);
 

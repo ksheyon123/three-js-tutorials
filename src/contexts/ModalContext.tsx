@@ -1,7 +1,6 @@
+import React, { ReactNode, createContext } from "react";
 import Modal from "@/components/Modal/Modal";
 import { useModal } from "@/hooks/useModal";
-import React, { ReactNode, createContext } from "react";
-
 interface IProps {
   children: ReactNode;
 }

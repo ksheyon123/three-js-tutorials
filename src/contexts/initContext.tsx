@@ -6,7 +6,6 @@ import { useCamera } from "@/hooks/useCamera";
 import WorkerBuilder from "@/workers/worker-builder";
 import turretWorker from "@/workers/turretWorker";
 import enemyWorker from "@/workers/enemyWorker";
-import shooterWorker from "@/workers/shooterWorker";
 
 interface IProps {
   children: ReactNode;
@@ -18,14 +17,12 @@ const InitContext = createContext<{
   camera: THREE.PerspectiveCamera | null;
   turretWorker: WorkerBuilder;
   enemyWorker: WorkerBuilder;
-  shooterWorker: WorkerBuilder;
 }>({
   scene: null,
   renderer: null,
   camera: null,
   turretWorker: null,
   enemyWorker: null,
-  shooterWorker: null,
 });
 
 const InitProvider: React.FC<IProps> = ({ children }) => {
@@ -35,7 +32,6 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
   const [camera, setCamera] = useState<THREE.PerspectiveCamera>();
   const tWorker = new WorkerBuilder(turretWorker);
   const eWorker = new WorkerBuilder(enemyWorker);
-  const sWorker = new WorkerBuilder(shooterWorker);
   /**
    * @param scene THREE.Scene which receives projected object.
    * @description Draw grid on the z-x plain
@@ -92,7 +88,6 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
         camera,
         turretWorker: tWorker,
         enemyWorker: eWorker,
-        shooterWorker: sWorker,
       }}
     >
       {!!scene && children}

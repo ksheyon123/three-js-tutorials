@@ -1,3 +1,4 @@
+import { PlayerContext } from "@/contexts/PlayerContext";
 import { InitContext } from "@/contexts/initContext";
 import { useContext, useEffect, useRef } from "react";
 import * as THREE from "three";
@@ -8,6 +9,7 @@ type EnemyStatus = {
 
 export const useEnemy = (scene: THREE.Scene) => {
   const { enemyWorker } = useContext(InitContext);
+  const { increasePoint } = useContext(PlayerContext);
   const hz = 1 / 60;
   const enemyStatusRef = useRef<EnemyStatus>({});
   const removeRef = useRef<THREE.Object3D[]>([]);
@@ -16,8 +18,8 @@ export const useEnemy = (scene: THREE.Scene) => {
     const { data } = e;
     const { type } = data;
     if (type === "game_start") {
-      const { life, speed } = data;
-      createEnemy(speed, life);
+      const { life, speed, point } = data;
+      createEnemy(speed, life, point);
     }
   };
 
@@ -26,7 +28,7 @@ export const useEnemy = (scene: THREE.Scene) => {
     return () => enemyWorker.removeEventListener("message", getCreateEvent);
   }, []);
 
-  const createEnemy = (speed: number, life: number) => {
+  const createEnemy = (speed: number, life: number, point: number) => {
     const deg = Math.random() * 90;
     const x = Math.sin(deg) * 5;
     const y = Math.cos(deg) * 5;
@@ -40,6 +42,7 @@ export const useEnemy = (scene: THREE.Scene) => {
     enemy.userData = {
       speed,
       life,
+      point,
     };
     enemyStatusRef.current = {
       ...enemyStatusRef.current,
@@ -75,6 +78,7 @@ export const useEnemy = (scene: THREE.Scene) => {
           enemy.userData.life = enemy.userData.life - object.userData.damage;
           if (enemy.userData.life <= 0) {
             removeRef.current.push(enemy);
+            increasePoint(enemy.userData.point);
           }
         }
       }

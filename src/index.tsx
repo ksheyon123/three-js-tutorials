@@ -6,6 +6,7 @@ import router from "@/router";
 import { InitProvider } from "./contexts/initContext";
 import { ModalProvider } from "./contexts/ModalContext";
 import { theme } from "./constants/theme";
+import { PlayerProvider } from "./contexts/PlayerContext";
 
 const GlobalStyling = createGlobalStyle`
   * {
@@ -25,8 +26,10 @@ root.render(
     <ThemeProvider theme={{}}>
       <InitProvider>
         <ModalProvider>
-          <GlobalStyling />
-          <RouterProvider router={router} />
+          <PlayerProvider>
+            <GlobalStyling />
+            <RouterProvider router={router} />
+          </PlayerProvider>
         </ModalProvider>
       </InitProvider>
     </ThemeProvider>

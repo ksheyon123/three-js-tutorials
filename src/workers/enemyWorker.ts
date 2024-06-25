@@ -19,16 +19,19 @@ export default () => {
       life: 1,
       speed: 3,
       delay: 1000,
+      point: 1,
     },
     enemy1: {
       life: 1,
       speed: 5,
       delay: 1500,
+      point: 2,
     },
     enemy2: {
       life: 3,
       speed: 2,
       delay: 800,
+      point: 3,
     },
   };
 
@@ -58,12 +61,14 @@ export default () => {
         const timerId = setInterval(() => {
           --roundInfo[ROUND][enemy];
 
+          // 해당 enemy의 수가 0이 되면 Timer를 해제합니다.
           if (roundInfo[ROUND][enemy] === 0) {
             clearInterval(timerId);
             if (Object.values(roundInfo[ROUND]).every((el) => el === 0)) {
               ROUND++;
             }
           }
+          // 적의 사양에 따라서 주기적으로 생성 이벤트를 전달합니다.
           self.postMessage({
             type: "game_start",
             life: enemyInfo[enemy].life,

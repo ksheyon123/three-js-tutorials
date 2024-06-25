@@ -11,12 +11,14 @@ import React, {
 } from "react";
 import * as THREE from "three";
 import { useEnemy } from "@/hooks/useEnemy";
+import { PlayerContext } from "@/contexts/PlayerContext";
 
 const Shooting: React.FC = () => {
-  const { renderer, camera, scene, shooterWorker } = useContext(InitContext);
+  const { renderer, camera, scene } = useContext(InitContext);
+  const { reduceLife } = useContext(PlayerContext);
   const canvasRef = useRef<HTMLDivElement>();
 
-  const { createObject, createPlane } = useCreate();
+  const { createObject } = useCreate();
   const { chkBulletCollided, bulletMove, bulletRemove, remove } =
     useTurret(scene);
   const { getPosition, chkEnemyCollided, enemyRemove } = useEnemy(scene);
@@ -99,11 +101,8 @@ const Shooting: React.FC = () => {
           const d = getPosition(el.uuid);
           if (d) {
             if (d.distanceTo(base) < 0.2) {
-              console.log("Lose life");
               el.removeFromParent();
-              shooterWorker.postMessage({
-                command: "lose_life",
-              });
+              reduceLife();
             }
             const { x, y, z } = d;
             el.position.set(x, y, z);
