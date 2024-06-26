@@ -4,8 +4,8 @@ import React, { ReactNode, createContext, useEffect, useState } from "react";
 import { useCamera } from "@/hooks/useCamera";
 
 import WorkerBuilder from "@/workers/worker-builder";
-import turretWorker from "@/workers/turretWorker";
-import enemyWorker from "@/workers/enemyWorker";
+import turretWorker from "@/workers/turret.worker";
+import enemyWorker from "@/workers/enemy.worker";
 
 interface IProps {
   children: ReactNode;

@@ -1,5 +1,5 @@
 import { EnemyInfo, RoundInfo, SortOfEnemy } from "@/types/enemy.type";
-// import { COMMAND } from "../constants/command";
+import { COMMAND } from "../constants/command";
 
 export default () => {
   const roundInfo: RoundInfo = {
@@ -44,7 +44,7 @@ export default () => {
     const { data } = e;
     const { command, props } = data;
 
-    console.log();
+    console.log(COMMAND);
     if (command === "get_round_info") {
       const d = Object.keys(roundInfo[ROUND]).map((key: SortOfEnemy) => {
         return {

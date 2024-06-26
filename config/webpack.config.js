@@ -62,6 +62,15 @@ module.exports = {
           // 추가로 postcss-loader를 사용할 경우 여기에 추가
         ],
       },
+      // {
+      //   test: /\.worker\.ts$/,
+      //   use: {
+      //     loader: "worker-loader",
+      //     options: {
+      //       esModule: true,
+      //     },
+      //   },
+      // },
     ],
   },
 };
