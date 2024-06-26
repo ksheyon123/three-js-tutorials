@@ -63,6 +63,16 @@ module.exports = {
           // 추가로 postcss-loader를 사용할 경우 여기에 추가
         ],
       },
+      {
+        test: /\.worker\.js$/,
+        use: {
+          loader: "worker-loader",
+          options: {
+            filename: "[name].[contenthash].worker.js", // 고유한 파일 이름을 설정
+            esModule: true,
+          },
+        },
+      },
     ],
   },
 };

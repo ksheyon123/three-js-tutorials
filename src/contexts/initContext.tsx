@@ -3,20 +3,22 @@ import * as THREE from "three";
 import React, { ReactNode, createContext, useEffect, useState } from "react";
 import { useCamera } from "@/hooks/useCamera";
 
-import WorkerBuilder from "@/workers/worker-builder";
-import turretWorker from "@/workers/turretWorker";
-import enemyWorker from "@/workers/enemyWorker";
+// @ts-ignore
+// import WorkerBuilder from "@/workers/worker-builder";
+import TurretWorker from "@/workers/turret.worker.js";
+// @ts-ignore
+import EnemyWorker from "@/workers/enemy.worker.js";
 
 interface IProps {
   children: ReactNode;
 }
 
 const InitContext = createContext<{
-  scene: THREE.Scene | null;
-  renderer: THREE.WebGLRenderer | null;
-  camera: THREE.PerspectiveCamera | null;
-  turretWorker: WorkerBuilder;
-  enemyWorker: WorkerBuilder;
+  scene: THREE.Scene | undefined;
+  renderer: THREE.WebGLRenderer | undefined;
+  camera: THREE.PerspectiveCamera | undefined;
+  turretWorker: any;
+  enemyWorker: any;
 }>({
   scene: null,
   renderer: null,
@@ -30,8 +32,12 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
   const [scene, setScene] = useState<THREE.Scene>();
   const [renderer, setRenderer] = useState<THREE.WebGLRenderer>();
   const [camera, setCamera] = useState<THREE.PerspectiveCamera>();
-  const tWorker = new WorkerBuilder(turretWorker);
-  const eWorker = new WorkerBuilder(enemyWorker);
+  // const tWorker = new WorkerBuilder(turretWorker);
+  // const eWorker = new WorkerBuilder(enemyWorker);
+
+  const tWorker = new TurretWorker();
+  const eWorker = new EnemyWorker();
+  console.log(tWorker);
   /**
    * @param scene THREE.Scene which receives projected object.
    * @description Draw grid on the z-x plain
