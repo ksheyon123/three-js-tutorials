@@ -15,12 +15,10 @@ import { PlayerContext } from "@/contexts/PlayerContext";
 
 const Shooting: React.FC = () => {
   const { renderer, camera, scene } = useContext(InitContext);
-  const { reduceLife } = useContext(PlayerContext);
   const canvasRef = useRef<HTMLDivElement>();
 
   const { createObject } = useCreate();
-  const { chkBulletCollided, bulletMove, bulletRemove, remove } =
-    useTurret(scene);
+  const { chkBulletCollided, bulletMove, bulletRemove } = useTurret(scene);
   const { getPosition, chkEnemyCollided, enemyRemove } = useEnemy(scene);
 
   const [isRender, setIsRender] = useState<boolean>(false);
@@ -100,10 +98,6 @@ const Shooting: React.FC = () => {
         enemies.map((el) => {
           const d = getPosition(el.uuid);
           if (d) {
-            // if (d.distanceTo(base) < 0.2) {
-            //   el.removeFromParent();
-            //   reduceLife();
-            // }
             const { x, y, z } = d;
             el.position.set(x, y, z);
           }
@@ -112,10 +106,6 @@ const Shooting: React.FC = () => {
         bullets.map((el) => {
           const d = bulletMove(el.uuid);
           if (d) {
-            if (d.distanceTo(base) > 15) {
-              el.removeFromParent();
-              remove(el.uuid);
-            }
             const { x, y, z } = d;
             el.position.set(x, y, z);
           }

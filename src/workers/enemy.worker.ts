@@ -1,5 +1,4 @@
 import { EnemyInfo, RoundInfo, SortOfEnemy } from "@/types/enemy.type";
-import { COMMAND } from "../constants/command";
 
 export default () => {
   const roundInfo: RoundInfo = {
@@ -44,7 +43,6 @@ export default () => {
     const { data } = e;
     const { command, props } = data;
 
-    console.log(COMMAND);
     if (command === "get_round_info") {
       const d = Object.keys(roundInfo[ROUND]).map((key: SortOfEnemy) => {
         return {
@@ -54,7 +52,7 @@ export default () => {
         };
       });
       self.postMessage({
-        type: "get_round_info",
+        command,
         round: ROUND,
         info: d,
       });
@@ -74,7 +72,7 @@ export default () => {
           }
           // 적의 사양에 따라서 주기적으로 생성 이벤트를 전달합니다.
           self.postMessage({
-            type: "game_start",
+            command,
             life: enemyInfo[key].life,
             speed: enemyInfo[key].speed,
             point: enemyInfo[key].point,
@@ -93,7 +91,7 @@ export default () => {
           };
         });
         self.postMessage({
-          type: "get_round_info",
+          command: "get_round_info",
           round: ROUND,
           info: d,
         });

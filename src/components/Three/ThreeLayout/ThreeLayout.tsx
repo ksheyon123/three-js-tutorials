@@ -7,6 +7,7 @@ import * as styles from "./ThreeLayout.module.css";
 import { InitContext } from "@/contexts/initContext";
 import { ModalContext } from "@/contexts/ModalContext";
 import InformationBar from "../InformationBar/InformationBar";
+import { COMMAND } from "@/constants/command";
 
 const ThreeLayout: React.FC = () => {
   const { enemyWorker, turretWorker } = useContext(InitContext);
@@ -19,10 +20,10 @@ const ThreeLayout: React.FC = () => {
           name: "시작",
           onClick: () => {
             enemyWorker.postMessage({
-              command: "get_round_info",
+              command: COMMAND.GET_ROUND_INFO,
             });
             turretWorker.postMessage({
-              command: "turret_info",
+              command: COMMAND.GET_TURRET_INFO,
             });
             toggleModal();
           },

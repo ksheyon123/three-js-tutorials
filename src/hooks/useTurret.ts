@@ -93,12 +93,6 @@ export const useTurret = (scene: THREE.Scene) => {
     });
   };
 
-  const remove = (uuid: string) => {
-    delete bulletStatusRef.current[uuid];
-  };
-
-  const rockOn = () => {};
-
   const createTurret = (
     damage: number,
     speed: number,
@@ -133,6 +127,5 @@ export const useTurret = (scene: THREE.Scene) => {
     chkBulletCollided,
     bulletMove,
     bulletRemove,
-    remove,
   };
 };

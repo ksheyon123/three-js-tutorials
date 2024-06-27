@@ -30,8 +30,10 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
   const [scene, setScene] = useState<THREE.Scene>();
   const [renderer, setRenderer] = useState<THREE.WebGLRenderer>();
   const [camera, setCamera] = useState<THREE.PerspectiveCamera>();
-  const tWorker = new WorkerBuilder(turretWorker);
-  const eWorker = new WorkerBuilder(enemyWorker);
+
+  const [tWorker, setTWorker] = useState<WorkerBuilder>();
+  const [eWorker, setEWorker] = useState<WorkerBuilder>();
+
   /**
    * @param scene THREE.Scene which receives projected object.
    * @description Draw grid on the z-x plain
@@ -75,6 +77,16 @@ const InitProvider: React.FC<IProps> = ({ children }) => {
   useEffect(() => {
     if (WebGL.isWebGLAvailable()) {
       init();
+
+      const tWorker = new WorkerBuilder(turretWorker);
+      const eWorker = new WorkerBuilder(enemyWorker);
+      setTWorker(tWorker);
+      setEWorker(eWorker);
+
+      return () => {
+        tWorker.terminate();
+        eWorker.terminate();
+      };
     } else {
       alert("Unable to use webgl");
     }

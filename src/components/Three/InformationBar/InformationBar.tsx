@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { faPause } from "@fortawesome/free-solid-svg-icons";
 import { PlayerContext } from "@/contexts/PlayerContext";
+import { COMMAND } from "@/constants/command";
 const InformationBar: React.FC = () => {
   const { enemyWorker } = useContext(InitContext);
   const { life, point } = useContext(PlayerContext);
@@ -17,8 +18,8 @@ const InformationBar: React.FC = () => {
 
   const getEnemyEvent = (e: any) => {
     const { data } = e;
-    const { type } = data;
-    if (type === "get_round_info") {
+    const { command } = data;
+    if (command === COMMAND.GET_ROUND_INFO) {
       const { round, info } = data;
       setIsPlaying(false);
       setRoundInfo(round);
@@ -45,7 +46,7 @@ const InformationBar: React.FC = () => {
                 className={styles["start"]}
                 onClick={() => {
                   enemyWorker.postMessage({
-                    command: "game_start",
+                    command: COMMAND.GAME_START,
                   });
                   setIsPlaying(true);
                 }}

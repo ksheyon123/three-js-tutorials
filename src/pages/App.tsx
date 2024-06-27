@@ -6,7 +6,7 @@ import { Layout } from "@/components/common/Layout/Layout";
 const App: React.FC = () => {
   return (
     <Layout>
-      <span>App Page</span>
+      {/* <span>App Page</span> */}
       {/* <Header /> */}
       <Outlet />
     </Layout>

@@ -53,7 +53,6 @@ export default () => {
   self.onmessage = (e) => {
     const { data } = e;
     const { command, props } = data;
-    console.log(command);
     if (command === "turret_info") {
       const products: TurretPurchase[] = Object.keys(TURRET_SPEC).map(
         (key: SortOfTurret) => ({
@@ -63,14 +62,14 @@ export default () => {
       );
       console.log(products);
       self.postMessage({
-        key: "turret_info",
+        command,
         list: products,
       });
     }
 
     if (command === "turret_install") {
       const { turret } = props as InstallCommand;
-      const timerId = fire(turret);
+      const timerId = fire(command, turret);
 
       const newObj = {
         [turret]: timerId,
@@ -99,7 +98,7 @@ export default () => {
       }
 
       clearInterval(timerIds[turret]);
-      const timerId = fire(turret);
+      const timerId = fire(command, turret);
       const newObj = {
         [turret]: timerId,
       };
@@ -107,13 +106,15 @@ export default () => {
     }
   };
 
-  const fire = (turret: SortOfTurret) => {
+  const fire = (command: string, turret: SortOfTurret) => {
     self.postMessage({
+      command,
       damage: TURRET_SPEC[turret].damage,
       speed: TURRET_SPEC[turret].speed,
     });
     const timerId = setInterval(() => {
       self.postMessage({
+        command,
         damage: TURRET_SPEC[turret].damage,
         speed: TURRET_SPEC[turret].speed,
       });
